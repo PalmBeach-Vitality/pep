@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ — Palm Beach Peptides</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 950: '#050A14', 900: '#0A1628', 800: '#0F1F38' },
+            teal: { 400: '#2DD4BF', 500: '#14B8A6', 600: '#0D9488', 700: '#0F766E', 100: '#CCFBF1' },
+            sand: { 50: '#FDFBF7', 100: '#F8F4EC', 200: '#F0E9D8' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], display: ['Playfair Display', 'Georgia', 'serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .btn-primary { background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); transition: all 0.3s ease; }
+    .btn-primary:hover { background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); }
+    .nav-link { position: relative; }
+    .nav-link::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 1.5px; background: #2DD4BF; transition: width 0.3s ease; }
+    .nav-link:hover::after { width: 100%; }
+  </style>
+</head>
+<body class="bg-sand-50 text-navy-900 antialiased">
+
+  <div class="bg-navy-950 text-white text-xs py-2">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+      <span class="text-teal-400 font-medium tracking-wide">🇺🇸 USA Manufactured · 99.9% Purity · COA on Every Order</span>
+      <div class="hidden sm:flex gap-6 text-gray-300">
+        <a href="../wholesale/index.html" class="hover:text-teal-400">Wholesale Accounts</a>
+        <a href="../contact/index.html" class="hover:text-teal-400">Support</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-sand-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-20">
+        <a href="../index.html" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-navy-900 to-teal-700 flex items-center justify-center shadow-lg">
+            <span class="text-white font-bold text-lg">PB</span>
+          </div>
+          <div>
+            <div class="font-display font-bold text-xl text-navy-900 leading-none group-hover:text-teal-700 transition">Palm Beach</div>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-teal-600 font-semibold">Peptides</div>
+          </div>
+        </a>
+        <nav class="hidden lg:flex items-center gap-8">
+          <a href="../products/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Products</a>
+          <a href="../about/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">About</a>
+          <a href="../research/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Research</a>
+          <a href="index.html" class="nav-link text-sm font-medium text-teal-600">FAQ</a>
+          <a href="../wholesale/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Wholesale</a>
+          <a href="../contact/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Contact</a>
+          <a href="../contact/index.html#pricing" class="btn-primary text-white text-sm font-semibold px-5 py-2.5 rounded-lg">Get Pricing</a>
+        </nav>
+        <button id="mobile-menu-btn" class="lg:hidden p-2 text-navy-800"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      </div>
+    </div>
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-sand-200">
+      <div class="px-4 py-4 space-y-1">
+        <a href="../products/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50">Products</a>
+        <a href="../about/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50">About</a>
+        <a href="../research/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50">Research</a>
+        <a href="index.html" class="block px-3 py-2.5 rounded-lg text-teal-700 font-medium bg-teal-50">FAQ</a>
+        <a href="../wholesale/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50">Wholesale</a>
+        <a href="../contact/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50">Contact</a>
+        <a href="../contact/index.html#pricing" class="block mt-2 text-center btn-primary text-white font-semibold px-5 py-3 rounded-lg">Get Pricing</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="bg-navy-900 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-teal-400 font-semibold text-sm tracking-widest uppercase mb-3">Help Center</p>
+      <h1 class="font-display text-3xl sm:text-4xl font-bold">Frequently Asked Questions</h1>
+    </div>
+  </section>
+
+  <section class="py-16 lg:py-20">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 space-y-4">
+
+      <details class="bg-white rounded-xl p-5 border border-sand-200 group open:shadow-md transition" open>
+        <summary class="font-semibold text-navy-900 cursor-pointer list-none flex justify-between items-center">Are your peptides for human consumption?<span class="text-teal-600 text-xl group-open:rotate-45 transition">+</span></summary>
+        <p class="text-sm text-gray-600 mt-3 leading-relaxed">No. All products are intended strictly for research purposes only. They are not for human or veterinary use, not evaluated by the FDA, and not sold as drugs, supplements, or cosmetics for consumption.</p>
+      </details>
+
+      <details class="bg-white rounded-xl p-5 border border-sand-200 group">
+        <summary class="font-semibold text-navy-900 cursor-pointer list-none flex justify-between items-center">What purity levels do you guarantee?<span class="text-teal-600 text-xl group-open:rotate-45 transition">+</span></summary>
+        <p class="text-sm text-gray-600 mt-3 leading-relaxed">We guarantee 99%+ purity on every compound, with most batches testing at 99.9% via independent third-party HPLC. A Certificate of Analysis is included with every order.</p>
+      </details>
+
+      <details class="bg-white rounded-xl p-5 border border-sand-200 group">
+        <summary class="font-semibold text-navy-900 cursor-pointer list-none flex justify-between items-center">Where are the peptides manufactured?<span class="text-teal-600 text-xl group-open:rotate-45 transition">+</span></summary>
+        <p class="text-sm text-gray-600 mt-3 leading-relaxed">All peptides are synthesized and packaged in the United States under strict quality controls using solid-phase peptide synthesis (SPPS).</p>
+      </details>
+
+      <details class="bg-white rounded-xl p-5 border border-sand-200 group">
+        <summary class="font-semibold text-navy-900 cursor-pointer list-none flex justify-between items-center">Do you ship to all 50 states?<span class="text-teal-600 text-xl group-open:rotate-45 transition">+</span></summary>
+        <p class="text-sm text-gray-600 mt-3 leading-relaxed">Yes. We offer overnight domestic shipping with cold-chain packaging to all 50 states, Monday through Friday.</p>
+      </details>
+
+      <details class="bg-white rounded-xl p-5 border border-sand-200 group">
+        <summary class="font-semibold text-navy-900 cursor-pointer list-none flex justify-between items-center">How do I get wholesale pricing?<span class="text-teal-600 text-xl group-open:rotate-45 transition">+</span></summary>
+        <p class="text-sm text-gray-600 mt-3 leading-relaxed">Apply for a wholesale account on our <a href="../wholesale/index.html" class="text-teal-600 underline">Wholesale page</a>. Applications are typically reviewed within 1–2 business days. Volume pricing is available for verified B2B buyers (clinics, labs, distributors, brands).</p>
+      </details>
+
+      <details class="bg-white rounded-xl p-5 border border-sand-200 group">
+        <summary class="font-semibold text-navy-900 cursor-pointer list-none flex justify-between items-center">What documentation comes with each order?<span class="text-teal-600 text-xl group-open:rotate-45 transition">+</span></summary>
+        <p class="text-sm text-gray-600 mt-3 leading-relaxed">Every order includes a Certificate of Analysis (COA), Safety Data Sheet (SDS), and batch traceability information for full transparency and compliance needs.</p>
+      </details>
+
+      <details class="bg-white rounded-xl p-5 border border-sand-200 group">
+        <summary class="font-semibold text-navy-900 cursor-pointer list-none flex justify-between items-center">What forms are available?<span class="text-teal-600 text-xl group-open:rotate-45 transition">+</span></summary>
+        <p class="text-sm text-gray-600 mt-3 leading-relaxed">Most compounds are available as lyophilized powder, liquid vials, and/or pre-filled injectable pens. Specific availability is listed on each product card in the catalog.</p>
+      </details>
+
+      <details class="bg-white rounded-xl p-5 border border-sand-200 group">
+        <summary class="font-semibold text-navy-900 cursor-pointer list-none flex justify-between items-center">How should peptides be stored?<span class="text-teal-600 text-xl group-open:rotate-45 transition">+</span></summary>
+        <p class="text-sm text-gray-600 mt-3 leading-relaxed">Lyophilized peptides are typically stable at room temperature for short periods but should be stored refrigerated (2–8°C) or frozen for long-term storage. Once reconstituted, follow the specific protocol for that compound. See our Research Library for detailed storage and reconstitution guides.</p>
+      </details>
+
+      <details class="bg-white rounded-xl p-5 border border-sand-200 group">
+        <summary class="font-semibold text-navy-900 cursor-pointer list-none flex justify-between items-center">Can individuals purchase?<span class="text-teal-600 text-xl group-open:rotate-45 transition">+</span></summary>
+        <p class="text-sm text-gray-600 mt-3 leading-relaxed">Our primary focus is B2B (clinics, research institutions, brands, distributors). Individual research buyers may be considered on a case-by-case basis — contact us to discuss.</p>
+      </details>
+
+      <details class="bg-white rounded-xl p-5 border border-sand-200 group">
+        <summary class="font-semibold text-navy-900 cursor-pointer list-none flex justify-between items-center">How do I request a quote or specific compounds?<span class="text-teal-600 text-xl group-open:rotate-45 transition">+</span></summary>
+        <p class="text-sm text-gray-600 mt-3 leading-relaxed">Use the <a href="../contact/index.html#pricing" class="text-teal-600 underline">Get Pricing</a> form on the Contact page, or apply for wholesale if you qualify for volume pricing. We're happy to quote custom quantities or compounds not currently listed.</p>
+      </details>
+
+    </div>
+  </section>
+
+  <section class="py-12 bg-sand-100 border-y border-sand-200 text-center">
+    <p class="text-gray-600 mb-4">Still have questions?</p>
+    <a href="../contact/index.html" class="btn-primary inline-block text-white font-semibold px-7 py-3.5 rounded-xl">Contact Us</a>
+  </section>
+
+  <footer class="bg-navy-950 text-gray-400 pt-12 pb-8">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p class="text-xs text-gray-500">© 2026 Palm Beach Peptides. All products intended for research purposes only. Not for human consumption.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+  </script>
+</body>
+</html>

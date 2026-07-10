@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peptide Catalog — Palm Beach Peptides | BPC-157, Semaglutide & More</title>
+  <meta name="description" content="Pharmacy-grade peptides. Every compound synthesized domestically, independently verified, and shipped with full documentation.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 950: '#050A14', 900: '#0A1628', 800: '#0F1F38', 700: '#162A4A', 600: '#1E3A5F', 100: '#E8EEF5' },
+            teal: { 400: '#2DD4BF', 500: '#14B8A6', 600: '#0D9488', 700: '#0F766E', 100: '#CCFBF1' },
+            gold: { 400: '#FBBF24', 500: '#D4AF37', 600: '#B8962E' },
+            sand: { 50: '#FDFBF7', 100: '#F8F4EC', 200: '#F0E9D8' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], display: ['Playfair Display', 'Georgia', 'serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .btn-primary { background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); transition: all 0.3s ease; }
+    .btn-primary:hover { background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); transform: translateY(-1px); box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.4); }
+    .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .card-hover:hover { transform: translateY(-3px); box-shadow: 0 15px 30px -10px rgba(13, 148, 136, 0.12); }
+    .nav-link { position: relative; }
+    .nav-link::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 1.5px; background: #2DD4BF; transition: width 0.3s ease; }
+    .nav-link:hover::after { width: 100%; }
+    .filter-btn.active { background: #0D9488; color: white; border-color: #0D9488; }
+  </style>
+</head>
+<body class="bg-sand-50 text-navy-900 antialiased">
+
+  <!-- Top Bar -->
+  <div class="bg-navy-950 text-white text-xs py-2">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+      <span class="text-teal-400 font-medium tracking-wide">🇺🇸 USA Manufactured · 99.9% Purity · COA on Every Order</span>
+      <div class="hidden sm:flex gap-6 text-gray-300">
+        <a href="../wholesale/index.html" class="hover:text-teal-400 transition">Wholesale Accounts</a>
+        <a href="../contact/index.html" class="hover:text-teal-400 transition">Support</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-sand-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-20">
+        <a href="../index.html" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-navy-900 to-teal-700 flex items-center justify-center shadow-lg">
+            <span class="text-white font-bold text-lg tracking-tighter">PB</span>
+          </div>
+          <div>
+            <div class="font-display font-bold text-xl text-navy-900 leading-none tracking-tight group-hover:text-teal-700 transition">Palm Beach</div>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-teal-600 font-semibold">Peptides</div>
+          </div>
+        </a>
+        <nav class="hidden lg:flex items-center gap-8">
+          <a href="index.html" class="nav-link text-sm font-medium text-teal-600">Products</a>
+          <a href="../about/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">About</a>
+          <a href="../research/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Research</a>
+          <a href="../faq/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">FAQ</a>
+          <a href="../wholesale/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Wholesale</a>
+          <a href="../contact/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Contact</a>
+          <a href="../contact/index.html#pricing" class="btn-primary text-white text-sm font-semibold px-5 py-2.5 rounded-lg shadow-md">Get Pricing</a>
+        </nav>
+        <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-md text-navy-800 hover:bg-sand-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-sand-200">
+      <div class="px-4 py-4 space-y-1">
+        <a href="index.html" class="block px-3 py-2.5 rounded-lg text-teal-700 font-medium bg-teal-50">Products</a>
+        <a href="../about/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50 hover:text-teal-700">About</a>
+        <a href="../research/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50 hover:text-teal-700">Research</a>
+        <a href="../faq/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50 hover:text-teal-700">FAQ</a>
+        <a href="../wholesale/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50 hover:text-teal-700">Wholesale</a>
+        <a href="../contact/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50 hover:text-teal-700">Contact</a>
+        <a href="../contact/index.html#pricing" class="block mt-2 text-center btn-primary text-white font-semibold px-5 py-3 rounded-lg">Get Pricing</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Header -->
+  <section class="bg-navy-900 text-white py-16 lg:py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-teal-400 font-semibold text-sm tracking-widest uppercase mb-3">Product Catalog</p>
+      <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">Pharmacy-Grade Peptides.</h1>
+      <p class="text-gray-300 text-lg max-w-2xl">Every compound synthesized domestically, independently verified, and shipped with full documentation. Built for B2B buyers who demand consistency.</p>
+      <div class="mt-6 flex flex-wrap gap-4 text-sm">
+        <span class="px-3 py-1 rounded-full bg-white/10 text-teal-300">28 compounds</span>
+        <span class="px-3 py-1 rounded-full bg-white/10 text-gray-300">99%+ Average Purity</span>
+        <span class="px-3 py-1 rounded-full bg-white/10 text-gray-300">USA Country of Origin</span>
+        <span class="px-3 py-1 rounded-full bg-white/10 text-gray-300">COA Every Shipment</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Category Filters -->
+  <section class="sticky top-16 lg:top-20 z-40 bg-white border-b border-sand-200 py-4 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-wrap gap-2" id="filters">
+        <button class="filter-btn active px-4 py-2 text-sm font-medium rounded-lg border border-teal-600 bg-teal-600 text-white transition" data-filter="all">All</button>
+        <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg border border-sand-200 text-navy-800 hover:border-teal-500 transition" data-filter="growth">Growth Factors</button>
+        <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg border border-sand-200 text-navy-800 hover:border-teal-500 transition" data-filter="metabolic">Metabolic</button>
+        <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg border border-sand-200 text-navy-800 hover:border-teal-500 transition" data-filter="cognitive">Cognitive</button>
+        <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg border border-sand-200 text-navy-800 hover:border-teal-500 transition" data-filter="hormonal">Hormonal</button>
+        <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg border border-sand-200 text-navy-800 hover:border-teal-500 transition" data-filter="immune">Immune</button>
+        <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg border border-sand-200 text-navy-800 hover:border-teal-500 transition" data-filter="stacks">Stacks</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products Grid -->
+  <section class="py-12 lg:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="product-grid">
+
+        <!-- Growth Factors -->
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="growth" id="bpc-157">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-teal-100 text-teal-700 text-xs font-bold rounded-md">Growth Factors</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">BPC-157</h3>
+          <p class="text-sm text-gray-500 mb-3">Body Protection Compound-157</p>
+          <p class="text-sm text-gray-600 mb-4">Pentadecapeptide for tissue repair, gut health, and angiogenesis research.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">5mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">10mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">25mg</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span> · <span>Injectable Pen</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="growth" id="tb-500">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-teal-100 text-teal-700 text-xs font-bold rounded-md">Growth Factors</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">TB-500</h3>
+          <p class="text-sm text-gray-500 mb-3">Thymosin Beta-4 Fragment</p>
+          <p class="text-sm text-gray-600 mb-4">For actin regulation, tissue repair, and recovery research applications.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">5mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">10mg</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span> · <span>Injectable Pen</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="growth" id="ghk-cu">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-teal-100 text-teal-700 text-xs font-bold rounded-md">Growth Factors</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">GHK-Cu</h3>
+          <p class="text-sm text-gray-500 mb-3">Copper Peptide</p>
+          <p class="text-sm text-gray-600 mb-4">Tripeptide-copper complex studied for skin, hair, and wound healing research.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">50mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">100mg</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <!-- Metabolic -->
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="metabolic" id="semaglutide">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-gold-400/20 text-gold-600 text-xs font-bold rounded-md">Metabolic</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">Semaglutide</h3>
+          <p class="text-sm text-gray-500 mb-3">GLP-1 Receptor Agonist</p>
+          <p class="text-sm text-gray-600 mb-4">High-demand analog for metabolic and glycemic regulation research.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">2mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">5mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">10mg</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span> · <span>Injectable Pen</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="metabolic" id="tirzepatide">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-gold-400/20 text-gold-600 text-xs font-bold rounded-md">Metabolic</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">Tirzepatide</h3>
+          <p class="text-sm text-gray-500 mb-3">Dual GIP/GLP-1 Agonist</p>
+          <p class="text-sm text-gray-600 mb-4">Next-gen dual agonist for advanced metabolic research applications.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">5mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">10mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">15mg</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span> · <span>Injectable Pen</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="metabolic" id="retatrutide">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-gold-400/20 text-gold-600 text-xs font-bold rounded-md">Metabolic</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">Retatrutide</h3>
+          <p class="text-sm text-gray-500 mb-3">Triple Agonist (GLP-1/GIP/Glucagon)</p>
+          <p class="text-sm text-gray-600 mb-4">Emerging multi-receptor agonist for comprehensive metabolic studies.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">5mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">10mg</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="metabolic" id="aod-9604">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-gold-400/20 text-gold-600 text-xs font-bold rounded-md">Metabolic</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">AOD-9604</h3>
+          <p class="text-sm text-gray-500 mb-3">HGH Fragment 176-191</p>
+          <p class="text-sm text-gray-600 mb-4">Studied for fat metabolism and body composition research.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">2mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">5mg</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <!-- Cognitive -->
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="cognitive" id="semax">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-navy-100 text-navy-700 text-xs font-bold rounded-md">Cognitive</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">Semax</h3>
+          <p class="text-sm text-gray-500 mb-3">ACTH-Derived Heptapeptide</p>
+          <p class="text-sm text-gray-600 mb-4">Neuroprotective and cognitive enhancement research applications.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">30mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">60mg</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span> · <span>Injectable Pen</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="cognitive" id="selank">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-navy-100 text-navy-700 text-xs font-bold rounded-md">Cognitive</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">Selank</h3>
+          <p class="text-sm text-gray-500 mb-3">Tuftsin Analog</p>
+          <p class="text-sm text-gray-600 mb-4">Anxiolytic and nootropic research peptide with immunomodulatory interest.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">5mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">10mg</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <!-- Hormonal -->
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="hormonal" id="ipamorelin">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-md">Hormonal</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">Ipamorelin</h3>
+          <p class="text-sm text-gray-500 mb-3">Growth Hormone Secretagogue</p>
+          <p class="text-sm text-gray-600 mb-4">Selective GH secretagogue for growth hormone release mechanism studies.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">2mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">5mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">10mg</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span> · <span>Injectable Pen</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="hormonal" id="cjc-1295">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-md">Hormonal</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">CJC-1295 (DAC)</h3>
+          <p class="text-sm text-gray-500 mb-3">GHRH Analog</p>
+          <p class="text-sm text-gray-600 mb-4">Long-acting growth hormone releasing hormone analog for GH research.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">2mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">5mg</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="hormonal" id="tesamorelin">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-md">Hormonal</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">Tesamorelin</h3>
+          <p class="text-sm text-gray-500 mb-3">GHRH Analog</p>
+          <p class="text-sm text-gray-600 mb-4">Studied for visceral fat reduction and GH axis research.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">2mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">5mg</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <!-- Immune -->
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="immune" id="kpv">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-md">Immune</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">KPV</h3>
+          <p class="text-sm text-gray-500 mb-3">α-MSH Fragment</p>
+          <p class="text-sm text-gray-600 mb-4">Anti-inflammatory and gut barrier research peptide.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">5mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">10mg</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="immune" id="nad">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-md">Immune</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">NAD+</h3>
+          <p class="text-sm text-gray-500 mb-3">Nicotinamide Adenine Dinucleotide</p>
+          <p class="text-sm text-gray-600 mb-4">Critical coenzyme for cellular energy and longevity research.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">100mg</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">500mg</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <!-- Stacks -->
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="stacks" id="wolverine">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-rose-100 text-rose-700 text-xs font-bold rounded-md">Stacks</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">Wolverine</h3>
+          <p class="text-sm text-gray-500 mb-3">BPC-157 + TB-500</p>
+          <p class="text-sm text-gray-600 mb-4">Synergistic recovery stack for comprehensive tissue repair research.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">5mg each</span>
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">10mg each</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span> · <span>Injectable Pen</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="stacks" id="glow">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-rose-100 text-rose-700 text-xs font-bold rounded-md">Stacks</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">GLOW</h3>
+          <p class="text-sm text-gray-500 mb-3">BPC-157 + TB-500 + GHK-Cu</p>
+          <p class="text-sm text-gray-600 mb-4">Skin, recovery, and regeneration multi-peptide stack.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">Combo kit</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+        <div class="product-card card-hover bg-white rounded-2xl p-6 border border-sand-200" data-category="stacks" id="klow">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 bg-rose-100 text-rose-700 text-xs font-bold rounded-md">Stacks</span>
+            <span class="text-teal-600 font-bold text-sm">99.9%</span>
+          </div>
+          <h3 class="font-display text-xl font-bold text-navy-900">KLOW</h3>
+          <p class="text-sm text-gray-500 mb-3">KPV + BPC-157 + TB-500 + GHK-Cu</p>
+          <p class="text-sm text-gray-600 mb-4">Advanced multi-pathway recovery and anti-inflammatory stack.</p>
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span class="text-xs px-2 py-0.5 bg-sand-100 rounded text-gray-600">Combo kit</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-4 text-xs text-gray-500">
+            <span>Lyophilized</span> · <span>Liquid Vial</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-sand-100">
+            <span class="text-xs text-teal-600 font-medium">COA Available</span>
+            <a href="../contact/index.html#pricing" class="text-sm font-semibold text-teal-700 hover:text-teal-600">Full Specs →</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Wholesale note -->
+      <div class="mt-16 bg-navy-900 rounded-2xl p-8 text-center text-white">
+        <h3 class="font-display text-2xl font-bold mb-3">Looking for Volume Pricing?</h3>
+        <p class="text-gray-300 mb-6 max-w-xl mx-auto">Wholesale pricing is available for verified B2B accounts. Clinics, research labs, and distributors welcome.</p>
+        <a href="../wholesale/index.html" class="btn-primary inline-flex text-white font-semibold px-7 py-3.5 rounded-xl">Apply for Wholesale Account</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-navy-950 text-gray-400 pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
+        <div class="lg:col-span-2">
+          <a href="../index.html" class="flex items-center gap-3 mb-5">
+            <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-teal-600 to-navy-700 flex items-center justify-center">
+              <span class="text-white font-bold text-sm">PB</span>
+            </div>
+            <div>
+              <div class="font-display font-bold text-lg text-white leading-none">Palm Beach</div>
+              <div class="text-[9px] uppercase tracking-[0.2em] text-teal-500 font-semibold">Peptides</div>
+            </div>
+          </a>
+          <p class="text-sm leading-relaxed mb-5 max-w-xs">Premium American-made peptides for researchers, clinics, and brands.</p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4">Products</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="index.html" class="hover:text-teal-400 transition">Full Catalog</a></li>
+            <li><a href="index.html#growth" class="hover:text-teal-400 transition">Growth Factors</a></li>
+            <li><a href="index.html#metabolic" class="hover:text-teal-400 transition">Metabolic</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4">Company</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="../about/index.html" class="hover:text-teal-400 transition">About Us</a></li>
+            <li><a href="../research/index.html" class="hover:text-teal-400 transition">Research Library</a></li>
+            <li><a href="../wholesale/index.html" class="hover:text-teal-400 transition">Wholesale</a></li>
+            <li><a href="../faq/index.html" class="hover:text-teal-400 transition">FAQ</a></li>
+            <li><a href="../contact/index.html" class="hover:text-teal-400 transition">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4">Legal</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="#" class="hover:text-teal-400 transition">Terms of Service</a></li>
+            <li><a href="#" class="hover:text-teal-400 transition">Privacy Policy</a></li>
+            <li><a href="#" class="hover:text-teal-400 transition">Research Use Only</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-navy-800 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p class="text-xs text-gray-500">© 2026 Palm Beach Peptides. All rights reserved.</p>
+        <p class="text-xs text-gray-500 text-center sm:text-right max-w-md">All products are intended for research purposes only. Not for human consumption.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+
+    // Filter logic
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.product-card');
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => {
+          b.classList.remove('active', 'bg-teal-600', 'text-white', 'border-teal-600');
+          b.classList.add('border-sand-200', 'text-navy-800');
+        });
+        btn.classList.add('active', 'bg-teal-600', 'text-white', 'border-teal-600');
+        btn.classList.remove('border-sand-200', 'text-navy-800');
+        const filter = btn.dataset.filter;
+        cards.forEach(card => {
+          if (filter === 'all' || card.dataset.category === filter) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
