@@ -127,7 +127,13 @@
           <div class="bg-navy-900 text-white rounded-2xl p-8 mb-8">
             <h2 class="font-display text-2xl font-bold mb-3">Get Pricing</h2>
             <p class="text-gray-300 text-sm mb-6">Request a quote for specific compounds or volumes. Wholesale applicants should use the <a href="../wholesale/index.html" class="text-teal-400 underline">wholesale application</a>.</p>
-            <form class="space-y-4" onsubmit="event.preventDefault(); alert('Pricing request submitted! (Demo only)');">
+            <form <form action="https://api.web3forms.com/submit" method="POST">
+  <input type="hidden" name="access_key" value="656007b0-666d-4ab2-91f1-c53d6387087a">
+  <input type="text" name="name" required>
+  <input type="email" name="email" required>
+  <textarea name="message" required></textarea>
+  <button type="submit">Submit Form</button>
+</form>
               <div>
                 <label class="block text-sm font-medium text-gray-300 mb-1.5">Email *</label>
                 <input type="email" required class="w-full px-4 py-3 rounded-lg border border-navy-700 bg-navy-800 text-white focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="you@company.com">
