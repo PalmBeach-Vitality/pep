@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact & Get Pricing — Palm Beach Peptides</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 950: '#050A14', 900: '#0A1628', 800: '#0F1F38' },
+            teal: { 400: '#2DD4BF', 500: '#14B8A6', 600: '#0D9488', 700: '#0F766E', 100: '#CCFBF1' },
+            sand: { 50: '#FDFBF7', 100: '#F8F4EC', 200: '#F0E9D8' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], display: ['Playfair Display', 'Georgia', 'serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .btn-primary { background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); transition: all 0.3s ease; }
+    .btn-primary:hover { background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); transform: translateY(-1px); box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.4); }
+    .nav-link { position: relative; }
+    .nav-link::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 1.5px; background: #2DD4BF; transition: width 0.3s ease; }
+    .nav-link:hover::after { width: 100%; }
+    .form-input {
+      transition: all 0.2s ease;
+    }
+    .form-input:focus {
+      border-color: #14B8A6;
+      box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+    }
+    .dark-input {
+      background-color: #0F1F38;
+      border-color: #1E3A5F;
+      color: white;
+    }
+    .dark-input:focus {
+      border-color: #2DD4BF;
+      box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.1);
+    }
+    .success-state {
+      animation: fadeInScale 0.4s ease forwards;
+    }
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body class="bg-sand-50 text-navy-900 antialiased">
+  <!-- Top Bar -->
+  <div class="bg-navy-950 text-white text-xs py-2">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+      <span class="text-teal-400 font-medium tracking-wide">🇺🇸 USA Manufactured · 99.9% Purity · COA on Every Order</span>
+      <div class="hidden sm:flex gap-6 text-gray-300">
+        <a href="../wholesale/index.html" class="hover:text-teal-400">Wholesale Accounts</a>
+        <a href="index.html" class="hover:text-teal-400">Support</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header / Nav -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-sand-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-20">
+        <a href="../index.html" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-navy-900 to-teal-700 flex items-center justify-center shadow-lg">
+            <span class="text-white font-bold text-lg">PB</span>
+          </div>
+          <div>
+            <div class="font-display font-bold text-xl text-navy-900 leading-none group-hover:text-teal-700 transition">Palm Beach</div>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-teal-600 font-semibold">Peptides</div>
+          </div>
+        </a>
+        
+        <nav class="hidden lg:flex items-center gap-8">
+          <a href="../products/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Products</a>
+          <a href="../about/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">About</a>
+          <a href="../research/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Research</a>
+          <a href="../faq/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">FAQ</a>
+          <a href="../wholesale/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Wholesale</a>
+          <a href="index.html" class="nav-link text-sm font-medium text-teal-600">Contact</a>
+          <a href="#pricing" class="btn-primary text-white text-sm font-semibold px-5 py-2.5 rounded-lg">Get Pricing</a>
+        </nav>
+        
+        <button id="mobile-menu-btn" class="lg:hidden p-2 text-navy-800">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-sand-200">
+      <div class="px-4 py-4 space-y-1">
+        <a href="../products/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50">Products</a>
+        <a href="../about/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50">About</a>
+        <a href="../research/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50">Research</a>
+        <a href="../faq/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50">FAQ</a>
+        <a href="../wholesale/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50">Wholesale</a>
+        <a href="index.html" class="block px-3 py-2.5 rounded-lg text-teal-700 font-medium bg-teal-50">Contact</a>
+        <a href="#pricing" class="block mt-2 text-center btn-primary text-white font-semibold px-5 py-3 rounded-lg">Get Pricing</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="bg-navy-900 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-teal-400 font-semibold text-sm tracking-widest uppercase mb-3">Get in Touch</p>
+      <h1 class="font-display text-3xl sm:text-4xl font-bold mb-4">Contact & Pricing</h1>
+      <p class="text-gray-300 text-lg max-w-xl">Questions, quotes, wholesale applications, or custom requests — we're here to help.</p>
+    </div>
+  </section>
+
+  <section class="py-16 lg:py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-12">
+        
+        <!-- Send a Message Form -->
+        <div>
+          <h2 class="font-display text-2xl font-bold text-navy-900 mb-6">Send a Message</h2>
+          
+          <!-- Success State for Contact Form -->
+          <div id="contact-success" class="hidden bg-emerald-50 border border-emerald-200 rounded-2xl p-8 text-center success-state">
+            <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+            </div>
+            <h3 class="font-semibold text-xl text-emerald-800 mb-2">Message Received!</h3>
+            <p class="text-emerald-700">Thank you. We've received your inquiry and will reply within 1 business day.</p>
+            <button onclick="resetContactForm()" class="mt-6 text-sm font-medium text-emerald-700 hover:text-emerald-800 underline">Send another message</button>
+          </div>
+          
+          <form id="contact-form" class="space-y-5">
+            <!-- Web3Forms Hidden Fields -->
+            <input type="hidden" name="access_key" value="656007b0-666d-4ab2-91f1-c53d6387087a">
+            <input type="hidden" name="subject" value="Palm Beach Peptides - Contact Form Submission">
+            <input type="checkbox" name="botcheck" class="hidden" style="display:none">
+            
+            <div class="grid sm:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-sm font-medium text-navy-900 mb-1.5">Name *</label>
+                <input type="text" name="name" required class="form-input w-full px-4 py-3 rounded-lg border border-sand-200 focus:outline-none bg-white" placeholder="Your full name">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-navy-900 mb-1.5">Email *</label>
+                <input type="email" name="email" required class="form-input w-full px-4 py-3 rounded-lg border border-sand-200 focus:outline-none bg-white" placeholder="you@company.com">
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-navy-900 mb-1.5">Subject</label>
+              <select name="inquiry_type" class="form-input w-full px-4 py-3 rounded-lg border border-sand-200 focus:outline-none bg-white">
+                <option value="General Inquiry">General Inquiry</option>
+                <option value="Product Question">Product Question</option>
+                <option value="Wholesale / B2B">Wholesale / B2B</option>
+                <option value="Shipping / Order Support">Shipping / Order Support</option>
+                <option value="Custom Research Request">Custom Research Request</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-navy-900 mb-1.5">Message *</label>
+              <textarea name="message" required rows="5" class="form-input w-full px-4 py-3 rounded-lg border border-sand-200 focus:outline-none bg-white" placeholder="How can we help you today?"></textarea>
+            </div>
+            
+            <button type="submit" class="btn-primary w-full sm:w-auto text-white font-semibold px-8 py-3.5 rounded-xl flex items-center justify-center gap-2">
+              <span>Send Message</span>
+            </button>
+            
+            <p class="text-xs text-gray-500">We typically respond within 1 business day.</p>
+          </form>
+        </div>
+        
+        <!-- Pricing / Quote Form -->
+        <div id="pricing">
+          <div class="bg-navy-900 text-white rounded-2xl p-8 mb-8">
+            <h2 class="font-display text-2xl font-bold mb-3">Get Pricing</h2>
+            <p class="text-gray-300 text-sm mb-6">Request a quote for specific compounds or volumes. Wholesale applicants should use the <a href="../wholesale/index.html" class="text-teal-400 underline">wholesale application</a>.</p>
+            
+            <!-- Success State for Pricing Form -->
+            <div id="pricing-success" class="hidden bg-navy-800 border border-teal-700 rounded-2xl p-8 text-center success-state">
+              <div class="w-16 h-16 bg-teal-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+              </div>
+              <h3 class="font-semibold text-xl text-white mb-2">Quote Request Received</h3>
+              <p class="text-teal-300">Thank you! Our team will prepare your custom quote and reply shortly.</p>
+              <button onclick="resetPricingForm()" class="mt-6 text-sm font-medium text-teal-400 hover:text-teal-300 underline">Submit another request</button>
+            </div>
+            
+            <form id="pricing-form">
+              <!-- Web3Forms Hidden Fields -->
+              <input type="hidden" name="access_key" value="656007b0-666d-4ab2-91f1-c53d6387087a">
+              <input type="hidden" name="subject" value="Palm Beach Peptides - Pricing Quote Request">
+              <input type="checkbox" name="botcheck" class="hidden" style="display:none">
+              
+              <div class="space-y-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Name *</label>
+                    <input type="text" name="name" required class="dark-input form-input w-full px-4 py-3 rounded-lg border focus:outline-none" placeholder="Your name">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Email *</label>
+                    <input type="email" name="email" required class="dark-input form-input w-full px-4 py-3 rounded-lg border focus:outline-none" placeholder="you@company.com">
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-1.5">Compounds of Interest *</label>
+                  <input type="text" name="compounds" required class="dark-input form-input w-full px-4 py-3 rounded-lg border focus:outline-none" placeholder="e.g. BPC-157 10mg, TB-500, Semaglutide research">
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-1.5">Approximate Quantity / Frequency</label>
+                  <input type="text" name="quantity" class="dark-input form-input w-full px-4 py-3 rounded-lg border focus:outline-none" placeholder="e.g. 50 vials per month, bulk order">
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-1.5">Additional Notes or Questions</label>
+                  <textarea name="message" rows="3" class="dark-input form-input w-full px-4 py-3 rounded-lg border focus:outline-none" placeholder="Any specific requirements or timeline?"></textarea>
+                </div>
+                
+                <button type="submit" class="w-full btn-primary text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2">
+                  <span>Request Quote</span>
+                </button>
+              </div>
+            </form>
+          </div>
+          
+          <!-- Contact Info -->
+          <div class="bg-white rounded-2xl p-6 border border-sand-200">
+            <h3 class="font-bold text-navy-900 mb-4">Other Ways to Reach Us</h3>
+            <ul class="space-y-3 text-sm text-gray-600">
+              <li class="flex items-start gap-3">
+                <span class="text-teal-600 font-bold mt-0.5">📍</span>
+                <span>Palm Beach County, Florida<br><span class="text-xs text-gray-500">Based in South Florida</span></span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-teal-600 font-bold mt-0.5">✉️</span>
+                <span>Response within 1 business day for most inquiries</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-teal-600 font-bold mt-0.5">📦</span>
+                <span>Overnight shipping available Mon–Fri to all 50 states</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-navy-950 text-gray-400 pt-12 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p class="text-xs text-gray-500">© 2026 Palm Beach Peptides. All rights reserved.</p>
+        <p class="text-xs text-gray-500 text-center">All products intended for research purposes only. Not for human consumption. Not evaluated by the FDA.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile Menu
+    document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+
+    // Web3Forms Submission Handler
+    async function submitToWeb3Forms(form, successDivId) {
+      const btn = form.querySelector('button[type="submit"]');
+      const originalText = btn.innerHTML;
+      
+      btn.disabled = true;
+      btn.innerHTML = `
+        <svg class="animate-spin h-4 w-4 mr-2 inline" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Sending...
+      `;
+      
+      try {
+        const formData = new FormData(form);
+        
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Hide form, show success
+          form.style.display = 'none';
+          const successDiv = document.getElementById(successDivId);
+          successDiv.classList.remove('hidden');
+          successDiv.classList.add('flex', 'flex-col', 'items-center', 'justify-center');
+        } else {
+          alert('There was an issue submitting the form. Please try again or contact us directly.');
+          console.error('Web3Forms error:', data);
+        }
+      } catch (error) {
+        console.error('Submission error:', error);
+        alert('Something went wrong while sending. Please try again in a moment.');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    // Attach handlers
+    function initForms() {
+      const contactForm = document.getElementById('contact-form');
+      const pricingForm = document.getElementById('pricing-form');
+      
+      if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          submitToWeb3Forms(this, 'contact-success');
+        });
+      }
+      
+      if (pricingForm) {
+        pricingForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          submitToWeb3Forms(this, 'pricing-success');
+        });
+      }
+    }
+
+    // Reset functions for "send another"
+    function resetContactForm() {
+      const form = document.getElementById('contact-form');
+      const success = document.getElementById('contact-success');
+      
+      success.classList.add('hidden');
+      success.classList.remove('flex', 'flex-col', 'items-center', 'justify-center');
+      form.style.display = 'block';
+      form.reset();
+    }
+
+    function resetPricingForm() {
+      const form = document.getElementById('pricing-form');
+      const success = document.getElementById('pricing-success');
+      
+      success.classList.add('hidden');
+      success.classList.remove('flex', 'flex-col', 'items-center', 'justify-center');
+      form.style.display = 'block';
+      form.reset();
+    }
+
+    // Initialize everything
+    window.onload = function() {
+      initForms();
+      console.log('%c[Palm Beach Peptides] Contact page with Web3Forms initialized.', 'color:#64748b');
+    }
+  </script>
+</body>
+</html>
