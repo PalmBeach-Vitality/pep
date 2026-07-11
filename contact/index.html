@@ -141,7 +141,13 @@
                 <input type="text" class="w-full px-4 py-3 rounded-lg border border-navy-700 bg-navy-800 text-white focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="e.g. 50 vials / month">
               </div>
               <button type="submit" class="w-full btn-primary text-white font-semibold py-3.5 rounded-xl">Request Quote</button>
-            </form>
+            <form action="https://api.web3forms.com/submit" method="POST">
+  <input type="hidden" name="access_key" value="656007b0-666d-4ab2-91f1-c53d6387087a">
+  <input type="text" name="name" required>
+  <input type="email" name="email" required>
+  <textarea name="message" required></textarea>
+  <button type="submit">Submit</button>
+</form>
           </div>
 
           <div class="bg-white rounded-2xl p-6 border border-sand-200">
