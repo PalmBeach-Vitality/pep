@@ -2,9 +2,31 @@
 
 Use this in the **HTTP Request** node that POSTs to `https://api.x.ai/v1/chat/completions`.
 
-Assumes the previous **Edit Fields** node outputs one Active compound row from `1-compounds-pens` or `1-compounds-vials`.
+Assumes the previous **Edit Fields** node outputs **one** Active compound row from `1-compounds-pens` or `1-compounds-vials`.
 
 > Not legal advice. Captions are constrained to **science + laboratory research catalog language only**, aligned with FDA intended-use caution (no human-use implication).
+
+---
+
+## If Grok outputs ~24 items
+
+The Google Sheets node is returning the whole sheet (one item per row). Grok then runs once per item.
+
+**Fix: only 1 row should reach Grok per workflow run.**
+
+Recommended chain:
+
+`Schedule → Get row(s) in sheet → Filter → Sort → Limit (1) → Edit Fields → Grok → …`
+
+| Node | Setting |
+|---|---|
+| **Filter** | `status` equals `Active` |
+| **Sort** | Optional: `last_spotlight_date` ascending (empty/oldest first), then `rotation_order` ascending |
+| **Limit** | `Max Items = 1` |
+
+Quick test fix: add **Limit → 1** right before Grok.
+
+Do **not** leave all 24 flowing into Grok/Buffer — that will generate and post an entire catalog batch.
 
 ---
 
