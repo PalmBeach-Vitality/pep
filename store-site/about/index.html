@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — Palm Beach Peptides | American Peptide Manufacturer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 950: '#050A14', 900: '#0A1628', 800: '#0F1F38', 700: '#162A4A', 100: '#E8EEF5' },
+            teal: { 400: '#2DD4BF', 500: '#14B8A6', 600: '#0D9488', 700: '#0F766E', 100: '#CCFBF1' },
+            gold: { 400: '#FBBF24', 500: '#D4AF37' },
+            sand: { 50: '#FDFBF7', 100: '#F8F4EC', 200: '#F0E9D8' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], display: ['Playfair Display', 'Georgia', 'serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .btn-primary { background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); transition: all 0.3s ease; }
+    .btn-primary:hover { background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); transform: translateY(-1px); box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.4); }
+    .nav-link { position: relative; }
+    .nav-link::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 1.5px; background: #2DD4BF; transition: width 0.3s ease; }
+    .nav-link:hover::after { width: 100%; }
+  </style>
+</head>
+<body class="bg-sand-50 text-navy-900 antialiased">
+
+  <!-- Top Bar + Nav (same structure) -->
+  <div class="bg-navy-950 text-white text-xs py-2">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+      <span class="text-teal-400 font-medium tracking-wide">🇺🇸 USA Manufactured · 99.9% Purity · COA on Every Order</span>
+      <div class="hidden sm:flex gap-6 text-gray-300">
+        <a href="../wholesale/index.html" class="hover:text-teal-400 transition">Wholesale Accounts</a>
+        <a href="../contact/index.html" class="hover:text-teal-400 transition">Support</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-sand-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-20">
+        <a href="../index.html" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-navy-900 to-teal-700 flex items-center justify-center shadow-lg">
+            <span class="text-white font-bold text-lg tracking-tighter">PB</span>
+          </div>
+          <div>
+            <div class="font-display font-bold text-xl text-navy-900 leading-none tracking-tight group-hover:text-teal-700 transition">Palm Beach</div>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-teal-600 font-semibold">Peptides</div>
+          </div>
+        </a>
+        <nav class="hidden lg:flex items-center gap-8">
+          <a href="../products/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Products</a>
+          <a href="index.html" class="nav-link text-sm font-medium text-teal-600">About</a>
+          <a href="../research/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Research</a>
+          <a href="../faq/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">FAQ</a>
+          <a href="../wholesale/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Wholesale</a>
+          <a href="../contact/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Contact</a>
+          <a href="../contact/index.html#pricing" class="btn-primary text-white text-sm font-semibold px-5 py-2.5 rounded-lg shadow-md">Get Pricing</a>
+        </nav>
+        <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-md text-navy-800 hover:bg-sand-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-sand-200">
+      <div class="px-4 py-4 space-y-1">
+        <a href="../products/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50">Products</a>
+        <a href="index.html" class="block px-3 py-2.5 rounded-lg text-teal-700 font-medium bg-teal-50">About</a>
+        <a href="../research/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50">Research</a>
+        <a href="../faq/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50">FAQ</a>
+        <a href="../wholesale/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50">Wholesale</a>
+        <a href="../contact/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50">Contact</a>
+        <a href="../contact/index.html#pricing" class="block mt-2 text-center btn-primary text-white font-semibold px-5 py-3 rounded-lg">Get Pricing</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="bg-navy-900 text-white py-16 lg:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-teal-400 font-semibold text-sm tracking-widest uppercase mb-3">Our Story</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-bold mb-6 leading-tight">Built in America.<br>Built to Last.</h1>
+      <p class="text-xl text-gray-300 max-w-2xl">Palm Beach Peptides was founded on a simple premise: the research community deserves a domestic peptide supplier that doesn't cut corners.</p>
+    </div>
+  </section>
+
+  <!-- Why We Exist -->
+  <section class="py-16 lg:py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <h2 class="font-display text-3xl font-bold text-navy-900 mb-6">Why We Exist</h2>
+          <p class="text-gray-600 leading-relaxed mb-4">Too many overseas suppliers chase low prices at the expense of consistent quality, verifiable purity, and complete documentation. Researchers and clinics end up with batches that fail verification or arrive without proper COAs.</p>
+          <p class="text-gray-600 leading-relaxed mb-4">We keep synthesis, testing, and fulfillment domestic. That means data-backed purchases for B2B partners who can't afford surprises.</p>
+          <p class="text-gray-600 leading-relaxed">From Palm Beach County, Florida, we serve partners across all 50 states with overnight shipping and full transparency.</p>
+        </div>
+        <div class="bg-sand-50 rounded-2xl p-8 border border-sand-200">
+          <div class="text-5xl font-extrabold text-teal-600 mb-2">99.9%</div>
+          <div class="text-lg font-semibold text-navy-900 mb-4">Average Purity</div>
+          <p class="text-sm text-gray-600">Independently verified by third-party HPLC. We publish the numbers — no exceptions, no exceptions.</p>
+          <div class="mt-6 pt-6 border-t border-sand-200">
+            <div class="text-sm font-semibold text-navy-900 mb-2">Manufactured in the United States of America</div>
+            <p class="text-xs text-gray-500">Solid-phase peptide synthesis (SPPS) under strict quality controls.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Manufacturing Standards -->
+  <section class="py-16 lg:py-24 bg-sand-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-display text-3xl font-bold text-navy-900 mb-4 text-center">How We Ensure Every Batch Meets the Mark</h2>
+      <p class="text-gray-600 text-center max-w-2xl mx-auto mb-12">Domestic synthesis, independent verification, full documentation, and reliable logistics.</p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl p-6 border border-sand-200">
+          <div class="w-10 h-10 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold mb-4">1</div>
+          <h3 class="font-bold text-navy-900 mb-2">Domestic Synthesis</h3>
+          <p class="text-sm text-gray-600">Solid-phase peptide synthesis (SPPS) performed in American facilities.</p>
+        </div>
+        <div class="bg-white rounded-xl p-6 border border-sand-200">
+          <div class="w-10 h-10 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold mb-4">2</div>
+          <h3 class="font-bold text-navy-900 mb-2">3rd-Party Testing</h3>
+          <p class="text-sm text-gray-600">Independent HPLC purity analysis and mass spectrometry verification.</p>
+        </div>
+        <div class="bg-white rounded-xl p-6 border border-sand-200">
+          <div class="w-10 h-10 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold mb-4">3</div>
+          <h3 class="font-bold text-navy-900 mb-2">Full Documentation</h3>
+          <p class="text-sm text-gray-600">COA, SDS, and batch traceability included with every order.</p>
+        </div>
+        <div class="bg-white rounded-xl p-6 border border-sand-200">
+          <div class="w-10 h-10 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold mb-4">4</div>
+          <h3 class="font-bold text-navy-900 mb-2">Overnight Shipping</h3>
+          <p class="text-sm text-gray-600">Cold-chain packaging to all 50 states, Mon–Fri.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="py-16 lg:py-24 bg-white">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-display text-3xl font-bold text-navy-900 mb-12 text-center">Our History</h2>
+      <div class="space-y-8">
+        <div class="flex gap-6">
+          <div class="flex-shrink-0 w-20 text-right">
+            <span class="text-teal-600 font-bold">2019</span>
+          </div>
+          <div class="pb-8 border-l-2 border-teal-200 pl-6">
+            <h3 class="font-semibold text-navy-900">Founded</h3>
+            <p class="text-sm text-gray-600 mt-1">Started with a focus on domestic peptide synthesis for research institutions and early B2B partners.</p>
+          </div>
+        </div>
+        <div class="flex gap-6">
+          <div class="flex-shrink-0 w-20 text-right">
+            <span class="text-teal-600 font-bold">2021</span>
+          </div>
+          <div class="pb-8 border-l-2 border-teal-200 pl-6">
+            <h3 class="font-semibold text-navy-900">Wholesale Expansion</h3>
+            <p class="text-sm text-gray-600 mt-1">Launched formal B2B wholesale program for clinics, distributors, and supplement brands.</p>
+          </div>
+        </div>
+        <div class="flex gap-6">
+          <div class="flex-shrink-0 w-20 text-right">
+            <span class="text-teal-600 font-bold">2023</span>
+          </div>
+          <div class="pb-8 border-l-2 border-teal-200 pl-6">
+            <h3 class="font-semibold text-navy-900">99.9% Standard</h3>
+            <p class="text-sm text-gray-600 mt-1">Achieved consistent 99.9% average purity verified by independent HPLC across the catalog.</p>
+          </div>
+        </div>
+        <div class="flex gap-6">
+          <div class="flex-shrink-0 w-20 text-right">
+            <span class="text-teal-600 font-bold">2025</span>
+          </div>
+          <div class="pb-8 border-l-2 border-teal-200 pl-6">
+            <h3 class="font-semibold text-navy-900">Nationwide Overnight</h3>
+            <p class="text-sm text-gray-600 mt-1">Expanded cold-chain overnight shipping to all 50 states.</p>
+          </div>
+        </div>
+        <div class="flex gap-6">
+          <div class="flex-shrink-0 w-20 text-right">
+            <span class="text-teal-600 font-bold">2026</span>
+          </div>
+          <div class="pl-6">
+            <h3 class="font-semibold text-navy-900">Catalog Expansion</h3>
+            <p class="text-sm text-gray-600 mt-1">Grew to 28+ pharmacy-grade compounds with full COA documentation and popular research stacks.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Principles -->
+  <section class="py-16 lg:py-24 bg-navy-900 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-display text-3xl font-bold mb-12 text-center">What We Stand For</h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div>
+          <h3 class="text-teal-400 font-bold text-lg mb-2">Transparency</h3>
+          <p class="text-gray-300 text-sm">Published purity data, batch numbers, and test results. No black boxes.</p>
+        </div>
+        <div>
+          <h3 class="text-teal-400 font-bold text-lg mb-2">Precision</h3>
+          <p class="text-gray-300 text-sm">Consistent synthesis and QC processes that deliver the same quality every time.</p>
+        </div>
+        <div>
+          <h3 class="text-teal-400 font-bold text-lg mb-2">Partnership</h3>
+          <p class="text-gray-300 text-sm">Long-term B2B relationships with dedicated support, not one-off transactions.</p>
+        </div>
+        <div>
+          <h3 class="text-teal-400 font-bold text-lg mb-2">Compliance</h3>
+          <p class="text-gray-300 text-sm">Full documentation ready for procurement teams and regulatory needs.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 bg-white">
+    <div class="max-w-3xl mx-auto px-4 text-center">
+      <h2 class="font-display text-3xl font-bold text-navy-900 mb-4">Ready to Partner?</h2>
+      <p class="text-gray-600 mb-8">See what Palm Beach Peptides can do for your operation.</p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="../wholesale/index.html" class="btn-primary text-white font-semibold px-7 py-3.5 rounded-xl">Request Wholesale Pricing</a>
+        <a href="../contact/index.html" class="px-7 py-3.5 rounded-xl border-2 border-navy-900 text-navy-900 font-semibold hover:bg-navy-900 hover:text-white transition">Contact Us</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-navy-950 text-gray-400 pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div class="lg:col-span-1">
+          <a href="../index.html" class="flex items-center gap-3 mb-5">
+            <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-teal-600 to-navy-700 flex items-center justify-center">
+              <span class="text-white font-bold text-sm">PB</span>
+            </div>
+            <div>
+              <div class="font-display font-bold text-lg text-white leading-none">Palm Beach</div>
+              <div class="text-[9px] uppercase tracking-[0.2em] text-teal-500 font-semibold">Peptides</div>
+            </div>
+          </a>
+          <p class="text-sm leading-relaxed">Premium American-made peptides from Palm Beach County, Florida.</p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4">Quick Links</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="../products/index.html" class="hover:text-teal-400">Products</a></li>
+            <li><a href="../research/index.html" class="hover:text-teal-400">Research</a></li>
+            <li><a href="../wholesale/index.html" class="hover:text-teal-400">Wholesale</a></li>
+            <li><a href="../faq/index.html" class="hover:text-teal-400">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4">Legal</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="#" class="hover:text-teal-400">Terms of Service</a></li>
+            <li><a href="#" class="hover:text-teal-400">Privacy Policy</a></li>
+            <li><a href="#" class="hover:text-teal-400">Research Use Only</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4">Contact</h4>
+          <p class="text-sm">Palm Beach County, FL</p>
+          <a href="../contact/index.html" class="text-sm text-teal-400 hover:text-teal-300 mt-2 inline-block">Get in touch →</a>
+        </div>
+      </div>
+      <div class="border-t border-navy-800 pt-8 text-center">
+        <p class="text-xs text-gray-500">© 2026 Palm Beach Peptides. All products intended for research purposes only. Not for human consumption.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+  </script>
+</body>
+</html>
