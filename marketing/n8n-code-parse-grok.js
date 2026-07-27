@@ -26,7 +26,10 @@ if (!tt.includes(DISCLAIMER)) flags.push('TikTok missing mandatory disclaimer');
 
 const compliance_ok = (parsed?.compliance_check?.ok === true) && flags.length === 0;
 
-const prior = $('Build Grok Body').item?.json || {};
+const prior = $('Edit Fields').item?.json
+  || $('Build Grok Body').item?.json
+  || $('Call Grok').item?.json
+  || {};
 
 return [{
   json: {
