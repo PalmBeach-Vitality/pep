@@ -134,5 +134,7 @@ return [{
   json: {
     ...$json,
     grok_request_body,
+    // Pre-stringified for n8n HTTP Raw body (avoids expression/stringify issues)
+    grok_request_body_string: JSON.stringify(grok_request_body),
   },
 }];
