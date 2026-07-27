@@ -6,9 +6,21 @@
 // - compound fields (compound_id, compound_name, etc.)
 // - xai_api_key  (add this in Edit Fields for now)
 
-const apiKey = $json.xai_api_key;
+const apiKey = String(
+  $json.xai_api_key
+  || $json.XAI_API_KEY
+  || $env.XAI_API_KEY
+  || ''
+).trim();
+
 if (!apiKey) {
-  throw new Error('Missing xai_api_key. Add it in Edit Fields (JSON) as "xai_api_key": "YOUR_KEY"');
+  throw new Error(
+    'Missing xai_api_key. In Edit Fields (JSON mode), add: "xai_api_key": "YOUR_KEY_HERE"'
+  );
+}
+
+if (!apiKey.startsWith('xai-')) {
+  throw new Error('xai_api_key looks invalid. It should start with "xai-".');
 }
 
 const SYSTEM_PROMPT = `You write SCIENCE AND RESEARCH-ONLY captions for Palm Beach Vitality laboratory research materials.
