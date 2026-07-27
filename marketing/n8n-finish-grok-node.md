@@ -149,6 +149,7 @@ return [{
   json: {
     ...$json,
     grok_request_body,
+    grok_request_body_string: JSON.stringify(grok_request_body),
   },
 }];
 ```
@@ -157,6 +158,8 @@ return [{
 
 ## 2) HTTP Request — Grok (final settings)
 
+Use **Raw body** (most reliable in n8n):
+
 | Setting | Value |
 |---|---|
 | Method | `POST` |
@@ -164,20 +167,14 @@ return [{
 | Authentication | Header Auth / Bearer `YOUR_XAI_API_KEY` |
 | Header `Content-Type` | `application/json` |
 | Send Body | ON |
-| Body Content Type | JSON |
-| Specify Body | Using JSON |
-| JSON Body | expression mode (click **fx** / `=`) then: `{{ $json.grok_request_body }}` |
+| Body Content Type | **Raw** |
+| Body | expression (**fx**): `={{ $json.grok_request_body_string }}` |
 
-Important:
-- Use **expression mode** for JSON Body
-- Put exactly: `{{ $json.grok_request_body }}`
-- Do **not** paste the huge prompt into the HTTP node anymore (the Code node builds it)
-
-If expression mode on JSON Body is awkward in your n8n version, use:
-
-- Body Content Type: **Raw**
-- Content Type header: `application/json`
-- Raw body expression: `{{ JSON.stringify($json.grok_request_body) }}`
+Notes:
+- Must include the leading `=`
+- Do **not** use `JSON.stringify(...)` again in the HTTP node
+- Do **not** paste the huge prompt into the HTTP node
+- Execute **Build Grok Body** alone first and confirm `grok_request_body_string` starts with `{"model":"grok-3"`
 
 ---
 
