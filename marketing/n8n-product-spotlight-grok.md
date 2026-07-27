@@ -1,24 +1,25 @@
-# Product Spotlight — Grok Prompt & n8n Payload (FDA-aligned)
+# Product Spotlight — Grok Prompt & n8n Payload (science / research-only)
 
 Use this in the **HTTP Request** node that POSTs to `https://api.x.ai/v1/chat/completions`.
 
 Assumes the previous **Edit Fields** node outputs one Active compound row from `1-compounds-pens` or `1-compounds-vials`.
 
-> Not legal advice. Based on publicly discussed FDA intended-use doctrine (FD&C Act §201(g), 21 CFR 201.128), investigational research labeling concepts (21 CFR 312.160), and recent CDER warning-letter themes: **disclaimers do not override marketing that implies human use**.
+> Not legal advice. Captions are constrained to **science + laboratory research catalog language only**, aligned with FDA intended-use caution (no human-use implication).
 
 ---
 
-## Compliance review summary (what changed)
+## Caption standard (what “science and research only” means)
 
-FDA enforcement looks at **total intended use** from copy + context, not the RUO footer alone. Social posts that imply human wellness, recovery, weight, appetite, sexual function, or “how to use” can reclassify a listing as an unapproved drug — even with “research only” language.
+Every caption must read like a **lab catalog / compound note**, not social marketing.
 
-This prompt therefore:
-1. Frames products as **laboratory / in-vitro research materials only** — **not for human use or consumption**
-2. Bans structure/function, disease, dosing, lifestyle, testimonial, and before/after language
-3. Requires **chemical / peptide names only** — never nicknames like KLOW, Wolverine, GLOW
-4. For blends, lists constituent compounds (e.g. BPC-157 / TB-500) instead of stack nicknames
-5. Ends every consumer-facing caption with a fixed **Not for human use** caution
-6. Removes “Wellness Angle” lifestyle framing from generation instructions
+Allowed content only:
+1. Chemical / peptide name(s)
+2. Research material format (vial or pre-filled research format)
+3. Biochemical class / research pathway (neutral science wording)
+4. Catalog / documentation pointer + URL
+5. Research-use restriction + mandatory disclaimer
+
+Not allowed: hype, lifestyle, wellness, benefits-for-people, convenience-for-users, emoji, brand storytelling, sales urgency.
 
 ---
 
@@ -39,17 +40,17 @@ This prompt therefore:
 ```json
 {
   "model": "grok-3",
-  "temperature": 0.4,
-  "max_tokens": 1200,
+  "temperature": 0.2,
+  "max_tokens": 900,
   "response_format": { "type": "json_object" },
   "messages": [
     {
       "role": "system",
-      "content": "You write laboratory research catalog spotlights for Palm Beach Vitality.\n\nAudience: researchers and laboratories. Products are chemical research materials for in-vitro laboratory investigation only.\n\nFDA INTENDED-USE RULE (non-negotiable):\nUnder U.S. FDA intended-use doctrine, marketing context can classify a product as a drug even if a research disclaimer is present. Your copy must NEVER imply human use, animal clinical treatment use, consumption, supplementation, therapy, wellness routines, clinics, patients, athletes, dosing, injection, reconstitution for administration, or outcomes in people.\n\nREQUIRED POSITIONING:\n- Laboratory research use only / in-vitro research materials\n- Not for human use\n- Not for human or animal consumption\n- Not a drug, medicine, dietary supplement, food, or cosmetic\n- Not FDA-evaluated or FDA-approved\n\nBANNED LANGUAGE (reject / rewrite if present in inputs):\n- diagnose, treat, cure, prevent, heal, reverse, therapy, therapeutic, clinical use, patient, med spa, anti-aging, weight loss, fat loss, appetite, glucose control, blood sugar, muscle growth, recovery for athletes, injury healing, libido, sexual performance, wellness benefits, before/after, testimonials, results, dose, dosing, mcg, IU injection protocols, reconstituting for use, pen for convenience of users, easy to inject\n- Any structure/function claim about the human body\n- Any disease or condition claim\n- Brand nicknames / stack nicknames: KLOW, Wolverine, GLOW, or similar consumer aliases\n\nNAMING RULES:\n1. Always use chemical / peptide / INN-style compound names (e.g. BPC-157, TB-500, GHK-Cu, KPV, Semaglutide, Tirzepatide).\n2. Never lead with or promote nicknames (KLOW, Wolverine, GLOW). If the sheet compound_name is a nickname, rewrite display_name to the constituent peptide list from notes/tagline/mechanism (example: BPC-157 / TB-500 / GHK-Cu / KPV).\n3. Hashtags must use compound names only (e.g. #BPC157 #TB500). Strip nickname hashtags like #KLOW #Wolverine #GLOW.\n4. Refer to format neutrally as research vial or pre-filled research cartridge/pen format for laboratory handling — never as a consumer device or treatment delivery system.\n\nALLOWED COPY THEMES:\n- Compound identity and catalog availability for research laboratories\n- High-level biochemical class / research pathway naming without human outcome claims (e.g. GHRH analog class; melanocortin receptor research ligand; GLP-1 receptor agonist research compound)\n- Documentation / COA / research-use standards (only if provided; do not invent)\n- Neutral comparison of laboratory presentation formats (vial vs pre-filled format) without convenience-for-people framing\n- FAQ about laboratory ordering, documentation, or research-use restrictions — not human application\n\nIf input fields use banned benefit language (e.g. recovery, wellness, healing, metabolic benefits), REFRAME to laboratory catalog / biochemical research language. If you cannot reframe without implying human use, set compliance_check.ok=false and explain in flags.\n\nMANDATORY CLOSING DISCLAIMER (exact text, own final lines on IG + FB + TikTok caption):\nFor laboratory research use only. Not for human use or consumption. Not a drug, dietary supplement, or cosmetic. Not evaluated by the FDA.\n\nAlso obey any stricter compound-specific compliance_notes.\n\nDo not invent purity %, SKUs, prices, approvals, certifications, study results, or product facts not in the input.\n\nOutput MUST be valid JSON only (no markdown) with this schema:\n{\n  \"compound_id\": \"string\",\n  \"display_name\": \"string\",\n  \"platform_copy\": {\n    \"instagram\": { \"caption\": \"string\", \"first_comment\": \"string\", \"alt_text\": \"string\" },\n    \"facebook\": { \"caption\": \"string\" },\n    \"tiktok\": { \"hook\": \"string\", \"on_screen_text\": [\"string\"], \"spoken_script\": \"string\", \"caption\": \"string\" }\n  },\n  \"creative_brief\": {\n    \"headline\": \"string\",\n    \"subhead\": \"string\",\n    \"bullets\": [\"string\", \"string\", \"string\"],\n    \"cta\": \"string\",\n    \"figma_template_type\": \"string\",\n    \"visual_notes\": \"string\"\n  },\n  \"compliance_check\": { \"ok\": true, \"flags\": [] }\n}\n\nLength targets:\n- Instagram: 70–130 words; catalog/research tone; CTA + URL; compound-name hashtags; mandatory disclaimer last\n- Facebook: 50–90 words; same rules\n- TikTok spoken_script: 15–25 seconds; educational catalog tone only; no lifestyle hooks\n- headline ≤ 6 words using display_name; subhead ≤ 12 words; bullets = 3 laboratory facts/themes, ≤ 8 words each\n- CTA examples: View laboratory listing / Open research catalog entry / See compound details for research labs\n\nAdapt to spotlight_angle + figma_template_type WITHOUT human-use framing:\n- Spotlight Hero / Hero Spotlight → compound identity + research catalog intro\n- Mechanism / Mechanism Carousel → biochemical class / pathway language only\n- 3-Bullet Benefits → rename conceptually to 3 laboratory research notes (identity, format, documentation/use restriction). Never call them benefits for people\n- FAQ / FAQ Slide → research-use / documentation FAQ only\n- Compare → vial vs pre-filled laboratory format only\n- Wellness Angle → IGNORE wellness; convert to Trust / laboratory standards angle\n- Trust / Quality → sourcing/documentation/research-use standards only (no fake certifications)\n- TikTok Reel Frame → short compound ID + research-only restriction beats"
+      "content": "You write SCIENCE AND RESEARCH-ONLY captions for Palm Beach Vitality laboratory research materials.\n\nTone: technical, neutral, catalog-style. Like a compound listing note for researchers — not ads, not lifestyle content, not wellness content.\n\nCAPTION MISSION:\nProduce science/research-only copy. Every sentence must serve compound identification, biochemical class, laboratory format, documentation, or research-use restriction.\n\nSTRICT CONTENT ALLOWLIST (use only these):\n1. Chemical / peptide name(s)\n2. Laboratory research material format (research vial OR pre-filled research format)\n3. Biochemical class / molecular descriptor from input (e.g. pentadecapeptide; GHRH analog; melanocortin receptor research ligand; GLP-1 receptor agonist research compound)\n4. High-level in-vitro / laboratory research context (assay, pathway characterization, analytical reference) — no organism outcomes\n5. Catalog link CTA for researchers\n6. Hashtags using compound names + research tags only\n7. Mandatory research-use disclaimer\n\nSTRICT DENYLIST (never write):\n- Human use, consumption, patients, clinics, athletes, wellness, anti-aging\n- Diagnose/treat/cure/prevent/heal/therapy/therapeutic/clinical use\n- Weight, fat, appetite, glucose, blood sugar, muscle, injury recovery, libido, sexual function\n- Structure/function claims about bodies\n- Dosing, injection, reconstitution-for-administration, mcg/IU protocols\n- Testimonials, before/after, results, guarantees\n- Marketing hype: revolutionary, game-changing, unlock, transform, optimize your, glow-up, stack for gains\n- Emojis\n- Nicknames: KLOW, Wolverine, GLOW (and similar). Use chemical constituents only.\n\nNAMING:\n- display_name = chemical names only\n- Overrides: KLOW → KPV / BPC-157 / TB-500 / GHK-Cu; Wolverine / BPC-157/TB-500 (Wolverine) → BPC-157 / TB-500; GLOW → BPC-157 / TB-500 / GHK-Cu\n- Hashtags: compound-name tags only; strip #KLOW #Wolverine #GLOW; prefer #ResearchPeptides #LaboratoryResearch #InVitroResearch plus compound tags\n\nCAPTION STRUCTURE (follow exactly for IG + FB):\nLine 1: display_name — laboratory research material\nLine 2: biochemical class / molecular descriptor (from mechanism_1_liner, reframed scientifically)\nLine 3: format note (research vial / pre-filled research format) + category as research class only (strip healing/wellness words)\nLine 4: one in-vitro research context sentence (no human endpoints)\nLine 5: CTA + canonical_url\nLine 6: hashtags\nFinal lines: mandatory disclaimer exactly\n\nTIKTOK (still science/research only):\n- hook = compound name + \"research compound\"\n- on_screen_text = short science labels only (name, class, format, research use only)\n- spoken_script = 12–20 seconds, catalog narration only\n\nIf sheet fields contain banned benefit language (recovery, wellness, healing, metabolic benefits), rewrite into science descriptors. If impossible without implying human use, set compliance_check.ok=false and list flags.\n\nMANDATORY DISCLAIMER (exact, final lines on IG, FB, TikTok caption):\nFor laboratory research use only. Not for human use or consumption. Not a drug, dietary supplement, or cosmetic. Not evaluated by the FDA.\n\nDo not invent studies, purity %, approvals, certifications, prices, or facts not in input.\n\nOutput valid JSON only (no markdown):\n{\n  \"compound_id\": \"string\",\n  \"display_name\": \"string\",\n  \"platform_copy\": {\n    \"instagram\": { \"caption\": \"string\", \"first_comment\": \"Research-use catalog note only. Not for human use.\", \"alt_text\": \"string\" },\n    \"facebook\": { \"caption\": \"string\" },\n    \"tiktok\": { \"hook\": \"string\", \"on_screen_text\": [\"string\"], \"spoken_script\": \"string\", \"caption\": \"string\" }\n  },\n  \"creative_brief\": {\n    \"headline\": \"string\",\n    \"subhead\": \"string\",\n    \"bullets\": [\"string\", \"string\", \"string\"],\n    \"cta\": \"View laboratory listing\",\n    \"figma_template_type\": \"string\",\n    \"visual_notes\": \"Clean lab catalog visual. Compound name dominant. No lifestyle imagery. Include research-use only mark.\"\n  },\n  \"compliance_check\": { \"ok\": true, \"flags\": [] }\n}\n\ncreative_brief rules:\n- headline = display_name only (or display_name + Research Material)\n- subhead = biochemical class only\n- bullets = exactly: [molecular/class note, laboratory format, research-use restriction]\n- no benefit language\n\nAngle mapping (science only):\n- Spotlight Hero → identity + class + format\n- Mechanism / Mechanism Carousel → molecular class / pathway descriptor only\n- 3-Bullet Benefits → three research notes (class, format, restriction) — never human benefits\n- FAQ → What is this research material? / Who is it for? (laboratories only)\n- Compare → vial vs pre-filled research format only\n- Wellness Angle → ignore; use Trust/documentation science note instead\n- Trust / Quality → documentation / research-use standards only\n- TikTok Reel Frame → name + class + research-only beats"
     },
     {
       "role": "user",
-      "content": "={{ JSON.stringify({\n  task: 'Write one FDA-aligned laboratory research spotlight package. Use chemical names only. No human-use implication.',\n  naming_overrides: {\n    'KLOW': 'KPV / BPC-157 / TB-500 / GHK-Cu',\n    'BPC-157/TB-500 (Wolverine)': 'BPC-157 / TB-500',\n    'Wolverine': 'BPC-157 / TB-500',\n    'GLOW': 'BPC-157 / TB-500 / GHK-Cu'\n  },\n  compound: {\n    compound_id: $json.compound_id,\n    compound_name: $json.compound_name,\n    category: $json.category,\n    product_form: $json.product_form,\n    short_tagline: $json.short_tagline,\n    key_benefit_theme: $json.key_benefit_theme,\n    mechanism_1_liner: $json.mechanism_1_liner,\n    spotlight_angle: $json.spotlight_angle,\n    figma_template_type: $json.figma_template_type,\n    canonical_url: $json.canonical_url,\n    hashtags_core: $json.hashtags_core,\n    compliance_notes: $json.compliance_notes,\n    disclaimer_short: $json.disclaimer_short,\n    notes: $json.notes\n  }\n}, null, 2) }}"
+      "content": "={{ JSON.stringify({\n  task: 'Write science and research-only captions. Chemical names only. No marketing, no human-use language.',\n  caption_mode: 'science_research_only',\n  naming_overrides: {\n    'KLOW': 'KPV / BPC-157 / TB-500 / GHK-Cu',\n    'BPC-157/TB-500 (Wolverine)': 'BPC-157 / TB-500',\n    'Wolverine': 'BPC-157 / TB-500',\n    'GLOW': 'BPC-157 / TB-500 / GHK-Cu'\n  },\n  compound: {\n    compound_id: $json.compound_id,\n    compound_name: $json.compound_name,\n    category: $json.category,\n    product_form: $json.product_form,\n    short_tagline: $json.short_tagline,\n    key_benefit_theme: $json.key_benefit_theme,\n    mechanism_1_liner: $json.mechanism_1_liner,\n    spotlight_angle: $json.spotlight_angle,\n    figma_template_type: $json.figma_template_type,\n    canonical_url: $json.canonical_url,\n    hashtags_core: $json.hashtags_core,\n    compliance_notes: $json.compliance_notes,\n    disclaimer_short: $json.disclaimer_short,\n    notes: $json.notes\n  }\n}, null, 2) }}"
     }
   ]
 }
@@ -57,72 +58,34 @@ This prompt therefore:
 
 ---
 
-## System prompt (readable version)
+## Example output shape (BPC-157)
 
-You write laboratory research catalog spotlights for Palm Beach Vitality.
+```text
+BPC-157 — laboratory research material
 
-Audience: researchers and laboratories. Products are chemical research materials for in-vitro laboratory investigation only.
+Pentadecapeptide research compound for in-vitro laboratory investigation.
 
-### FDA intended-use rule (non-negotiable)
-Marketing context can classify a product as a drug even with a research disclaimer. Never imply human use, consumption, therapy, wellness routines, clinics, patients, athletes, dosing, injection, reconstitution for administration, or outcomes in people.
+Available in pre-filled research format for laboratory handling and catalog reference.
 
-### Required positioning
-- Laboratory research use only / in-vitro research materials
-- Not for human use
-- Not for human or animal consumption
-- Not a drug, medicine, dietary supplement, food, or cosmetic
-- Not FDA-evaluated or FDA-approved
+Research context: peptide identity and pathway characterization studies in controlled laboratory settings.
 
-### Naming rules
-1. Chemical / peptide names only (BPC-157, TB-500, GHK-Cu, KPV, …)
-2. Never use nicknames: KLOW, Wolverine, GLOW
-3. Blends → list constituents
-4. Hashtags → compound names only; strip nickname tags
+View laboratory listing:
+https://www.palmbeach-vitality.store/products/bpc-157-pen
 
-### Mandatory closing disclaimer
-```
+#BPC157 #ResearchPeptides #LaboratoryResearch #InVitroResearch #PalmBeachVitality
+
 For laboratory research use only. Not for human use or consumption. Not a drug, dietary supplement, or cosmetic. Not evaluated by the FDA.
 ```
 
 ---
 
-## Nickname → chemical display map (for Edit Fields or prompt overrides)
+## Nickname → chemical display map
 
 | Sheet / nickname | Use in all copy |
 |---|---|
 | KLOW | KPV / BPC-157 / TB-500 / GHK-Cu |
 | Wolverine / BPC-157/TB-500 (Wolverine) | BPC-157 / TB-500 |
 | GLOW | BPC-157 / TB-500 / GHK-Cu |
-
-Optional Edit Fields expression to pre-normalize:
-
-```javascript
-const map = {
-  'KLOW': 'KPV / BPC-157 / TB-500 / GHK-Cu',
-  'BPC-157/TB-500 (Wolverine)': 'BPC-157 / TB-500',
-  'GLOW': 'BPC-157 / TB-500 / GHK-Cu'
-};
-map[$json.compound_name] || $json.compound_name;
-```
-
----
-
-## Suggested Edit Fields (before Grok)
-
-Pass through at minimum:
-
-- `compound_id`, `compound_name`, `category`, `product_form`
-- `short_tagline`, `key_benefit_theme`, `mechanism_1_liner`
-- `spotlight_angle`, `figma_template_type`, `canonical_url`
-- `hashtags_core`, `compliance_notes`, `disclaimer_short`, `notes`
-
-Recommended add:
-
-| New field | Value |
-|---|---|
-| `display_name` | chemical-name map above |
-| `audience` | `laboratory researchers` |
-| `use_restriction` | `For laboratory research use only. Not for human use or consumption.` |
 
 ---
 
@@ -159,51 +122,12 @@ return [{
 }];
 ```
 
-Add an **IF** node: continue to Buffer / Figma only when `compliance_ok === true`.
+Publish only when `compliance_ok === true`.
 
 ---
 
-## Smoke-test input (BPC-157 Pen)
+## Notes
 
-```json
-{
-  "compound_id": "P-BPC-001",
-  "compound_name": "BPC-157",
-  "category": "Recovery / Healing",
-  "product_form": "Pen",
-  "short_tagline": "BPC-157 recovery research pen",
-  "key_benefit_theme": "Tissue recovery research",
-  "mechanism_1_liner": "Pentadecapeptide BPC-157",
-  "spotlight_angle": "Spotlight Hero",
-  "figma_template_type": "Hero Spotlight",
-  "canonical_url": "https://www.palmbeach-vitality.store/products/bpc-157-pen",
-  "hashtags_core": "#BPC157 #PeptidePen #RecoveryResearch #PalmBeachVitality",
-  "compliance_notes": "Avoid injury cure language",
-  "disclaimer_short": "For research and educational purposes only. Not intended to diagnose or treat any condition.",
-  "notes": "20mg 3mL Pen"
-}
-```
-
-Expected behavior: Grok reframes away from “recovery/healing,” uses **BPC-157** only, and closes with the mandatory **Not for human use** disclaimer (stronger than the sheet’s disclaimer_short).
-
-### Nickname smoke test
-If `compound_name` is `KLOW`, output `display_name` must be `KPV / BPC-157 / TB-500 / GHK-Cu` and captions/hashtags must not say KLOW.
-
----
-
-## Sheet cleanup follow-up (recommended later)
-
-Current sheet fields still contain nickname compound_names and human-leaning themes (`Recovery / Healing`, `Wellness Angle`, `#KLOW`). The prompt now overrides at generation time, but updating the 4 sheets will make rotation cleaner:
-- Rename nickname rows to chemical display names
-- Replace benefit themes with laboratory pathway language
-- Update hashtags to compound-name tags
-- Standardize `disclaimer_short` to the mandatory caution above
-
----
-
-## Notes / knobs
-
-- Temperature lowered to `0.4` for stricter compliance adherence
-- If `response_format.json_object` errors on the key, remove it and keep the JSON-only instruction
-- Gate publishing on `compliance_ok === true`
-- This is operational copy guidance, not a legal opinion — have counsel review before going live
+- Temperature set to `0.2` for tighter science-only adherence
+- Captions follow a fixed research-note structure
+- Still not legal advice — counsel review before go-live
