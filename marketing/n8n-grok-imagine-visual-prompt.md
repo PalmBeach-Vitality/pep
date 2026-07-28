@@ -1,43 +1,33 @@
-# Grok Imagine — richer spotlight visuals
+# Grok Imagine prompt — match the premium PB Vitality card
 
-Replace the bland text-card prompt in **`Grok_Imagine`** with the body below.
+Target look (from your reference):
+- Deep navy + faint technical grid
+- Soft hex / molecular pattern on the **right**
+- Warm pale glow bottom-right
+- Left-aligned big compound name
+- Teal underline + teal bar bullets
+- Centered brand with teal rules
+- CTA with arrow
+- Clean, premium, not a photo collage, not a flat empty slide
 
-Keep FDA rules: laboratory / in-vitro only. No people injecting, clinics, athletes, wellness, before/after, or disease claims. Chemical name must appear spelled correctly.
-
----
-
-## Grok_Imagine JSON body (fx ON)
+## Paste into `Grok_Imagine` JSON body (fx ON)
 
 ```text
 {{ JSON.stringify({ model: 'grok-imagine-image-quality', aspect_ratio: '1:1', n: 1, prompt: [
-  'Premium Instagram square 1080x1080 brand campaign still for Palm Beach Vitality.',
-  'NOT a plain text slide. NOT a flat PowerPoint card. NOT sparse empty navy with only typography.',
-  'Cinematic laboratory photography mood: deep navy and charcoal environment, soft teal accent lighting (#0D9488), shallow depth of field, subtle haze, reflective glass, premium product-catalog atmosphere.',
-  'Background must feel rich: dark lab bench, frosted glassware, abstract molecular / helix light motifs, gentle caustic reflections, micro-grid or technical schematic faintly in the distance. High-end pharma-research aesthetic, tasteful, not cluttered.',
-  'Foreground: elegant typography overlay integrated into the scene.',
-  'Top: PALM BEACH VITALITY in refined small caps.',
-  'Eyebrow: Laboratory research material.',
-  'Hero headline EXACT spelling: ' + String($json.figma_headline || $json.display_name || 'Research material') + '.',
-  'Subhead: ' + String($json.figma_subhead || '') + '.',
-  'Short research notes (clean, minimal): ' + [ $json.figma_bullet_1, $json.figma_bullet_2, $json.figma_bullet_3 ].filter(Boolean).join(' · ') + '.',
-  'CTA: ' + String($json.figma_cta || 'View laboratory listing') + '.',
-  'Tiny bottom disclaimer: For laboratory research use only. Not for human use.',
-  'Visual direction for today: ' + String($json.daily_image_brief || $('Prep_day_variant').item.json.daily_image_brief || 'hero compound name with cinematic lab atmosphere') + '.',
-  'Style references: luxury scientific brand photography, Vogue-lab editorial lighting, crisp, modern, high contrast, atmospheric, beautiful bokeh.',
-  'Strictly avoid: people, hands, injections, gyms, clinics, smiles, lifestyle, supplements bottles marketing cliches, neon cyberpunk overload, purple gradients, emojis, misspelled chemical names, medical claim graphics.'
+  'Design a premium Palm Beach Vitality Instagram square graphic 1080x1080 that looks like a high-end scientific brand poster, NOT a photo of a lab and NOT a sparse PowerPoint slide.',
+  'Exact art direction: deep navy background, subtle blueprint grid across the canvas, large soft translucent hexagonal molecular honeycomb pattern occupying the right side and fading left, gentle warm champagne glow in the bottom-right corner for depth.',
+  'Layout: centered top brand lockup PALM BEACH VITALITY in small tracked caps with thin teal horizontal rules on both sides.',
+  'Left side hierarchy: huge bold white condensed sans headline EXACT text: ' + String($json.figma_headline || $json.display_name || 'BPC-157').replace(/ Research Material/i,'') + '.',
+  'Directly under headline a thick short teal underline. Then white subhead: ' + String($json.figma_subhead || 'Pentadecapeptide') + '.',
+  'Then small tracked gray uppercase line: LABORATORY RESEARCH MATERIAL.',
+  'Then three left-aligned lines with short vertical teal bars as bullets: 1) ' + String($json.figma_bullet_1 || 'Pentadecapeptide molecular class') + ' 2) ' + String($json.figma_bullet_2 || 'Pre-filled research format') + ' 3) ' + String($json.figma_bullet_3 || 'Laboratory research use only') + '.',
+  'Lower left teal uppercase CTA with arrow: ' + String($json.figma_cta || 'VIEW LABORATORY LISTING').toUpperCase() + ' →',
+  'Bottom centered small uppercase muted disclaimer: FOR LABORATORY RESEARCH USE ONLY. NOT FOR HUMAN USE OR CONSUMPTION.',
+  'Typography must be crisp and correctly spelled. Color palette only navy, white, teal #2CB29D, soft warm glow. Generous padding, modern, luxurious, scientific.',
+  'Avoid: people, syringes, gym, clinic, lifestyle, purple neon, cluttered icons, misspellings, stock photo product bottles, busy collages.'
 ].join(' ') }) }}
 ```
 
-Optional cheaper model: change `grok-imagine-image-quality` → `grok-imagine-image`.
+Execute `Grok_Imagine` and open the new URL.
 
----
-
-## After updating
-1. Execute `Parse_Grok` → `Grok_Imagine`  
-2. Open the new `data[0].url`  
-3. If still too text-heavy, run once more (Imagine varies) or add to prompt: `Typography understated; background photography dominates 70% of the frame.`
-
----
-
-## Daily variety
-`Prep_day_variant.daily_image_brief` already changes by weekday, so backgrounds should shift (mechanism day vs format day vs FAQ day) while staying on-brand.
+For pixel-perfect repeatability later, use the HTML card in `marketing/spotlight-card.html` with Htmlcsstoimage (same layout every time).

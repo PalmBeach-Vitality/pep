@@ -2,82 +2,174 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --navy: #0A1628;
-      --teal: #0D9488;
-      --sand: #F8F4EC;
-      --muted: #8C9CAC;
+      --navy: #071422;
+      --navy2: #0A1628;
+      --teal: #2CB29D;
+      --sand: #F4F7FA;
+      --muted: #9AA8B5;
       --white: #FFFFFF;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       width: 1080px;
       height: 1080px;
-      background:
-        radial-gradient(ellipse 70% 50% at 85% 10%, rgba(13,148,136,0.22), transparent 55%),
-        radial-gradient(ellipse 50% 40% at 5% 95%, rgba(13,148,136,0.12), transparent 50%),
-        linear-gradient(180deg, #0A1628 0%, #0D1B33 100%);
-      color: var(--sand);
-      font-family: Manrope, sans-serif;
       overflow: hidden;
+      font-family: Manrope, sans-serif;
+      color: var(--white);
+      background:
+        radial-gradient(ellipse 80% 70% at 100% 100%, rgba(232, 210, 160, 0.18), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 85% 30%, rgba(44, 178, 157, 0.12), transparent 50%),
+        linear-gradient(145deg, #071422 0%, #0A1628 55%, #0C1C30 100%);
       position: relative;
     }
+    /* technical grid */
     body::before {
       content: "";
       position: absolute;
       inset: 0;
       background-image:
-        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-      background-size: 54px 54px;
+        linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 90% 90% at 40% 40%, #000 20%, transparent 75%);
       pointer-events: none;
     }
-    .pad { position: relative; z-index: 1; padding: 70px 72px; height: 100%; display: flex; flex-direction: column; }
-    .top { display: flex; justify-content: space-between; align-items: baseline; }
-    .brand { font-family: Syne, sans-serif; font-weight: 700; font-size: 28px; letter-spacing: 0.08em; color: var(--sand); }
-    .eyebrow { margin-top: 18px; color: var(--teal); font-size: 24px; font-weight: 500; }
-    .form { color: var(--muted); font-size: 22px; letter-spacing: 0.12em; text-transform: uppercase; }
-    .headline { margin-top: 72px; font-family: Syne, sans-serif; font-weight: 700; font-size: 92px; line-height: 1.02; color: var(--white); max-width: 920px; }
-    .rule { width: 120px; height: 4px; background: var(--teal); margin: 28px 0 24px; }
-    .subhead { font-size: 34px; line-height: 1.3; color: var(--sand); max-width: 860px; }
-    .bullets { list-style: none; margin-top: 48px; display: flex; flex-direction: column; gap: 18px; }
-    .bullets li { font-size: 28px; padding-left: 28px; position: relative; color: var(--sand); }
+    /* hex / molecular wash (right side) */
+    .hex {
+      position: absolute;
+      right: -80px;
+      top: 80px;
+      width: 720px;
+      height: 920px;
+      opacity: 0.35;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='104' viewBox='0 0 120 104'%3E%3Cpath d='M30 2 L90 2 L120 52 L90 102 L30 102 L0 52 Z' fill='none' stroke='%232CB29D' stroke-width='1.2'/%3E%3C/svg%3E");
+      background-size: 110px 96px;
+      filter: blur(0.2px);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 35%, #000 100%);
+      mask-image: linear-gradient(90deg, transparent 0%, #000 35%, #000 100%);
+      pointer-events: none;
+    }
+    .pad {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      padding: 72px 78px 64px;
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 78px;
+    }
+    .brand-row .rule {
+      width: 56px;
+      height: 1px;
+      background: var(--teal);
+      opacity: 0.85;
+    }
+    .brand {
+      font-family: Syne, sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--sand);
+    }
+    .headline {
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      font-size: 118px;
+      line-height: 0.92;
+      letter-spacing: -0.03em;
+      max-width: 720px;
+    }
+    .accent {
+      width: 92px;
+      height: 5px;
+      background: var(--teal);
+      margin: 28px 0 22px;
+    }
+    .subhead {
+      font-size: 36px;
+      font-weight: 500;
+      color: var(--sand);
+      margin-bottom: 10px;
+    }
+    .eyebrow {
+      font-size: 18px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 48px;
+    }
+    .bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-top: 8px;
+    }
+    .bullets li {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      font-size: 28px;
+      color: var(--sand);
+      max-width: 620px;
+    }
     .bullets li::before {
       content: "";
-      position: absolute;
-      left: 0; top: 12px;
-      width: 10px; height: 10px;
-      border-radius: 50%;
+      width: 5px;
+      height: 28px;
+      margin-top: 4px;
+      flex: 0 0 auto;
       background: var(--teal);
     }
     .bottom { margin-top: auto; }
     .cta {
-      display: inline-block;
-      border: 2px solid var(--teal);
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
       color: var(--teal);
       font-family: Syne, sans-serif;
-      font-weight: 600;
-      font-size: 26px;
-      padding: 16px 36px;
+      font-weight: 700;
+      font-size: 24px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
       margin-bottom: 28px;
     }
-    .disclaimer { font-size: 18px; line-height: 1.4; color: var(--muted); max-width: 920px; }
+    .cta::after {
+      content: "→";
+      font-size: 28px;
+    }
+    .disclaimer {
+      font-size: 15px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      max-width: 900px;
+      line-height: 1.45;
+    }
   </style>
 </head>
 <body>
+  <div class="hex"></div>
   <div class="pad">
-    <div class="top">
-      <div>
-        <div class="brand">PALM BEACH VITALITY</div>
-        <div class="eyebrow">Laboratory research material</div>
-      </div>
-      <div class="form">{{PRODUCT_FORM}}</div>
+    <div class="brand-row">
+      <span class="rule"></span>
+      <div class="brand">Palm Beach Vitality</div>
+      <span class="rule"></span>
     </div>
     <div class="headline">{{HEADLINE}}</div>
-    <div class="rule"></div>
+    <div class="accent"></div>
     <div class="subhead">{{SUBHEAD}}</div>
+    <div class="eyebrow">Laboratory research material</div>
     <ul class="bullets">
       <li>{{BULLET_1}}</li>
       <li>{{BULLET_2}}</li>
@@ -85,7 +177,7 @@
     </ul>
     <div class="bottom">
       <div class="cta">{{CTA}}</div>
-      <div class="disclaimer">For laboratory research use only. Not for human use or consumption. Not a drug, dietary supplement, or cosmetic. Not evaluated by the FDA.</div>
+      <div class="disclaimer">For laboratory research use only. Not for human use or consumption.</div>
     </div>
   </div>
 </body>
