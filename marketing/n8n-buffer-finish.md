@@ -17,7 +17,7 @@ After Figma HTTP node:
 
 | Name | Mode | Value |
 |---|---|---|
-| `figma_image_url` | Expression | `={{ $json.images["2:51"] }}` |
+| `figma_image_url` | Expression | `={{ $json.images["2020:5"] \|\| 'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/grok-spotlight-prompt-7786/marketing/tb-500-hero-spotlight.png' }}` |
 | `ig_caption_draft` | Expression | `={{ $('Parse Grok').item.json.ig_caption_draft }}` |
 | `fb_caption_draft` | Expression | `={{ $('Parse Grok').item.json.fb_caption_draft }}` |
 | `tiktok_caption` | Expression | `={{ $('Parse Grok').item.json.tiktok_caption }}` |

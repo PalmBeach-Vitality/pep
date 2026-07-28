@@ -15,8 +15,9 @@ Schedule (weekly)
   → Grok HTTP
   → Parse_Grok
   → IF compliance_ok = true
-       → Figma_export
-       → Save_figma_image
+       → Wait (30–60s)
+       → Figma_export (ids=2020:5; On Error Continue; Retry 60s)
+       → Resolve_image (Figma URL or GitHub PNG fallback)
        → Create a post (Buffer)
        → Google Sheets (update row writeback)
   → IF false → stop (do not post)

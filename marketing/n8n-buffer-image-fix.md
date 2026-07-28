@@ -14,7 +14,7 @@ Place **after** Figma images API node (or after Save Figma Image if URL is alrea
 | Setting | Value |
 |---|---|
 | Method | `GET` |
-| URL | `={{ $json.images["2:51"] }}`  **or** `={{ $json.figma_image_url }}` |
+| URL | `={{ $json.images["2020:5"] }}`  **or** `={{ $json.figma_image_url }}` |
 | Response / Response Format | **File** (binary) |
 | Put Output in Field | `data` (default) |
 

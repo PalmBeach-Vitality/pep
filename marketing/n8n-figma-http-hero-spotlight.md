@@ -1,12 +1,12 @@
 # Figma HTTP node — Hero Spotlight smoke test
 
 From link:
-`https://www.figma.com/slides/cVeMEJnU12e8QdjfOystrl/Untitled?node-id=2-51...`
+`https://www.figma.com/slides/cVeMEJnU12e8QdjfOystrl/...node-id=2020-5`
 
 | Piece | Value |
 |---|---|
 | File key | `cVeMEJnU12e8QdjfOystrl` |
-| Node id (API) | `2:51` (from `2-51`) |
+| Node id (API) | `2020:5` (from `2020-5`) — old `2:51` is dead |
 
 ## Chain
 `Parse Grok → HTTP Figma Export → Edit Fields (Figma Image URL) → Buffer`
@@ -34,7 +34,7 @@ Optional: IF `compliance_ok` is true before Figma.
 ### Query parameters
 | Name | Value |
 |---|---|
-| `ids` | `2:51` |
+| `ids` | `2020:5` |
 | `format` | `png` |
 | `scale` | `2` |
 
@@ -43,12 +43,12 @@ Optional: IF `compliance_ok` is true before Figma.
 {
   "err": null,
   "images": {
-    "2:51": "https://figma-alpha-api.s3.us-west-2.amazonaws.com/..."
+    "2020:5": "https://figma-alpha-api.s3.us-west-2.amazonaws.com/..."
   }
 }
 ```
 
-If `images["2:51"]` is `null`, the node id is wrong or the slide isn’t exportable.
+If `images["2020:5"]` is `null`, the node id is wrong or the slide isn’t exportable. See `n8n-fix-figma-export.md` for fallback.
 
 ---
 
@@ -67,7 +67,7 @@ Recommended fields:
 
 | Name | Value |
 |---|---|
-| `figma_image_url` | `={{ $json.images["2:51"] }}` |
+| `figma_image_url` | `={{ $json.images["2020:5"] \|\| 'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/grok-spotlight-prompt-7786/marketing/tb-500-hero-spotlight.png' }}` |
 | `ig_caption_draft` | `={{ $('Parse Grok').item.json.ig_caption_draft }}` |
 | `fb_caption_draft` | `={{ $('Parse Grok').item.json.fb_caption_draft }}` |
 | `figma_headline` | `={{ $('Parse Grok').item.json.figma_headline }}` |
