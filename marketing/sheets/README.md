@@ -31,17 +31,16 @@
    - Rename the tab exactly as in the table above
 3. Share the spreadsheet with the Google account connected to n8n
 
-## n8n daily queue (start here)
+## n8n daily queue (7 posts / compound / week)
 Point Sheets read node at tab: **`1-compounds-pens`**
 
-Rotation:
-- Schedule = **Days / 1**
-- Filter `status = Active`
-- Sort `last_spotlight_date` ASC, `rotation_order` ASC
-- Limit `1`
-- After Buffer success → write back `last_spotlight_date`
+Cadence:
+- Schedule = **Days / 1** (post every day)
+- Same compound for 7 days (`week_start_date` + `posts_this_week`)
+- Each day: different `daily_angle` → different Grok captions + image
+- Next week: next Active compound
 
-One Active pen compound **per day**.
+See `marketing/n8n-weekly-sheets-rotation.md`.
 
 ## Vials
-Keep `1-compounds-vials` ready. Do **not** run pens + vials the same day unless you intentionally want 2 posts. For strict 1/day, pens only first.
+Keep `1-compounds-vials` ready. Do not mix into the daily pens week unless you intentionally want a second daily stream.
