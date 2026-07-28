@@ -31,16 +31,17 @@
    - Rename the tab exactly as in the table above
 3. Share the spreadsheet with the Google account connected to n8n
 
-## n8n weekly queue (start here)
+## n8n daily queue (start here)
 Point Sheets read node at tab: **`1-compounds-pens`**
 
 Rotation:
+- Schedule = **Days / 1**
 - Filter `status = Active`
 - Sort `last_spotlight_date` ASC, `rotation_order` ASC
 - Limit `1`
 - After Buffer success → write back `last_spotlight_date`
 
-One Active pen compound per week.
+One Active pen compound **per day**.
 
 ## Vials
-Keep `1-compounds-vials` ready. Do **not** run both queues the same week unless you intentionally want 2 posts. For strict 1/week, pens only first.
+Keep `1-compounds-vials` ready. Do **not** run pens + vials the same day unless you intentionally want 2 posts. For strict 1/day, pens only first.
