@@ -1,208 +1,206 @@
-# Absolute beginner: redesign your Figma slide (BPC-157)
+# Build the Hero Spotlight slide in Figma (step by step)
 
-You’re editing this file:
-https://www.figma.com/slides/cVeMEJnU12e8QdjfOystrl/Untitled?node-id=2-51
-
-Goal: replace the “Product Review / Feature Name” placeholder with real BPC-157 research catalog content.
-
----
-
-## Part 1 — Open the right slide
-
-1. Open the link above in Chrome.
-2. If Figma asks you to log in, log in.
-3. You should see a slide canvas (like a presentation page).
-4. On the left, click the slide that shows the placeholder (“Product Review…”).
-5. Click once on empty space on that slide so the whole slide is active.
+File: https://www.figma.com/slides/cVeMEJnU12e8QdjfOystrl  
+Target size: **1080 × 1080** (Instagram)  
+Working export id after you finish: copy from the URL `node-id=XXXX-Y` → use as `XXXX:Y` in n8n
 
 ---
 
-## Part 2 — Delete the placeholder content
+## 0) Open the right place
 
-1. Click the big placeholder text (“Product”, “Review”, etc.).
-2. Press **Delete** (or Backspace).
-3. Repeat until the slide is mostly empty.
-4. If something won’t delete:
-   - Click it
-   - Look at the right panel
-   - Press Delete again
-5. Leave the slide background if you like; we’ll change color next.
+1. Open the link above and log into Figma.
+2. You should be in **Figma Slides** (presentation-style pages on the left).
+3. In the left filmstrip, click the slide you want to redesign (or click **+** to add a new blank slide).
+4. Click empty space on the slide so the whole page is selected.
 
 ---
 
-## Part 3 — Set the slide size / background
+## 1) Make it square 1080
 
-### Background color
-1. Click empty area of the slide (not a text box).
-2. On the right panel, find **Fill** / background color.
-3. Set it to: `#0A1628` (dark navy).
-4. If you can’t find Fill:
-   - With slide selected, look for a paint-bucket / color square on the right.
+1. With the slide selected, look at the **right panel**.
+2. Set width / height to **1080 × 1080** if you can (or pick a square Instagram slide preset if Slides offers one).
+3. If Slides locks size, design within a **1080×1080 Frame** on the slide:
+   - Press **F** (Frame)
+   - In the right panel choose **Instagram Post 1080×1080**, or type 1080 / 1080
+   - Center that frame on the slide — this frame is what n8n will export
 
 ---
 
-## Part 4 — Add text (one piece at a time)
+## 2) Background
 
-### A) Brand
-1. Click **Text** tool in the toolbar (letter **T**), or press **T**.
-2. Click near the top of the slide.
-3. Type:
+1. Select the frame (or slide).
+2. Right panel → **Fill** → solid color **`#0A1628`** (navy).
+3. Optional soft atmosphere (keep subtle):
+   - Press **O** (Ellipse)
+   - Draw a large circle top-right
+   - Fill `#0D9488`, lower opacity to ~15–25%
+   - No stroke
+4. Optional grid:
+   - Or skip — compound name should stay the visual anchor
 
+---
+
+## 3) Add text layers (top → bottom)
+
+Press **T** for each new text box. After typing, rename the layer in the left layers list (double-click the layer name).
+
+### Layer `brand`
 ```text
-Palm Beach Vitality
+PALM BEACH VITALITY
 ```
+- Size ~28–32 · Color `#F8F4EC` · Top-left · Bold/semibold  
+- Letter-spacing slightly open if available
 
-4. Select that text.
-5. Right panel:
-   - Font size: about **28–36**
-   - Color: `#2DD4BF` or `#0D9488` (teal)
-   - Center align if you want
-
-### B) Eyebrow
-1. Press **T**, click below the brand.
-2. Type:
-
+### Layer `eyebrow`
 ```text
 Laboratory research material
 ```
+- Size ~22–24 · Color `#0D9488` · Under brand
 
-3. Size: about **20–24**
-4. Color: light gray/white (`#E8EEF5` or white)
+### Layer `product_form` (top-right)
+```text
+PEN
+```
+- Size ~20–22 · Color `#5B6B7C` · Uppercase · Top-right
 
-### C) Big compound name (most important)
-1. Press **T**, click center of slide.
-2. Type:
-
+### Layer `headline` (hero — biggest thing on the slide)
 ```text
 BPC-157
 ```
+- Size ~90–120 · Color `#FFFFFF` · Bold  
+- This must dominate the first glance
 
-3. Size: about **96–140** (large)
-4. Color: white
-5. Make it bold if available
-6. This should be the biggest text on the slide
+### Layer `accent_line`
+1. Press **L** (Line) or draw a thin rectangle
+2. Under the headline, ~120px wide, 4px tall
+3. Color `#0D9488`
 
-### D) Subhead
-1. Press **T** under BPC-157.
-2. Type:
-
+### Layer `subhead`
 ```text
 Pentadecapeptide
 ```
+- Size ~32–36 · Color `#F8F4EC`
 
-3. Size: about **32–40**
-4. Color: teal `#2DD4BF`
-
-### E) Three research notes
-Add three separate text boxes:
-
+### Layers `bullet_1` / `bullet_2` / `bullet_3`
 ```text
 Pentadecapeptide molecular class
 ```
-
 ```text
 Pre-filled research format
 ```
-
 ```text
 Laboratory research use only
 ```
+- Size ~26–28 · Color `#F8F4EC`
+- Optional: small teal dots (ellipses) to the left of each line
 
-- Size: about **24–28**
-- Color: white / light gray
-- Stack them vertically with space between
-
-### F) CTA
-1. Press **T** near lower area.
-2. Type:
-
+### Layer `cta`
 ```text
 View laboratory listing
 ```
+- Size ~24–26 · Color `#0D9488`
+- Optional: rectangle outline around it, stroke `#0D9488`, no fill
 
-3. Size: about **24**
-4. Color: teal
+### Layer `disclaimer` (required)
+```text
+For laboratory research use only. Not for human use or consumption. Not a drug, dietary supplement, or cosmetic. Not evaluated by the FDA.
+```
+- Size ~14–18 · Color `#5B6B7C` · Bottom of frame
 
-### G) Disclaimer (required)
-1. Press **T** near the bottom.
-2. Type exactly:
+---
+
+## 4) Layout checklist
+
+Top → bottom should read:
+1. Brand  
+2. Eyebrow (+ PEN top-right)  
+3. **Headline** (hero)  
+4. Teal rule  
+5. Subhead  
+6. 3 bullets  
+7. CTA  
+8. Disclaimer  
+
+Rules:
+- One composition — not a dashboard
+- No cards, badges, stickers, photos, or emoji
+- Brand visible; headline is the only huge text
+- Leave breathing room around the compound name
+
+---
+
+## 5) Name layers exactly
+
+Left layers panel, rename to:
 
 ```text
-For laboratory research use only. Not for human use or consumption.
+bg
+brand
+eyebrow
+product_form
+headline
+accent_line
+subhead
+bullet_1
+bullet_2
+bullet_3
+cta
+disclaimer
 ```
 
-3. Size: about **14–18**
-4. Color: muted gray
-5. Keep it readable but smaller than everything else
+Exact names matter later if you bind Variables or clone this into Placid.
 
 ---
 
-## Part 5 — Align it so it looks clean
+## 6) Get the node id for n8n
 
-1. Select each text box and drag to center.
-2. Leave breathing room around **BPC-157**.
-3. Keep order top → bottom:
-   - Brand  
-   - Laboratory research material  
-   - BPC-157  
-   - Pentadecapeptide  
-   - 3 notes  
-   - View laboratory listing  
-   - Disclaimer  
-4. Don’t add photos, icons, stickers, or extra boxes.
-
-Optional accent line:
-1. Find **Line** / shape tool
-2. Draw a short horizontal line under **BPC-157**
-3. Color: `#0D9488`
+1. Click the **frame** (or slide) you want exported — not a single text box.
+2. Look at the browser URL. You’ll see something like:
+   `node-id=2020-5`
+3. Convert hyphen → colon for the API:
+   - `2020-5` → **`2020:5`**
+4. Put that in n8n `Figma_export` query `ids`.
 
 ---
 
-## Part 6 — Use the reference image (optional but helpful)
+## 7) Quick visual QA
 
-Reference file in your repo:
-`marketing/bpc-157-hero-spotlight.png`
+- [ ] Navy background, teal accents only  
+- [ ] Chemical name only (no nicknames)  
+- [ ] Disclaimer readable at bottom  
+- [ ] Looks like a lab catalog slide, not a wellness ad  
+- [ ] Square crop looks good at 1080  
 
-To view it while designing:
-1. Open that PNG on your computer
-2. Put it on a second monitor / split screen
-3. Match the layout roughly (doesn’t need to be identical)
+Reference samples in the repo:
+- `marketing/generated/tb-500-spotlight.png`
+- `marketing/generated/mots-c-spotlight.png`
+- `marketing/bpc-157-hero-spotlight.png`
 
-To place it in Figma temporarily as a guide:
-1. Drag the PNG into the Figma slide
-2. Lower opacity if possible
-3. Build text on top
-4. Delete the guide image when finished
-
----
-
-## Part 7 — Save / confirm
-
-Figma usually auto-saves.
-1. Make sure your slide no longer says “Product Review…”
-2. You should clearly see **BPC-157** as the main title
-3. Disclaimer is visible at the bottom
+Open one beside Figma and match spacing/hierarchy (doesn’t need to be pixel-identical).
 
 ---
 
-## Part 8 — Re-run n8n so Buffer gets the new art
+## 8) Duplicate for other compounds (manual multi-slide method)
 
-In n8n, execute from Figma export onward:
+1. In the left filmstrip, right-click your finished slide → **Duplicate**
+2. Open the copy
+3. Change only:
+   - `headline`
+   - `subhead`
+   - `bullet_1/2/3`
+   - `product_form` if needed
+4. Copy that slide’s `node-id` for that week’s n8n `ids=`
 
-1. Figma HTTP export (`ids=2:51`)
-2. Save Figma Image
-3. Buffer Create Post
-
-Then check Buffer preview — it should show the new BPC-157 slide, not the old placeholder.
+This is how you stay in Figma without Variables/Enterprise: one slide per compound, swap `ids` (or map later by `compound_id`).
 
 ---
 
-## If you get stuck
+## 9) After the slide exists
 
-Common issues:
-- **Can’t type:** press **T** first, then click the slide
-- **Text too small/large:** select text → change font size on right panel
-- **Wrong slide:** click the correct thumbnail on the left
-- **Still seeing placeholder:** you may be on a different slide; delete placeholder on the active one
+**Export test in n8n (single item):**
+1. Limit = 1  
+2. Wait → Figma_export (`ids=YOUR:NODE`) → Resolve_Image → Buffer  
 
-When done, tell me “slide updated” and we’ll re-test Figma → Buffer.
+**Or** keep this Figma slide as the master design and recreate the same layers in Htmlcsstoimage/Placid for true auto text each week.
+
+When the slide is done, reply **slide updated** and paste the URL (with `node-id=...`).
