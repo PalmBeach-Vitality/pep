@@ -153,13 +153,18 @@ Condition:
 
 ---
 
-## 10) Figma + Buffer
-Keep current working nodes:
-- Figma_export (`ids=2020:5` for Hero Spotlight smoke; later map by template)
-- Save_figma_image
-- Create a post
+## 10) Dynamic image + Buffer
+Do **not** rely on fixed Figma frame for per-compound art.
 
-> Template mapping by `figma_template_type` can come next. For now Hero Spotlight frame is fine for first weekly runs if most first posts use that template, or manually switch node id when needed.
+Use (see `n8n-dynamic-spotlight-image.md`):
+- Build_spotlight_html (**after** Parse_Grok, **before** Render_spotlight)
+- Render_spotlight — Htmlcsstoimage POST (**after** Build, **before** Save_render_url)
+- Save_render_url (**after** Render, **before** Create a post)
+- Create a post (`Image URL` = `{{ $json.figma_image_url }}`)
+
+Disable: Wait / Figma_export / Resolve_Image / Save_figma_image while testing dynamic renders.
+
+> Figma can stay as a design reference; the images API cannot rewrite text per post.
 
 ---
 
