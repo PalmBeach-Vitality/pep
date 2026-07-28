@@ -1,0 +1,1 @@
+{{ JSON.stringify({ model: 'grok-3', temperature: 0.2, max_tokens: 900, response_format: { type: 'json_object' }, messages: [{ role: 'system', content: $json.system_prompt }, { role: 'user', content: $json.user_prompt }] }) }}
