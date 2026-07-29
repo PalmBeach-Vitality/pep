@@ -1,0 +1,65 @@
+/**
+ * Palm Beach Vitality — match homepage hero to logo aspect ratio
+ *
+ * Paste into: WP Admin → Appearance → Customize → Additional CSS
+ * (Live theme: palmbeach-vitality on palmbeach-vitality.store)
+ *
+ * Logo card: 2.35 / 1
+ * Hero was:  9 / 16  ← mismatch
+ * Hero now:  2.35 / 1 (same width + radius as logo)
+ */
+
+.pbv-hero-photo {
+  width: min(100% - 2rem, 56rem) !important;
+  max-width: 56rem !important;
+  aspect-ratio: 2.35 / 1 !important;
+  border-radius: 1.25rem !important;
+}
+
+@media (min-width: 750px) {
+  .pbv-hero-photo {
+    width: min(100% - 2rem, 64rem) !important;
+    max-width: 64rem !important;
+    border-radius: 1.5rem !important;
+  }
+
+  .pbv-hero-photo__content {
+    padding: 1.25rem 1.75rem !important;
+  }
+
+  .pbv-hero-photo__body {
+    font-size: 0.72rem !important;
+    line-height: 1.35 !important;
+    margin-bottom: 0.4rem !important;
+  }
+}
+
+/* Short landscape frame on mobile — keep title/CTA, hide long body copy */
+@media (max-width: 749px) {
+  .pbv-hero-photo__body {
+    display: none !important;
+  }
+
+  .pbv-hero-photo__content {
+    padding: 0.7rem 0.95rem !important;
+  }
+
+  .pbv-hero-photo__title {
+    font-size: clamp(1.05rem, 4.5vw, 1.35rem) !important;
+    margin-bottom: 0.2rem !important;
+  }
+
+  .pbv-hero-photo__subtitle {
+    font-size: clamp(0.72rem, 3vw, 0.88rem) !important;
+    margin-bottom: 0.35rem !important;
+  }
+
+  .pbv-hero-photo__welcome {
+    font-size: clamp(0.78rem, 3.1vw, 0.95rem) !important;
+    margin: 0.25rem 0 !important;
+  }
+
+  .pbv-hero-photo__wholesale {
+    font-size: clamp(0.58rem, 2.2vw, 0.68rem) !important;
+  }
+}
