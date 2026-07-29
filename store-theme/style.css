@@ -376,8 +376,17 @@ a:hover { opacity: 0.7; }
   }
 }
 
-/* Short landscape hero on small screens */
+/* Mobile: logo + hero identical 2.35:1 frames */
 @media (max-width: 749px) {
+  .pbv-logo-card,
+  .pbv-hero-photo {
+    width: min(100% - 2rem, 56rem);
+    max-width: none;
+    aspect-ratio: 2.35 / 1;
+    border-radius: 1.25rem;
+    height: auto;
+  }
+
   .pbv-hero-photo__body {
     display: none;
   }
@@ -399,6 +408,10 @@ a:hover { opacity: 0.7; }
   .pbv-hero-photo__welcome {
     font-size: clamp(0.78rem, 3.1vw, 0.95rem);
     margin: 0.25rem 0;
+  }
+
+  .pbv-hero-photo__wholesale {
+    font-size: clamp(0.58rem, 2.2vw, 0.68rem);
   }
 }
 

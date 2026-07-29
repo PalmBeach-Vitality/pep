@@ -1,41 +1,50 @@
 /**
  * Palm Beach Vitality — match homepage hero to logo aspect ratio
+ * Desktop + mobile
  *
  * Paste into: WP Admin → Appearance → Customize → Additional CSS
  * (Live theme: palmbeach-vitality on palmbeach-vitality.store)
  *
  * Logo card: 2.35 / 1
- * Hero was:  9 / 16  ← mismatch
- * Hero now:  2.35 / 1 (same width + radius as logo)
+ * Hero was:  9 / 16  ← mismatch (especially obvious on mobile: narrow portrait)
+ * Hero now:  2.35 / 1 on all breakpoints (same width + radius as logo)
  */
 
+/* Shared frame — mobile-first (same as .pbv-logo-card) */
+.pbv-logo-card,
 .pbv-hero-photo {
   width: min(100% - 2rem, 56rem) !important;
   max-width: 56rem !important;
   aspect-ratio: 2.35 / 1 !important;
   border-radius: 1.25rem !important;
+  height: auto !important;
 }
 
-@media (min-width: 750px) {
-  .pbv-hero-photo {
-    width: min(100% - 2rem, 64rem) !important;
-    max-width: 64rem !important;
-    border-radius: 1.5rem !important;
-  }
-
-  .pbv-hero-photo__content {
-    padding: 1.25rem 1.75rem !important;
-  }
-
-  .pbv-hero-photo__body {
-    font-size: 0.72rem !important;
-    line-height: 1.35 !important;
-    margin-bottom: 0.4rem !important;
-  }
+.pbv-hero-photo {
+  /* kill live theme's narrow portrait width: min(92vw, 22.5rem) */
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
-/* Short landscape frame on mobile — keep title/CTA, hide long body copy */
+/* Mobile (<750px): force identical logo + hero frames */
 @media (max-width: 749px) {
+  .pbv-logo-banner {
+    padding: 1rem 1rem 0.85rem !important;
+  }
+
+  .pbv-hero {
+    padding: 0.75rem 1rem 0.5rem !important;
+  }
+
+  .pbv-logo-card,
+  .pbv-hero-photo {
+    width: min(100% - 2rem, 56rem) !important;
+    max-width: none !important;
+    aspect-ratio: 2.35 / 1 !important;
+    border-radius: 1.25rem !important;
+  }
+
+  /* Short landscape frame — keep title/CTA, hide long body copy */
   .pbv-hero-photo__body {
     display: none !important;
   }
@@ -61,5 +70,27 @@
 
   .pbv-hero-photo__wholesale {
     font-size: clamp(0.58rem, 2.2vw, 0.68rem) !important;
+  }
+}
+
+/* Desktop: match logo card width (64rem) */
+@media (min-width: 750px) {
+  .pbv-logo-card,
+  .pbv-hero-photo {
+    width: min(100% - 2rem, 64rem) !important;
+    max-width: 64rem !important;
+    aspect-ratio: 2.35 / 1 !important;
+    border-radius: 1.5rem !important;
+  }
+
+  .pbv-hero-photo__content {
+    padding: 1.25rem 1.75rem !important;
+  }
+
+  .pbv-hero-photo__body {
+    display: block !important;
+    font-size: 0.72rem !important;
+    line-height: 1.35 !important;
+    margin-bottom: 0.4rem !important;
   }
 }

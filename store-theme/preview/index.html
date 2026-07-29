@@ -3,15 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hero / Logo aspect preview</title>
+  <title>Hero / Logo aspect preview (mobile + desktop)</title>
   <style>
     :root {
       --pbv-font-body: system-ui, sans-serif;
-      --pbv-font-display: Georgia, serif;
     }
     body { margin: 0; font-family: system-ui, sans-serif; background: #f6f6f6; color: #111; }
     h1 { font-size: 1.1rem; margin: 1rem; }
     .note { margin: 0 1rem 1rem; color: #555; font-size: 0.9rem; }
+    .viewport-label {
+      display: inline-block; margin: 0 1rem 0.75rem; padding: 0.25rem 0.55rem;
+      background: #111; color: #fff; font-size: 0.7rem; border-radius: 999px;
+    }
     .pbv-logo-banner {
       display: flex; justify-content: center; align-items: center;
       width: 100%; padding: 1rem 1rem 0.85rem; background: #fff; border-bottom: 1px solid #eee;
@@ -26,7 +29,7 @@
     .pbv-hero-photo {
       position: relative; display: grid; place-items: center;
       width: min(100% - 2rem, 56rem); aspect-ratio: 2.35 / 1; margin: 0 auto;
-      border-radius: 1.25rem; overflow: hidden; color: #fff;
+      border-radius: 1.25rem; overflow: hidden; color: #fff; height: auto;
       background: var(--pbv-hero-image) center / cover no-repeat, #12304a;
       box-shadow: 0 18px 40px rgba(0,0,0,.18);
     }
@@ -53,8 +56,9 @@
   </style>
 </head>
 <body>
-  <h1>Fixed: logo + hero both 2.35:1</h1>
-  <p class="note">Same width and aspect ratio as live logo card.</p>
+  <h1>Fixed: logo + hero both 2.35:1 (mobile + desktop)</h1>
+  <p class="note">Resize under 750px — both frames stay the same wide ratio and width.</p>
+  <span class="viewport-label">logo + hero = 2.35:1</span>
 
   <div class="pbv-logo-banner">
     <a class="pbv-logo-card" href="#">

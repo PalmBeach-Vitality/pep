@@ -2,10 +2,10 @@
 
 Live site: [palmbeach-vitality.store](https://palmbeach-vitality.store)
 
-| Element | Before | After |
-|--------|--------|-------|
-| Logo (`.pbv-logo-card`) | `2.35 / 1` | unchanged |
-| Hero (`.pbv-hero-photo`) | `9 / 16` | `2.35 / 1` (matches logo width + radius) |
+| Breakpoint | Logo | Hero before | Hero after |
+|-----------|------|-------------|------------|
+| Mobile (`<750px`) | `2.35 / 1`, full width | `9 / 16`, max `22.5rem` | `2.35 / 1`, same width as logo |
+| Desktop (`≥750px`) | `2.35 / 1`, max `64rem` | `9 / 16`, max `28rem` | `2.35 / 1`, same width as logo |
 
 The WordPress theme (`palmbeach-vitality`) is hosted on WordPress.com Atomic and is **not** deployed from this repo. Apply the CSS on the live site:
 
