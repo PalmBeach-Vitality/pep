@@ -1,33 +1,45 @@
-# Grok Imagine prompt — match the premium PB Vitality card
+# Stronger daily image differentiation
 
-Target look (from your reference):
-- Deep navy + faint technical grid
-- Soft hex / molecular pattern on the **right**
-- Warm pale glow bottom-right
-- Left-aligned big compound name
-- Teal underline + teal bar bullets
-- Centered brand with teal rules
-- CTA with arrow
-- Clean, premium, not a photo collage, not a flat empty slide
+Captions can differ while images still look alike if Imagine keeps the same layout every day. Force composition changes.
 
-## Paste into `Grok_Imagine` JSON body (fx ON)
+## GROK_Imagine (1:1 feed) — Body fx ON
 
 ```text
 {{ JSON.stringify({ model: 'grok-imagine-image-quality', aspect_ratio: '1:1', n: 1, prompt: [
-  'Design a premium Palm Beach Vitality Instagram square graphic 1080x1080 that looks like a high-end scientific brand poster, NOT a photo of a lab and NOT a sparse PowerPoint slide.',
-  'Exact art direction: deep navy background, subtle blueprint grid across the canvas, large soft translucent hexagonal molecular honeycomb pattern occupying the right side and fading left, gentle warm champagne glow in the bottom-right corner for depth.',
-  'Layout: centered top brand lockup PALM BEACH VITALITY in small tracked caps with thin teal horizontal rules on both sides.',
-  'Left side hierarchy: huge bold white condensed sans headline EXACT text: ' + String($json.figma_headline || $json.display_name || 'BPC-157').replace(/ Research Material/i,'') + '.',
-  'Directly under headline a thick short teal underline. Then white subhead: ' + String($json.figma_subhead || 'Pentadecapeptide') + '.',
-  'Then small tracked gray uppercase line: LABORATORY RESEARCH MATERIAL.',
-  'Then three left-aligned lines with short vertical teal bars as bullets: 1) ' + String($json.figma_bullet_1 || 'Pentadecapeptide molecular class') + ' 2) ' + String($json.figma_bullet_2 || 'Pre-filled research format') + ' 3) ' + String($json.figma_bullet_3 || 'Laboratory research use only') + '.',
-  'Lower left teal uppercase CTA with arrow: ' + String($json.figma_cta || 'VIEW LABORATORY LISTING').toUpperCase() + ' →',
-  'Bottom centered small uppercase muted disclaimer: FOR LABORATORY RESEARCH USE ONLY. NOT FOR HUMAN USE OR CONSUMPTION.',
-  'Typography must be crisp and correctly spelled. Color palette only navy, white, teal #2CB29D, soft warm glow. Generous padding, modern, luxurious, scientific.',
-  'Avoid: people, syringes, gym, clinic, lifestyle, purple neon, cluttered icons, misspellings, stock photo product bottles, busy collages.'
+  'Premium Palm Beach Vitality Instagram square 1080x1080 scientific brand poster.',
+  'Brand system only: deep navy, teal #2CB29D, white type, faint blueprint grid, translucent hex molecular pattern, soft champagne glow.',
+  'NOT a photo of a real lab. NOT a sparse empty text slide. NOT the same layout every day.',
+  'TODAY IS ' + String($('Prep_day_variant').item.json.day_of_week || $now.weekdayLong) + ' (' + $now.toISODate() + ').',
+  'MANDATORY UNIQUE LAYOUT FOR TODAY: ' + String($('Prep_day_variant').item.json.daily_image_brief || '') + '.',
+  'Follow that layout instruction exactly. If it says glow BOTTOM-LEFT, glow must be bottom-left. If it says PEN as secondary hero, show PEN/format wording large under the compound name.',
+  'Headline EXACT: ' + String($('Parse_Grok').item.json.figma_headline || JSON.parse($('GROK_HTTP').item.json.choices[0].message.content).creative_brief.headline || 'BPC-157') + '.',
+  'Subhead: ' + String($('Parse_Grok').item.json.figma_subhead || JSON.parse($('GROK_HTTP').item.json.choices[0].message.content).creative_brief.subhead || '') + '.',
+  'Bullets: ' + [ $('Parse_Grok').item.json.figma_bullet_1, $('Parse_Grok').item.json.figma_bullet_2, $('Parse_Grok').item.json.figma_bullet_3 ].filter(Boolean).join(' | ') + '.',
+  'CTA: VIEW LABORATORY LISTING →',
+  'Tiny date in corner: ' + $now.toISODate() + '.',
+  'Disclaimer small: FOR LABORATORY RESEARCH USE ONLY. NOT FOR HUMAN USE.',
+  'Top brand: PALM BEACH VITALITY with teal rules.',
+  'Make this weekday OBVIOUSLY different from other weekdays: change dominant hierarchy, hex density, glow corner, and headline scale per today\'s brief.',
+  'No people, syringes, gym, clinic, lifestyle, purple neon, misspellings.'
 ].join(' ') }) }}
 ```
 
-Execute `Grok_Imagine` and open the new URL.
+## Grok_imagine_story (9:16) — Body fx ON
 
-For pixel-perfect repeatability later, use the HTML card in `marketing/spotlight-card.html` with Htmlcsstoimage (same layout every time).
+Same prompt, only change:
+
+```text
+aspect_ratio: '9:16'
+```
+
+And add:
+
+```text
+'Vertical story crop 9:16. Keep today\'s unique layout readable in tall format.'
+```
+
+## Also confirm Parse maps creative brief
+If `figma_headline` is empty, add Parse fields from `creative_brief.*` or the expression above falls back to GROK_HTTP JSON.
+
+## Verify
+Two days should not share the same glow corner / hierarchy. Wednesday must show format/PEN emphasis + bottom-left glow.
