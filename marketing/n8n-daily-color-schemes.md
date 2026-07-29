@@ -1,48 +1,56 @@
-# Different image + color every day
+# Extreme daily visual reset (everything different)
 
-## Prep_day_variant — add/replace these 3 fields (fx ON)
+Each weekday is a **different poster system**: color + pattern + layout + motif.
+
+## Prep_day_variant — replace these fields (fx ON)
 
 ### `daily_color_scheme`
 ```text
-{{ ({1:'Primary deep navy #071422, accent teal #2CB29D, white type, cool blue grid',2:'Primary charcoal #101820, accent ice blue #7DD3FC, white type, steel grid',3:'Primary ink green-black #0B1F1A, accent mint #34D399, off-white type, soft green grid',4:'Primary midnight #0A1024, accent electric cyan #22D3EE, white type, dense blueprint grid',5:'Primary graphite #151515, accent champagne gold #D4B483, warm white type, subtle gold haze',6:'Primary black #050505, accent silver #C0C7D1 with thin cyan #67E8F9, high-contrast mono scientific',7:'Primary deep navy #0A1628, accent coral-teal #2DD4BF with soft sand highlight #E8DCC8, calm premium catalog'})[$now.weekday] || 'Primary deep navy #071422, accent teal #2CB29D, white type' }}
+{{ ({1:'Matte black #050505 + neon lime #B6FF3B + white',2:'Pure white #F7F7F5 + ink black #111111 + signal red #E11D48 accents',3:'Deep indigo #111827 + hot magenta #F472B6 + ice #E0F2FE',4:'Sandstone #E7E5E4 + espresso #1C1917 + copper #B45309',5:'Ocean #082F49 + aqua #2DD4BF + foam white',6:'Burgundy #4C0519 + gold #F5D0A0 + cream type',7:'Slate blue #0F172A + orange #FB923C + pale gray type'})[$now.weekday] || 'Matte black + neon lime + white' }}
+```
+
+### `daily_pattern`
+```text
+{{ ({1:'Diagonal hazard stripes faded in background',2:'Giant oversized typography as texture filling half the frame',3:'Isometric cube wireframe city of molecules',4:'Halftone print dots + torn-paper collage edges',5:'Concentric radar circles / sonar rings',6:'Vertical film-strip frames / storyboard gutters',7:'Cracked stone / mineral texture with clean type overlays'})[$now.weekday] || 'Diagonal abstract pattern' }}
 ```
 
 ### `daily_image_brief`
 ```text
-{{ ({1:'Hero name TOP-LEFT huge; sparse hex RIGHT; minimal bullets; identity poster',2:'Giant CLASS/subhead typography; denser hex RIGHT; teal/ice bars thicker; mechanism poster',3:'FORMAT poster: huge PEN/VIAL word as secondary hero under name; glow BOTTOM-LEFT; format icons as abstract geometry only',4:'ASSAY poster: stronger schematic grid; molecular orbit lines; smaller headline; larger in-vitro subhead',5:'DOCUMENTATION poster: big CTA arrow; medium headline; catalog-card framing; file/document abstract shapes (no readable fake docs)',6:'FAQ poster: larger disclaimer band; calmer open space; quiet composition; research-use clarification focus',7:'QUALITY poster: centered elegant brand lockup; wide spacing; soft premium glow; minimal bullets'})[$now.weekday] || 'Hero scientific poster' }}
+{{ ({1:'Split poster: left solid color block with huge compound name, right motif zone',2:'Editorial magazine cover layout, name massive top, thin rules, lots of whitespace',3:'Centered badge/medallion composition with orbiting motif elements',4:'Bottom-heavy collage: type top-left, dense pattern lower two-thirds',5:'Top banner bar + clean center hero name + motif peeking corners',6:'Asymmetric diagonal divide; name on one side, motif on the other',7:'Full-bleed texture background with frosted glass card in center holding text'})[$now.weekday] || 'Split poster composition' }}
 ```
 
 ### `daily_visual_motif`
 ```text
-{{ ({1:'Abstract glass ampoule silhouette + clean identity lockup',2:'Abstract molecular lattice / bond diagram (no fake study claims)',3:'Abstract pre-filled pen geometry / capsule outline (no injection imagery)',4:'Abstract waveform + assay plate grid motif',5:'Abstract catalog card / clipped blueprint sheet motif',6:'Abstract shield-outline research-use mark (not medical cross)',7:'Abstract precision caliper / quality-seal geometry (non-regulatory)'})[$now.weekday] || 'Abstract scientific geometry' }}
+{{ ({1:'Abstract crystalline shard cluster',2:'Bold stencil compound-name as graphic shape',3:'Floating geometric pen/capsule blueprint (no needles)',4:'Layered translucent circles like assay wells',5:'Folded blueprint ribbon / catalog folio shape',6:'Minimal research-use seal stamp graphic',7:'Faceted mineral + soft lens flare (abstract, not lifestyle)'})[$now.weekday] || 'Abstract crystalline shard cluster' }}
 ```
+
+### keep existing
+`day_of_week`, `daily_angle`, `daily_caption_mode`
 
 ---
 
-## GROK_Imagine body (fx ON) — 1:1 feed
+## GROK_Imagine (1:1) — full Body fx ON
 
 ```text
 {{ JSON.stringify({ model: 'grok-imagine-image-quality', aspect_ratio: '1:1', n: 1, prompt: [
-  'Create a BRAND NEW Palm Beach Vitality scientific poster image for Instagram 1080x1080.',
-  'This must look like a different design from every other weekday — different color, different layout, different motif.',
-  'COLOR SCHEME (mandatory): ' + String($('Prep_day_variant').item.json.daily_color_scheme) + '.',
-  'LAYOUT (mandatory): ' + String($('Prep_day_variant').item.json.daily_image_brief) + '.',
-  'VISUAL MOTIF (mandatory, make it prominent in the background/side art): ' + String($('Prep_day_variant').item.json.daily_visual_motif) + '.',
-  'Day: ' + String($('Prep_day_variant').item.json.day_of_week || $now.weekdayLong) + ' / ' + $now.toISODate() + '.',
-  'Headline EXACT: ' + String($('Parse_Grok').item.json.figma_headline || 'BPC-157') + '.',
+  'Generate a COMPLETELY DIFFERENT Palm Beach Vitality scientific social poster for today only. Do not reuse prior-day look.',
+  'Square 1080x1080. Premium print design. High contrast. Distinctive.',
+  'COLOR SYSTEM TODAY (must dominate): ' + String($('Prep_day_variant').item.json.daily_color_scheme) + '.',
+  'PATTERN TODAY (must be obvious): ' + String($('Prep_day_variant').item.json.daily_pattern) + '.',
+  'LAYOUT TODAY (must follow exactly): ' + String($('Prep_day_variant').item.json.daily_image_brief) + '.',
+  'MOTIF TODAY (large, visible): ' + String($('Prep_day_variant').item.json.daily_visual_motif) + '.',
+  'Weekday: ' + String($('Prep_day_variant').item.json.day_of_week || $now.weekdayLong) + '. Date mark: ' + $now.toISODate() + '.',
+  'Exact headline: ' + String($('Parse_Grok').item.json.figma_headline || 'BPC-157') + '.',
   'Subhead: ' + String($('Parse_Grok').item.json.figma_subhead || '') + '.',
-  'Bullets: ' + [ $('Parse_Grok').item.json.figma_bullet_1, $('Parse_Grok').item.json.figma_bullet_2, $('Parse_Grok').item.json.figma_bullet_3 ].filter(Boolean).join(' | ') + '.',
-  'Brand top: PALM BEACH VITALITY. CTA: VIEW LABORATORY LISTING →. Tiny date ' + $now.toISODate() + '. Small disclaimer: FOR LABORATORY RESEARCH USE ONLY. NOT FOR HUMAN USE.',
-  'Style: premium scientific brand poster, sharp typography, atmospheric depth.',
-  'Strictly avoid: same navy-teal default if today is not Monday, people, syringes, needles, injections, gym, clinic, lifestyle, misspelled chemical names, purple neon spam, generic repeated layout.'
+  'Three short bullets: ' + [ $('Parse_Grok').item.json.figma_bullet_1, $('Parse_Grok').item.json.figma_bullet_2, $('Parse_Grok').item.json.figma_bullet_3 ].filter(Boolean).join(' | ') + '.',
+  'Include brand wordmark PALM BEACH VITALITY, CTA VIEW LABORATORY LISTING, and tiny disclaimer FOR LABORATORY RESEARCH USE ONLY. NOT FOR HUMAN USE.',
+  'If two weekdays were placed side by side, a viewer must instantly see different color, pattern, and composition.',
+  'Forbidden: repeating navy-teal default, people, syringes, needles, injections, gyms, clinics, lifestyle photography, misspelled chemical names.'
 ].join(' ') }) }}
 ```
 
 ## Grok_imagine_story
-Same prompt, set `aspect_ratio: '9:16'` and add: `Tall 9:16 story crop; keep motif and hierarchy readable.`
+Same, `aspect_ratio: '9:16'`.
 
-## Success check
-Wed vs Tue should differ in:
-1. colors (mint/green vs ice blue)
-2. layout (PEN/format vs class)
-3. motif (pen geometry vs molecular lattice)
+## Side-by-side test
+Run twice with different forced weekdays if needed — images must not look like recolors of one template.
