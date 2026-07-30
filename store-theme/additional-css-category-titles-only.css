@@ -1,14 +1,15 @@
 /**
  * Peptides + Peptide Pens title images ONLY
+ * Titles sit BELOW the category banner image, centered.
  *
  * APPLY: paste the WHOLE CONTENTS of this file (not the filename)
- * at the BOTTOM of Additional CSS (or replace any old title-glow block) → Publish
+ * Replace any previous title/glow block in Additional CSS → Publish
  */
 
 body.term-peptides h1.page-title,
 body.term-peptide-pens h1.page-title {
   display: block !important;
-  margin: 1rem auto 0.75rem !important;
+  margin: 1rem auto !important;
   padding: 0 !important;
   border: 0 !important;
   height: auto !important;
@@ -24,9 +25,9 @@ body.term-peptide-pens h1.page-title {
   background-repeat: no-repeat !important;
   background-position: center center !important;
   background-size: contain !important;
+  order: 2 !important;
 }
 
-/* Peptides — centered */
 body.term-peptides h1.page-title {
   width: min(92vw, 40rem) !important;
   max-width: 40rem !important;
@@ -34,12 +35,40 @@ body.term-peptides h1.page-title {
   background-image: url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/Peptides-glow.png") !important;
 }
 
-/* Peptide Pens — centered */
 body.term-peptide-pens h1.page-title {
   width: min(94vw, 56rem) !important;
   max-width: 56rem !important;
   aspect-ratio: 1815 / 540 !important;
   background-image: url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/Peptide-Pens-glow.png") !important;
+}
+
+/* Banner first, then glow title, then products */
+body.term-peptides .site-wrap,
+body.term-peptide-pens .site-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+body.term-peptides .pbv-cat-banner,
+body.term-peptide-pens .pbv-cat-banner {
+  order: 1 !important;
+}
+
+body.term-peptides .woocommerce-notices-wrapper,
+body.term-peptides p.woocommerce-result-count,
+body.term-peptides form.woocommerce-ordering,
+body.term-peptides ul.products,
+body.term-peptides .woocommerce-pagination,
+body.term-peptides nav.woocommerce-pagination,
+body.term-peptides .site-footer,
+body.term-peptide-pens .woocommerce-notices-wrapper,
+body.term-peptide-pens p.woocommerce-result-count,
+body.term-peptide-pens form.woocommerce-ordering,
+body.term-peptide-pens ul.products,
+body.term-peptide-pens .woocommerce-pagination,
+body.term-peptide-pens nav.woocommerce-pagination,
+body.term-peptide-pens .site-footer {
+  order: 3 !important;
 }
 
 body.term-peptides .pbv-cat-banner__title,
