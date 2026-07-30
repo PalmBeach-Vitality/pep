@@ -72,10 +72,11 @@ Palm Beach Vitality = **cutting-edge American peptide synthesis film** — futur
 
 ## 4) Content program (what we produce)
 
-### 4.1 Weekly cadence (unchanged compound lock)
-- **Mon–Sun:** same `compound_id`  
-- **Each day:** new angle + new video treatment + new caption set  
-- **Next Monday:** switch compound in Sheets (manual filter for now)
+### 4.1 Daily cadence (1 compound per day)
+- **Each day:** next Active `compound_id` from `1-compounds-all` (oldest `last_spotlight_date`)  
+- **Each day:** new compound + unique still/video treatment + new caption set  
+- **Loop** after all Active compounds are used (~44 today; target 56 when catalog grows)  
+- See `marketing/n8n-daily-compound-rotation.md` — do **not** week-lock one compound
 
 ### 4.2 Seven realistic video formats (`daily_video_format`)
 
@@ -235,14 +236,19 @@ Full build steps: `marketing/n8n-video-nodes-step-by-step.md`
 
 ### 6.3 Prep_day_variant — new fields
 
-#### `daily_video_format`
+#### `daily_video_format` (keyed by compound `rotation_order`, not weekday)
 ```text
-{{ ({1:'Futuristic Vial Identity',2:'Purity Spec Readout',3:'Peptide Synthesis Prototype',4:'Cutting-Edge Assay Bay',5:'Nano Catalog Drop',6:'Research Seal Future Lab',7:'99.99 Purity Glass Close'})[$now.weekday] || 'Futuristic Vial Identity' }}
+{{ ({0:'Futuristic Vial Identity',1:'Purity Spec Readout',2:'Peptide Synthesis Prototype',3:'Cutting-Edge Assay Bay',4:'Nano Catalog Drop',5:'Research Seal Future Lab',6:'99.99 Purity Glass Close'})[Number($json.rotation_order || $now.weekday) % 7] }}
 ```
 
 #### `daily_motion_brief`
 ```text
-{{ ({1:'Slow push-in on photoreal research vial in a futuristic peptide synthesis lab; cool cyan-blue tech light sweep; compound name hold',2:'Gentle lateral slide past holographic-clean purity instrumentation; focus pull to 99.99% purity readout aesthetic; glass refraction',3:'Orbit a cutting-edge peptide synthesis / prototype reactor bay with vial hero; engineering calm; no use demo',4:'Bench dolly through a futuristic assay engineering bay; vial rack + precision instruments; subtle LED pulse',5:'Rise onto acrylic riser with vial + advanced lab tech props; settle; catalog CTA end card',6:'Calm hold on sealed research vial in sterile future-lab; research-use seal fades in final 2 seconds',7:'Extreme macro vial glass / crystal meniscus; micro push; premium 99.99% purity chemistry close'})[$now.weekday] || 'Slow push-in; futuristic vial peptide synthesis film' }}
+{{ ({0:'Slow push-in on photoreal research vial in a futuristic peptide synthesis lab; cool cyan-blue tech light sweep; compound name hold',1:'Gentle lateral slide past holographic-clean purity instrumentation; focus pull to 99.99% purity readout aesthetic; glass refraction',2:'Orbit a cutting-edge peptide synthesis / prototype reactor bay with vial hero; engineering calm; no use demo',3:'Bench dolly through a futuristic assay engineering bay; vial rack + precision instruments; subtle LED pulse',4:'Rise onto acrylic riser with vial + advanced lab tech props; settle; catalog CTA end card',5:'Calm hold on sealed research vial in sterile future-lab; research-use seal fades in final 2 seconds',6:'Extreme macro vial glass / crystal meniscus; micro push; premium 99.99% purity chemistry close'})[Number($json.rotation_order || $now.weekday) % 7] }}
+```
+
+#### `daily_scene_seed`
+```text
+{{ String($json.compound_id || '') + '|' + $now.toISODate() + '|' + String($json.rotation_order || '') + '|' + String($json.compound_name || '') }}
 ```
 
 ### 6.4 Buffer bodies (pattern)

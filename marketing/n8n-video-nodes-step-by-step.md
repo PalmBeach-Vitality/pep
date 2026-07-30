@@ -6,10 +6,14 @@ Exact canvas names matter for `$('node_name')` expressions.
 
 ### Assumed existing chain (already working — keep these names)
 ```text
-Schedule → Sheets → Limit → Prep_day_variant → Edit Fields → GROK_HTTP
+Schedule → Sheets (1-compounds-all) → Filter Active → Sort last_spotlight → Limit 1
+  → Prep_day_variant → Edit Fields → GROK_HTTP
   → Parse_Grok → GROK_Imagine → Grok_imagine_story → Save_render_URL
   → Buffer_post_IG → Buffer_post_FB → (stories optional) → Sheets_writeback
 ```
+
+**Compound cadence:** **1 different Active compound per day** (see `marketing/n8n-daily-compound-rotation.md`).  
+Do **not** week-lock one compound for 7 days.
 
 ### Target chain after this guide
 ```text
@@ -60,7 +64,7 @@ Edits only (not new nodes): `Prep_day_variant`, `Save_render_URL`, `Sheets_write
 | Value (fx ON) | below |
 
 ```text
-{{ ({1:'Futuristic Vial Identity',2:'Purity Spec Readout',3:'Peptide Synthesis Prototype',4:'Cutting-Edge Assay Bay',5:'Nano Catalog Drop',6:'Research Seal Future Lab',7:'99.99 Purity Glass Close'})[$now.weekday] || 'Futuristic Vial Identity' }}
+{{ ({0:'Futuristic Vial Identity',1:'Purity Spec Readout',2:'Peptide Synthesis Prototype',3:'Cutting-Edge Assay Bay',4:'Nano Catalog Drop',5:'Research Seal Future Lab',6:'99.99 Purity Glass Close'})[Number($json.rotation_order || $now.weekday) % 7] }}
 ```
 
 ### Field 2
@@ -70,7 +74,7 @@ Edits only (not new nodes): `Prep_day_variant`, `Save_render_URL`, `Sheets_write
 | Value (fx ON) | below |
 
 ```text
-{{ ({1:'Slow push-in on photoreal research vial in a futuristic peptide synthesis lab; cool cyan-blue tech light sweep; compound name hold',2:'Gentle lateral slide past holographic-clean purity instrumentation; focus pull to 99.99% purity readout aesthetic; glass refraction',3:'Orbit a cutting-edge peptide synthesis / prototype reactor bay with vial hero; engineering calm; no use demo',4:'Bench dolly through a futuristic assay engineering bay; vial rack + precision instruments; subtle LED pulse',5:'Rise onto acrylic riser with vial + advanced lab tech props; settle; catalog CTA end card',6:'Calm hold on sealed research vial in sterile future-lab; research-use seal fades in final 2 seconds',7:'Extreme macro vial glass / crystal meniscus; micro push; premium 99.99% purity chemistry close'})[$now.weekday] || 'Slow push-in; futuristic vial peptide synthesis film' }}
+{{ ({0:'Slow push-in on photoreal research vial in a futuristic peptide synthesis lab; cool cyan-blue tech light sweep; compound name hold',1:'Gentle lateral slide past holographic-clean purity instrumentation; focus pull to 99.99% purity readout aesthetic; glass refraction',2:'Orbit a cutting-edge peptide synthesis / prototype reactor bay with vial hero; engineering calm; no use demo',3:'Bench dolly through a futuristic assay engineering bay; vial rack + precision instruments; subtle LED pulse',4:'Rise onto acrylic riser with vial + advanced lab tech props; settle; catalog CTA end card',5:'Calm hold on sealed research vial in sterile future-lab; research-use seal fades in final 2 seconds',6:'Extreme macro vial glass / crystal meniscus; micro push; premium 99.99% purity chemistry close'})[Number($json.rotation_order || $now.weekday) % 7] }}
 ```
 
 ### Field 3 — uniqueness (required so re-runs same day still differ)
@@ -90,10 +94,20 @@ Edits only (not new nodes): `Prep_day_variant`, `Save_render_URL`, `Sheets_write
 | Value (fx ON) | below |
 
 ```text
-{{ ({1:'camera starts slightly LOW-LEFT, push-in toward vial label',2:'camera starts HIGH-RIGHT, slow lateral slide across glassware',3:'camera orbits CLOCKWISE ~15 degrees around vial / synthesis setup',4:'camera dolly LEFT-TO-RIGHT across assay bench plane',5:'camera rises from BELOW riser then settles eye-level on vial',6:'locked tripod, vial scale breathes via focus pull only',7:'extreme MACRO start on vial glass edge, micro push to compound name'})[$now.weekday] || 'slow push-in on vial' }}
+{{ ({0:'camera starts slightly LOW-LEFT, push-in toward vial label',1:'camera starts HIGH-RIGHT, slow lateral slide across glassware',2:'camera orbits CLOCKWISE ~15 degrees around vial / synthesis setup',3:'camera dolly LEFT-TO-RIGHT across assay bench plane',4:'camera rises from BELOW riser then settles eye-level on vial',5:'locked tripod, vial scale breathes via focus pull only',6:'extreme MACRO start on vial glass edge, micro push to compound name'})[Number($json.rotation_order || $now.weekday) % 7] }}
 ```
 
-**Test:** Execute `Prep_day_variant` → all four video fields appear; `unique_run_stamp` changes every run.
+### Field 5 — compound+date scene seed (makes each compound day unique)
+| Setting | Value |
+|---|---|
+| Name | `daily_scene_seed` |
+| Value (fx ON) | below |
+
+```text
+{{ String($json.compound_id || '') + '|' + $now.toISODate() + '|' + String($json.rotation_order || '') + '|' + String($json.compound_name || '') }}
+```
+
+**Test:** Execute `Prep_day_variant` → video fields appear; `daily_scene_seed` includes today’s `compound_id`; `unique_run_stamp` changes every run.
 
 ---
 
@@ -120,6 +134,7 @@ Edits only (not new nodes): `Prep_day_variant`, `Save_render_URL`, `Sheets_write
   n: 1,
   prompt: [
     'CRITICAL SUBJECT LOCK: the ONLY product in frame is a small clear GLASS RESEARCH VIAL with a screw cap. Absolutely zero injector devices, zero autoinjectors, zero cylindrical handheld medicine devices, zero writing instruments.',
+    'This Reel is UNIQUE for compound ' + String($('Prep_day_variant').item.json.compound_id || $('Limit').item.json.compound_id || '') + ' — ' + String($('Parse_Grok').item.json.display_name || $('Limit').item.json.compound_name || '') + '. Scene seed: ' + String($('Prep_day_variant').item.json.daily_scene_seed || '') + '. Do not reuse prior compositions, prop layouts, or camera angles from other compounds.',
     'Photoreal vertical 9:16 FUTURISTIC cutting-edge peptide synthesis catalog still for Palm Beach Vitality.',
     'Brand story: advanced technology peptide synthesis at 99.99% purity — precise, sterile, next-gen American research.',
     'HERO: one crystal-clear glass research vial labeled for ' + String($('Parse_Grok').item.json.display_name || $('Limit').item.json.compound_name || 'research compound') + ', sitting on a clear acrylic riser.',
@@ -188,6 +203,7 @@ If story URL used `$json.data[0].url`, change it to `$('Grok_imagine_story').ite
   model: 'grok-imagine-video-1.5',
   prompt: [
     'CRITICAL: animate ONLY the glass research vial and lab scene from the source image. Do not invent any injector device, autoinjector, handheld dosing device, ballpoint, or writing instrument at any frame.',
+    'This Reel is UNIQUE for compound ' + String($('Prep_day_variant').item.json.compound_id || '') + ' — scene seed ' + String($('Prep_day_variant').item.json.daily_scene_seed || '') + '. Do not reuse motion from other compounds.',
     'Animate this photoreal Palm Beach Vitality futuristic peptide synthesis still into an 8-second premium vertical cutting-edge research film.',
     'Brand story in motion: next-gen technology, peptide synthesis precision, 99.99% purity atmosphere — photoreal, not cartoon sci-fi.',
     'Keep the glass research VIAL and futuristic lab / chemistry / synthesis / engineering / prototype props exactly as in the source image.',
