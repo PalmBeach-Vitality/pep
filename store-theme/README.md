@@ -1,24 +1,38 @@
-# Store theme — homepage hero aspect ratio
+# Store theme — homepage logo + hero
 
 Live site: [palmbeach-vitality.store](https://palmbeach-vitality.store)
 
-| Breakpoint | Logo | Hero before | Hero after |
-|-----------|------|-------------|------------|
-| Mobile (`<750px`) | `2.35 / 1`, full width | `9 / 16`, max `22.5rem` | `2.35 / 1`, same width as logo |
-| Desktop (`≥750px`) | `2.35 / 1`, max `64rem` | `9 / 16`, max `28rem` | `2.35 / 1`, same width as logo |
+## Logo
 
-The WordPress theme (`palmbeach-vitality`) is hosted on WordPress.com Atomic and is **not** deployed from this repo. Apply the CSS on the live site:
+| | |
+|--|--|
+| **New logo (whole file)** | `store-theme/assets/images/PBV_NEW_LOGO.jpg` |
+| **Also saved as** | `store-theme/assets/images/logo-full.jpg` |
+| **Live media URL** | https://palmbeach-vitality.store/wp-content/uploads/2026/07/PBV_NEW_LOGO.jpg |
 
-## Apply (fastest)
+## Aspect ratio
+
+| Breakpoint | Logo + hero |
+|-----------|-------------|
+| Mobile (`<750px`) | `2.35 / 1`, same width |
+| Desktop (`≥750px`) | `2.35 / 1`, same width |
+
+## Apply (fastest) — Additional CSS
 
 1. WP Admin → **Appearance → Customize → Additional CSS**
 2. Paste the **whole contents** of `additional-css-hero-match-logo.css` (not the filename)
 3. Publish
 
-## Apply (theme file)
+That CSS swaps in the new logo URL and matches hero aspect ratio on desktop + mobile.
 
-Replace the hero block in `wp-content/themes/palmbeach-vitality/style.css` with the matching rules in `style.css` (search for `.pbv-hero-photo`), or upload the full `style.css` over the theme file via SFTP.
+## Optional permanent theme file replace
+
+Upload the **whole file** `assets/images/logo-full.jpg` over:
+
+`wp-content/themes/palmbeach-vitality/assets/images/logo-full.jpg`
+
+(via SFTP / File Manager). After that, you can remove the logo-swap lines from Additional CSS if you want.
 
 ## Preview
 
-Open `preview/index.html` locally to compare logo vs hero frames side by side.
+Open `preview/index.html` locally.

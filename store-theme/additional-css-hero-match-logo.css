@@ -1,14 +1,26 @@
 /**
- * Palm Beach Vitality — match homepage hero to logo aspect ratio
+ * Palm Beach Vitality — logo swap + match hero to logo aspect ratio
  * Desktop + mobile
  *
- * Paste into: WP Admin → Appearance → Customize → Additional CSS
- * (Live theme: palmbeach-vitality on palmbeach-vitality.store)
+ * APPLY: paste the WHOLE CONTENTS of this file (not the filename) into
+ * WP Admin → Appearance → Customize → Additional CSS → Publish
  *
- * Logo card: 2.35 / 1
- * Hero was:  9 / 16  ← mismatch (especially obvious on mobile: narrow portrait)
- * Hero now:  2.35 / 1 on all breakpoints (same width + radius as logo)
+ * New logo URL:
+ * https://palmbeach-vitality.store/wp-content/uploads/2026/07/PBV_NEW_LOGO.jpg
+ *
+ * Logo + hero frames: 2.35 / 1 (same width + radius)
  */
+
+/* --- New logo (replaces theme logo-full.jpg) --- */
+.pbv-logo-card {
+  background:
+    url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/PBV_NEW_LOGO.jpg")
+    center / cover no-repeat !important;
+}
+
+.pbv-logo-card__img {
+  opacity: 0 !important; /* keep layout; show new logo via card background */
+}
 
 /* Shared frame — mobile-first (same as .pbv-logo-card) */
 .pbv-logo-card,
