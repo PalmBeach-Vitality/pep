@@ -415,8 +415,9 @@ a:hover { opacity: 0.7; }
   }
 }
 
-/* Peptides category title — centered electric blue energy glow */
-.term-peptides .page-title {
+/* Peptides + Peptide Pens titles — centered electric blue energy glow */
+.term-peptides .page-title,
+.term-peptide-pens .page-title {
   display: block;
   width: 100%;
   margin: 1.25rem auto 0.85rem;
