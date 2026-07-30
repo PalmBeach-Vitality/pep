@@ -1,5 +1,5 @@
 /**
- * Palm Beach Vitality — logo + hero frames + category title glow
+ * Palm Beach Vitality — logo + hero frames + Peptides title image
  *
  * APPLY: paste the WHOLE CONTENTS of this file (not the filename) into
  * WP Admin → Appearance → Customize → Additional CSS → Publish
@@ -80,79 +80,58 @@
   }
 }
 
-/* --- PEPTIDES + PEPTIDE PENS page titles (left → center, blue energy glow) --- */
-body.term-peptides h1.page-title,
-body.term-peptide-pens h1.page-title,
-body.tax-product_cat.term-peptides .page-title,
-body.tax-product_cat.term-peptide-pens .page-title,
-.woocommerce.archive.term-peptides .page-title,
-.woocommerce.archive.term-peptide-pens .page-title {
+/* --- Peptides page title → your Peptides-glow.png (centered) --- */
+body.term-peptides h1.page-title {
   display: block !important;
-  width: 100% !important;
-  max-width: none !important;
-  margin: 1.5rem auto 1rem !important;
-  padding: 0.35rem 1rem !important;
-  text-align: center !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.2em !important;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  font-size: clamp(2.2rem, 8vw, 3.6rem) !important;
-  font-weight: 800 !important;
-  line-height: 1.05 !important;
-  color: #7ec8ff !important;
-  -webkit-text-fill-color: #7ec8ff !important;
-  background: none !important;
+  width: min(92vw, 40rem) !important;
+  max-width: 40rem !important;
+  aspect-ratio: 2 / 1 !important; /* 1080x540 */
+  height: auto !important;
+  margin: 1rem auto 0.75rem !important;
+  padding: 0 !important;
   border: 0 !important;
-  text-shadow:
-    0 0 5px #ffffff,
-    0 0 12px #4db8ff,
-    0 0 28px #1a8cff,
-    0 0 48px #0077ff,
-    0 0 80px rgba(0, 160, 255, 0.75) !important;
-  filter: drop-shadow(0 0 18px rgba(0, 170, 255, 0.55)) !important;
-  animation: pbv-cat-title-glow 2.6s ease-in-out infinite alternate !important;
+  background:
+    url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/Peptides-glow.png")
+    center / contain no-repeat !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  text-shadow: none !important;
+  filter: none !important;
+  animation: none !important;
+  overflow: hidden !important;
 }
 
-/* Banner headline on those pages — same energy treatment */
+/* Undo previous ugly text-glow on Peptide Pens until you supply a pens image */
+body.term-peptide-pens h1.page-title {
+  text-align: center !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+  text-shadow: none !important;
+  filter: none !important;
+  animation: none !important;
+  font-size: clamp(1.7rem, 3vw, 2.4rem) !important;
+  font-weight: 700 !important;
+  margin: 1.25rem auto !important;
+  width: 100% !important;
+  background: none !important;
+}
+
+/* Keep banner titles clean (no fake CSS glow) */
 body.term-peptides .pbv-cat-banner__title,
-body.term-peptide-pens .pbv-cat-banner__title {
-  text-transform: uppercase !important;
-  letter-spacing: 0.12em !important;
-  color: #7ec8ff !important;
-  text-shadow:
-    0 0 5px #ffffff,
-    0 0 12px #4db8ff,
-    0 0 28px #1a8cff,
-    0 0 48px #0077ff !important;
-  filter: drop-shadow(0 0 14px rgba(0, 170, 255, 0.5)) !important;
+body.term-peptide-pens .pbv-cat-banner__title,
+body.term-peptides .pbv-cat-banner__title span,
+body.term-peptide-pens .pbv-cat-banner__title span {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55) !important;
+  filter: none !important;
+  animation: none !important;
+  color: #fff !important;
 }
 
 body.term-peptides .pbv-cat-banner__title span,
 body.term-peptide-pens .pbv-cat-banner__title span {
-  color: #b8e6ff !important;
-  text-shadow:
-    0 0 5px #ffffff,
-    0 0 14px #7ec8ff,
-    0 0 30px #2ea8ff !important;
-}
-
-@keyframes pbv-cat-title-glow {
-  from {
-    text-shadow:
-      0 0 4px #ffffff,
-      0 0 10px #4db8ff,
-      0 0 22px #1a8cff,
-      0 0 40px #0077ff,
-      0 0 60px rgba(0, 140, 255, 0.55);
-    filter: drop-shadow(0 0 12px rgba(0, 170, 255, 0.4));
-  }
-  to {
-    text-shadow:
-      0 0 8px #ffffff,
-      0 0 18px #9ad8ff,
-      0 0 36px #2ea8ff,
-      0 0 60px #00a0ff,
-      0 0 100px rgba(0, 180, 255, 0.9);
-    filter: drop-shadow(0 0 26px rgba(0, 190, 255, 0.75));
-  }
+  color: #7ec8ff !important;
 }

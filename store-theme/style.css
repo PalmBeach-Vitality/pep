@@ -415,60 +415,27 @@ a:hover { opacity: 0.7; }
   }
 }
 
-/* Peptides + Peptide Pens titles — centered electric blue energy glow */
-body.term-peptides h1.page-title,
-body.term-peptide-pens h1.page-title {
+/* Peptides page title — use Peptides-glow.png */
+body.term-peptides h1.page-title {
   display: block;
-  width: 100%;
-  margin: 1.5rem auto 1rem;
-  padding: 0.35rem 1rem;
+  width: min(92vw, 40rem);
+  max-width: 40rem;
+  aspect-ratio: 2 / 1;
+  height: auto;
+  margin: 1rem auto 0.75rem;
+  padding: 0;
+  background:
+    url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/Peptides-glow.png")
+    center / contain no-repeat;
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+  overflow: hidden;
+}
+
+body.term-peptide-pens h1.page-title {
   text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-family: var(--pbv-font-display, system-ui, sans-serif);
-  font-size: clamp(2.2rem, 8vw, 3.6rem);
-  font-weight: 800;
-  line-height: 1.05;
-  color: #7ec8ff;
-  text-shadow:
-    0 0 5px #ffffff,
-    0 0 12px #4db8ff,
-    0 0 28px #1a8cff,
-    0 0 48px #0077ff,
-    0 0 80px rgba(0, 160, 255, 0.75);
-  filter: drop-shadow(0 0 18px rgba(0, 170, 255, 0.55));
-  animation: pbv-cat-title-glow 2.6s ease-in-out infinite alternate;
-}
-
-body.term-peptides .pbv-cat-banner__title,
-body.term-peptide-pens .pbv-cat-banner__title {
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #7ec8ff;
-  text-shadow:
-    0 0 5px #ffffff,
-    0 0 12px #4db8ff,
-    0 0 28px #1a8cff,
-    0 0 48px #0077ff;
-}
-
-@keyframes pbv-cat-title-glow {
-  from {
-    text-shadow:
-      0 0 4px #ffffff,
-      0 0 10px #4db8ff,
-      0 0 22px #1a8cff,
-      0 0 40px #0077ff,
-      0 0 60px rgba(0, 140, 255, 0.55);
-  }
-  to {
-    text-shadow:
-      0 0 8px #ffffff,
-      0 0 18px #9ad8ff,
-      0 0 36px #2ea8ff,
-      0 0 60px #00a0ff,
-      0 0 100px rgba(0, 180, 255, 0.9);
-  }
+  margin: 1.25rem auto;
 }
 
 /* Most Popular — middle homepage section */
