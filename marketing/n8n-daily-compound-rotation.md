@@ -1,5 +1,24 @@
 # Daily compound rotation — 1 different compound per day
 
+## LIVE SHEET FIX (Sal — do this first)
+
+Your exported `1-compounds-pens` still has weekly locking. That is why the same compound/reel style keeps repeating.
+
+| Problem in your sheet | Fix |
+|---|---|
+| `week_start_date` = `2026-07-27` on `P-KLO-001` | **Clear all `week_start_date` cells** (or delete the column) |
+| `posts_this_week` still used | Ignore it — do not Filter on it |
+| **Two** columns named `last_spotlight_date` | Keep **one** only; delete the empty duplicate |
+| `P-BPC-001` already has a Reel | Set its `last_spotlight_date` = `2026-07-30` so it is **not** picked again tomorrow |
+| n8n Filter on `week_start_date` | **Delete that Filter** |
+
+**Import-ready cleaned file:** `marketing/sheets/1-compounds-pens-daily-ready.csv`  
+(built from your upload — week lock removed, one `last_spotlight_date`, BPC marked done)
+
+**Pens-only Active count in your file = 22** (not 56). Add vials / more SKUs later for a longer cycle.
+
+---
+
 ## Goal
 - **1 Reel per day**
 - **1 different compound every day** (not the same compound for a week)
