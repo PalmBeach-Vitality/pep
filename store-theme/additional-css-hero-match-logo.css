@@ -1,17 +1,12 @@
 /**
- * Palm Beach Vitality — logo swap + match hero to logo aspect ratio
- * Desktop + mobile
+ * Palm Beach Vitality — logo + hero frames + category title glow
  *
  * APPLY: paste the WHOLE CONTENTS of this file (not the filename) into
  * WP Admin → Appearance → Customize → Additional CSS → Publish
- *
- * New logo URL:
- * https://palmbeach-vitality.store/wp-content/uploads/2026/07/PBV_NEW_LOGO.jpg
- *
- * Logo + hero frames: 2.35 / 1 (same width + radius)
+ * Replace whatever is there now with this full file.
  */
 
-/* --- New logo (replaces theme logo-full.jpg) --- */
+/* --- New logo --- */
 .pbv-logo-card {
   background:
     url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/PBV_NEW_LOGO.jpg")
@@ -19,10 +14,10 @@
 }
 
 .pbv-logo-card__img {
-  opacity: 0 !important; /* keep layout; show new logo via card background */
+  opacity: 0 !important;
 }
 
-/* Shared frame — mobile-first (same as .pbv-logo-card) */
+/* --- Logo + hero same 2.35:1 frame --- */
 .pbv-logo-card,
 .pbv-hero-photo {
   width: min(100% - 2rem, 56rem) !important;
@@ -33,20 +28,13 @@
 }
 
 .pbv-hero-photo {
-  /* kill live theme's narrow portrait width: min(92vw, 22.5rem) */
   margin-left: auto !important;
   margin-right: auto !important;
 }
 
-/* Mobile (<750px): force identical logo + hero frames */
 @media (max-width: 749px) {
-  .pbv-logo-banner {
-    padding: 1rem 1rem 0.85rem !important;
-  }
-
-  .pbv-hero {
-    padding: 0.75rem 1rem 0.5rem !important;
-  }
+  .pbv-logo-banner { padding: 1rem 1rem 0.85rem !important; }
+  .pbv-hero { padding: 0.75rem 1rem 0.5rem !important; }
 
   .pbv-logo-card,
   .pbv-hero-photo {
@@ -56,36 +44,25 @@
     border-radius: 1.25rem !important;
   }
 
-  /* Short landscape frame — keep title/CTA, hide long body copy */
-  .pbv-hero-photo__body {
-    display: none !important;
-  }
-
-  .pbv-hero-photo__content {
-    padding: 0.7rem 0.95rem !important;
-  }
-
+  .pbv-hero-photo__body { display: none !important; }
+  .pbv-hero-photo__content { padding: 0.7rem 0.95rem !important; }
   .pbv-hero-photo__title {
     font-size: clamp(1.05rem, 4.5vw, 1.35rem) !important;
     margin-bottom: 0.2rem !important;
   }
-
   .pbv-hero-photo__subtitle {
     font-size: clamp(0.72rem, 3vw, 0.88rem) !important;
     margin-bottom: 0.35rem !important;
   }
-
   .pbv-hero-photo__welcome {
     font-size: clamp(0.78rem, 3.1vw, 0.95rem) !important;
     margin: 0.25rem 0 !important;
   }
-
   .pbv-hero-photo__wholesale {
     font-size: clamp(0.58rem, 2.2vw, 0.68rem) !important;
   }
 }
 
-/* Desktop: match logo card width (64rem) */
 @media (min-width: 750px) {
   .pbv-logo-card,
   .pbv-hero-photo {
@@ -94,11 +71,7 @@
     aspect-ratio: 2.35 / 1 !important;
     border-radius: 1.5rem !important;
   }
-
-  .pbv-hero-photo__content {
-    padding: 1.25rem 1.75rem !important;
-  }
-
+  .pbv-hero-photo__content { padding: 1.25rem 1.75rem !important; }
   .pbv-hero-photo__body {
     display: block !important;
     font-size: 0.72rem !important;
@@ -107,45 +80,79 @@
   }
 }
 
-/* --- Peptides + Peptide Pens titles: centered + electric blue energy glow --- */
-.term-peptides .page-title,
-.term-peptide-pens .page-title {
+/* --- PEPTIDES + PEPTIDE PENS page titles (left → center, blue energy glow) --- */
+body.term-peptides h1.page-title,
+body.term-peptide-pens h1.page-title,
+body.tax-product_cat.term-peptides .page-title,
+body.tax-product_cat.term-peptide-pens .page-title,
+.woocommerce.archive.term-peptides .page-title,
+.woocommerce.archive.term-peptide-pens .page-title {
   display: block !important;
   width: 100% !important;
-  margin: 1.25rem auto 0.85rem !important;
-  padding: 0 1rem !important;
+  max-width: none !important;
+  margin: 1.5rem auto 1rem !important;
+  padding: 0.35rem 1rem !important;
   text-align: center !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.18em !important;
-  font-family: var(--pbv-font-display, system-ui, sans-serif) !important;
-  font-size: clamp(2rem, 7vw, 3.4rem) !important;
-  font-weight: 700 !important;
-  line-height: 1.1 !important;
+  letter-spacing: 0.2em !important;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-size: clamp(2.2rem, 8vw, 3.6rem) !important;
+  font-weight: 800 !important;
+  line-height: 1.05 !important;
   color: #7ec8ff !important;
+  -webkit-text-fill-color: #7ec8ff !important;
+  background: none !important;
+  border: 0 !important;
   text-shadow:
-    0 0 4px #ffffff,
-    0 0 10px #4db8ff,
-    0 0 22px #1a8cff,
-    0 0 42px #0077ff,
-    0 0 70px rgba(0, 140, 255, 0.65) !important;
-  animation: pbv-peptides-glow 2.8s ease-in-out infinite alternate !important;
+    0 0 5px #ffffff,
+    0 0 12px #4db8ff,
+    0 0 28px #1a8cff,
+    0 0 48px #0077ff,
+    0 0 80px rgba(0, 160, 255, 0.75) !important;
+  filter: drop-shadow(0 0 18px rgba(0, 170, 255, 0.55)) !important;
+  animation: pbv-cat-title-glow 2.6s ease-in-out infinite alternate !important;
 }
 
-@keyframes pbv-peptides-glow {
+/* Banner headline on those pages — same energy treatment */
+body.term-peptides .pbv-cat-banner__title,
+body.term-peptide-pens .pbv-cat-banner__title {
+  text-transform: uppercase !important;
+  letter-spacing: 0.12em !important;
+  color: #7ec8ff !important;
+  text-shadow:
+    0 0 5px #ffffff,
+    0 0 12px #4db8ff,
+    0 0 28px #1a8cff,
+    0 0 48px #0077ff !important;
+  filter: drop-shadow(0 0 14px rgba(0, 170, 255, 0.5)) !important;
+}
+
+body.term-peptides .pbv-cat-banner__title span,
+body.term-peptide-pens .pbv-cat-banner__title span {
+  color: #b8e6ff !important;
+  text-shadow:
+    0 0 5px #ffffff,
+    0 0 14px #7ec8ff,
+    0 0 30px #2ea8ff !important;
+}
+
+@keyframes pbv-cat-title-glow {
   from {
     text-shadow:
-      0 0 3px #ffffff,
-      0 0 8px #4db8ff,
-      0 0 18px #1a8cff,
-      0 0 34px #0077ff,
-      0 0 55px rgba(0, 140, 255, 0.5);
+      0 0 4px #ffffff,
+      0 0 10px #4db8ff,
+      0 0 22px #1a8cff,
+      0 0 40px #0077ff,
+      0 0 60px rgba(0, 140, 255, 0.55);
+    filter: drop-shadow(0 0 12px rgba(0, 170, 255, 0.4));
   }
   to {
     text-shadow:
-      0 0 6px #ffffff,
-      0 0 14px #7ec8ff,
-      0 0 28px #2ea8ff,
-      0 0 52px #0088ff,
-      0 0 90px rgba(0, 170, 255, 0.85);
+      0 0 8px #ffffff,
+      0 0 18px #9ad8ff,
+      0 0 36px #2ea8ff,
+      0 0 60px #00a0ff,
+      0 0 100px rgba(0, 180, 255, 0.9);
+    filter: drop-shadow(0 0 26px rgba(0, 190, 255, 0.75));
   }
 }

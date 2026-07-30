@@ -416,45 +416,58 @@ a:hover { opacity: 0.7; }
 }
 
 /* Peptides + Peptide Pens titles — centered electric blue energy glow */
-.term-peptides .page-title,
-.term-peptide-pens .page-title {
+body.term-peptides h1.page-title,
+body.term-peptide-pens h1.page-title {
   display: block;
   width: 100%;
-  margin: 1.25rem auto 0.85rem;
-  padding: 0 1rem;
+  margin: 1.5rem auto 1rem;
+  padding: 0.35rem 1rem;
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
   font-family: var(--pbv-font-display, system-ui, sans-serif);
-  font-size: clamp(2rem, 7vw, 3.4rem);
-  font-weight: 700;
-  line-height: 1.1;
+  font-size: clamp(2.2rem, 8vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.05;
   color: #7ec8ff;
   text-shadow:
-    0 0 4px #ffffff,
-    0 0 10px #4db8ff,
-    0 0 22px #1a8cff,
-    0 0 42px #0077ff,
-    0 0 70px rgba(0, 140, 255, 0.65);
-  animation: pbv-peptides-glow 2.8s ease-in-out infinite alternate;
+    0 0 5px #ffffff,
+    0 0 12px #4db8ff,
+    0 0 28px #1a8cff,
+    0 0 48px #0077ff,
+    0 0 80px rgba(0, 160, 255, 0.75);
+  filter: drop-shadow(0 0 18px rgba(0, 170, 255, 0.55));
+  animation: pbv-cat-title-glow 2.6s ease-in-out infinite alternate;
 }
 
-@keyframes pbv-peptides-glow {
+body.term-peptides .pbv-cat-banner__title,
+body.term-peptide-pens .pbv-cat-banner__title {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #7ec8ff;
+  text-shadow:
+    0 0 5px #ffffff,
+    0 0 12px #4db8ff,
+    0 0 28px #1a8cff,
+    0 0 48px #0077ff;
+}
+
+@keyframes pbv-cat-title-glow {
   from {
     text-shadow:
-      0 0 3px #ffffff,
-      0 0 8px #4db8ff,
-      0 0 18px #1a8cff,
-      0 0 34px #0077ff,
-      0 0 55px rgba(0, 140, 255, 0.5);
+      0 0 4px #ffffff,
+      0 0 10px #4db8ff,
+      0 0 22px #1a8cff,
+      0 0 40px #0077ff,
+      0 0 60px rgba(0, 140, 255, 0.55);
   }
   to {
     text-shadow:
-      0 0 6px #ffffff,
-      0 0 14px #7ec8ff,
-      0 0 28px #2ea8ff,
-      0 0 52px #0088ff,
-      0 0 90px rgba(0, 170, 255, 0.85);
+      0 0 8px #ffffff,
+      0 0 18px #9ad8ff,
+      0 0 36px #2ea8ff,
+      0 0 60px #00a0ff,
+      0 0 100px rgba(0, 180, 255, 0.9);
   }
 }
 

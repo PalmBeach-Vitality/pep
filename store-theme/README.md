@@ -19,14 +19,18 @@ Live site: [palmbeach-vitality.store](https://palmbeach-vitality.store)
 
 ## Apply (fastest) — Additional CSS
 
-1. WP Admin → **Appearance → Customize → Additional CSS**
-2. Paste the **whole contents** of `additional-css-hero-match-logo.css` (not the filename)
-3. Publish
+Your live Additional CSS is still an **older paste** (logo/aspect only). The PEPTIDES title glow is not in it yet.
 
-That CSS:
-- Swaps in the new logo URL
-- Matches hero aspect ratio on desktop + mobile
-- Centers **PEPTIDES** on the category page with an electric blue energy glow (like the vial product shots)
+**Option A (recommended):** replace everything
+1. WP Admin → **Appearance → Customize → Additional CSS**
+2. Select all → delete
+3. Paste the **whole contents** of `additional-css-hero-match-logo.css` (not the filename)
+4. Publish
+
+**Option B:** keep current CSS, only add titles
+1. Scroll to the **bottom** of Additional CSS
+2. Paste the **whole contents** of `additional-css-category-titles-only.css` (not the filename)
+3. Publish
 
 ## Optional permanent theme file replace
 
