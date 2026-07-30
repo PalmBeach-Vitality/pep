@@ -1,5 +1,5 @@
 /**
- * Palm Beach Vitality — logo + hero frames + Peptides title image
+ * Palm Beach Vitality — logo + hero frames + category title images
  *
  * APPLY: paste the WHOLE CONTENTS of this file (not the filename) into
  * WP Admin → Appearance → Customize → Additional CSS → Publish
@@ -80,44 +80,45 @@
   }
 }
 
-/* --- Peptides page title → your Peptides-glow.png (centered) --- */
-body.term-peptides h1.page-title {
+/* --- Shared: centered category title image frames --- */
+body.term-peptides h1.page-title,
+body.term-peptide-pens h1.page-title {
   display: block !important;
-  width: min(92vw, 40rem) !important;
-  max-width: 40rem !important;
-  aspect-ratio: 2 / 1 !important; /* 1080x540 */
-  height: auto !important;
-  margin: 1rem auto 0.75rem !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  margin-top: 1rem !important;
+  margin-bottom: 0.75rem !important;
   padding: 0 !important;
   border: 0 !important;
-  background:
-    url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/Peptides-glow.png")
-    center / contain no-repeat !important;
+  height: auto !important;
   color: transparent !important;
   -webkit-text-fill-color: transparent !important;
   font-size: 0 !important;
   line-height: 0 !important;
+  text-align: center !important;
   text-shadow: none !important;
   filter: none !important;
   animation: none !important;
   overflow: hidden !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  background-size: contain !important;
 }
 
-/* Undo previous ugly text-glow on Peptide Pens until you supply a pens image */
+/* Peptides — 1080x540 */
+body.term-peptides h1.page-title {
+  width: min(92vw, 40rem) !important;
+  max-width: 40rem !important;
+  aspect-ratio: 1080 / 540 !important;
+  background-image: url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/Peptides-glow.png") !important;
+}
+
+/* Peptide Pens — 1815x540 (wider art) */
 body.term-peptide-pens h1.page-title {
-  text-align: center !important;
-  text-transform: none !important;
-  letter-spacing: normal !important;
-  color: inherit !important;
-  -webkit-text-fill-color: currentColor !important;
-  text-shadow: none !important;
-  filter: none !important;
-  animation: none !important;
-  font-size: clamp(1.7rem, 3vw, 2.4rem) !important;
-  font-weight: 700 !important;
-  margin: 1.25rem auto !important;
-  width: 100% !important;
-  background: none !important;
+  width: min(94vw, 56rem) !important;
+  max-width: 56rem !important;
+  aspect-ratio: 1815 / 540 !important;
+  background-image: url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/Peptide-Pens-glow.png") !important;
 }
 
 /* Keep banner titles clean (no fake CSS glow) */

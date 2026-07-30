@@ -12,6 +12,7 @@ Live site: [palmbeach-vitality.store](https://palmbeach-vitality.store)
 | `assets/images/PBV_NEW_LOGO.jpg` | New homepage logo |
 | `assets/images/logo-full.jpg` | Same logo, theme filename |
 | `assets/images/Peptides-glow.png` | Peptides category title art |
+| `assets/images/Peptide-Pens-glow.png` | Peptide Pens category title art |
 
 ## Apply on live WP
 
@@ -25,7 +26,7 @@ Live site: [palmbeach-vitality.store](https://palmbeach-vitality.store)
 That CSS:
 - Swaps homepage logo to `PBV_NEW_LOGO.jpg`
 - Matches logo + hero to `2.35:1`
-- Replaces the Peptides page title with `Peptides-glow.png` (centered)
+- Replaces Peptides + Peptide Pens page titles with centered glow images
 - Removes the old CSS text-glow
 
 ## Titles-only shortcut

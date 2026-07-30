@@ -1,51 +1,45 @@
 /**
- * Peptides title image ONLY
+ * Peptides + Peptide Pens title images ONLY
  *
  * APPLY: paste the WHOLE CONTENTS of this file (not the filename)
- * at the BOTTOM of Additional CSS (or replace the old title-glow block) → Publish
+ * at the BOTTOM of Additional CSS (or replace any old title-glow block) → Publish
  */
 
-/* Replace left "Peptides" text with your glow image */
-body.term-peptides h1.page-title {
+body.term-peptides h1.page-title,
+body.term-peptide-pens h1.page-title {
   display: block !important;
-  width: min(92vw, 40rem) !important;
-  max-width: 40rem !important;
-  aspect-ratio: 2 / 1 !important;
-  height: auto !important;
   margin: 1rem auto 0.75rem !important;
   padding: 0 !important;
   border: 0 !important;
-  background:
-    url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/Peptides-glow.png")
-    center / contain no-repeat !important;
+  height: auto !important;
   color: transparent !important;
   -webkit-text-fill-color: transparent !important;
   font-size: 0 !important;
   line-height: 0 !important;
+  text-align: center !important;
   text-shadow: none !important;
   filter: none !important;
   animation: none !important;
   overflow: hidden !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  background-size: contain !important;
 }
 
-/* Kill the previous CSS text-glow rules if still present */
-body.term-peptides h1.page-title,
-body.term-peptide-pens h1.page-title {
-  text-shadow: none !important;
-  filter: none !important;
-  animation: none !important;
+/* Peptides — centered */
+body.term-peptides h1.page-title {
+  width: min(92vw, 40rem) !important;
+  max-width: 40rem !important;
+  aspect-ratio: 1080 / 540 !important;
+  background-image: url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/Peptides-glow.png") !important;
 }
 
+/* Peptide Pens — centered */
 body.term-peptide-pens h1.page-title {
-  text-align: center !important;
-  color: inherit !important;
-  -webkit-text-fill-color: currentColor !important;
-  font-size: clamp(1.7rem, 3vw, 2.4rem) !important;
-  font-weight: 700 !important;
-  background: none !important;
-  width: 100% !important;
-  margin: 1.25rem auto !important;
-  aspect-ratio: auto !important;
+  width: min(94vw, 56rem) !important;
+  max-width: 56rem !important;
+  aspect-ratio: 1815 / 540 !important;
+  background-image: url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/Peptide-Pens-glow.png") !important;
 }
 
 body.term-peptides .pbv-cat-banner__title,

@@ -415,27 +415,34 @@ a:hover { opacity: 0.7; }
   }
 }
 
-/* Peptides page title — use Peptides-glow.png */
-body.term-peptides h1.page-title {
+/* Peptides + Peptide Pens titles — centered glow images */
+body.term-peptides h1.page-title,
+body.term-peptide-pens h1.page-title {
   display: block;
-  width: min(92vw, 40rem);
-  max-width: 40rem;
-  aspect-ratio: 2 / 1;
-  height: auto;
   margin: 1rem auto 0.75rem;
   padding: 0;
-  background:
-    url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/Peptides-glow.png")
-    center / contain no-repeat;
+  height: auto;
   color: transparent;
   font-size: 0;
   line-height: 0;
   overflow: hidden;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+
+body.term-peptides h1.page-title {
+  width: min(92vw, 40rem);
+  max-width: 40rem;
+  aspect-ratio: 1080 / 540;
+  background-image: url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/Peptides-glow.png");
 }
 
 body.term-peptide-pens h1.page-title {
-  text-align: center;
-  margin: 1.25rem auto;
+  width: min(94vw, 56rem);
+  max-width: 56rem;
+  aspect-ratio: 1815 / 540;
+  background-image: url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/Peptide-Pens-glow.png");
 }
 
 /* Most Popular — middle homepage section */
