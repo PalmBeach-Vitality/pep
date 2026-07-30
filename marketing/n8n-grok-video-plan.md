@@ -51,9 +51,10 @@ Still images can continue for feed/stories on some days; **video is the primary 
 Sal requirement: videos must look **real**, not generic AI poster motion.
 
 ### Do
-- Photoreal **research vial** hero plus lab world: science, chemistry glassware, synthesis benches, engineering / prototype fixtures, assay instruments, sterile health-science atmosphere  
+- Photoreal **research vial** hero plus **futuristic** lab world: cutting-edge peptide synthesis, chemistry glassware, synthesis / prototype bays, engineering fixtures, assay instruments, sterile health-science atmosphere, cyan tech lighting  
+- Portray **99.99% purity** peptide synthesis technology (approved brand line on stills)  
 - Slow cinematic camera: push-in, lateral slide, shallow DOF rack  
-- Subtle condensation / particle dust / light sweep — physical, not cartoon  
+- Subtle clean-room particles / light sweep — physical and premium, not cartoon  
 - End hold: chemical name + “For laboratory research use only”  
 
 ### Don’t
@@ -61,11 +62,11 @@ Sal requirement: videos must look **real**, not generic AI poster motion.
 - People, faces, hands injecting, needles/syringes in use, clinics, gyms, bathrooms, lifestyle wellness  
 - Before/after bodies, weight-loss montage, “results” overlays  
 - Nicknames (KLOW, Wolverine, GLOW)  
-- Invented purity %, FDA approvals, certifications  
-- Loud meme / glitch / cartoon molecule mascots as the default look  
+- Other invented purity numbers (only **99.99%** as specified), FDA approvals, certifications  
+- Loud meme / glitch / cartoon molecule mascots / cheesy spaceship sci-fi kitsch  
 
 ### Brand feel
-Palm Beach Vitality = **premium American research catalog film** — clinical, precise, expensive glassware, controlled light. Same world as the vial product stills with electric-blue energy, but motion stays believable. Reels are **vial + lab science**, never pen product shots — even when Sheets `product_form` says Pen.
+Palm Beach Vitality = **cutting-edge American peptide synthesis film** — futuristic, precise, 99.99% purity atmosphere, expensive glassware, cyan-blue controlled light. Reels are **vial + futuristic lab science**, never pen product shots — even when Sheets `product_form` says Pen.
 
 ---
 
@@ -78,15 +79,15 @@ Palm Beach Vitality = **premium American research catalog film** — clinical, p
 
 ### 4.2 Seven realistic video formats (`daily_video_format`)
 
-| Day | Format | Photoreal scene | Motion | On-screen text (from Parse only) |
+| Day | Format | Photoreal scene | Motion | On-screen text (from Parse only + purity line) |
 |---|---|---|---|---|
-| Mon | **Vial Identity Macro** | Hero research vial centered, dark lab void | Slow push-in; soft blue sweep | Chemical name → “Laboratory research material” |
-| Tue | **Chemistry Class Spec** | Vial + chemistry glassware; cool HUD-free light | Gentle slide; focus pull to class line | Biochemical class line |
-| Wed | **Synthesis Prototype** | Synthesis / prototype engineering bench with vial hero | Orbit setup; calm engineering reveal | “Laboratory research material” |
-| Thu | **Assay Engineering Bench** | Assay instruments, vial rack, HPLC-adjacent props (no patient care) | Lateral dolly; subtle instrument LEDs | “In-vitro / analytical research context” |
-| Fri | **Lab Catalog Atmosphere** | Vial on acrylic riser with lab props; catalog card motif | Rise + settle; CTA frame | “View laboratory listing” (no spoken URL) |
-| Sat | **Research Seal Lab** | Sealed research vial in sterile lab + research-use seal aesthetic | Calm hold; seal fades in last 2s | FAQ: research use only (not human use) |
-| Sun | **Precision Glass Close** | Extreme macro vial glass / meniscus; chemistry calm | Micro push; light bloom settle | Quality / documentation neutral close |
+| Mon | **Futuristic Vial Identity** | Hero research vial in futuristic peptide synthesis lab | Slow push-in; cyan-blue tech sweep | Chemical name + `99.99% PURITY — PEPTIDE SYNTHESIS` |
+| Tue | **Purity Spec Readout** | Vial + advanced purity instrumentation aesthetic | Gentle slide; focus pull to purity readout | Biochemical class + 99.99% line |
+| Wed | **Peptide Synthesis Prototype** | Cutting-edge synthesis / prototype reactor bay + vial | Orbit setup; engineering calm | Chemical name + purity line |
+| Thu | **Cutting-Edge Assay Bay** | Futuristic assay bay, vial rack, precision instruments | Lateral dolly; LED pulse | Analytical research context + purity line |
+| Fri | **Nano Catalog Drop** | Vial on acrylic riser with advanced lab tech props | Rise + settle; CTA frame | Catalog CTA (no spoken URL) + purity line |
+| Sat | **Research Seal Future Lab** | Sealed vial in sterile future-lab + research-use seal | Calm hold; seal fades in last 2s | Research use only + purity line |
+| Sun | **99.99 Purity Glass Close** | Extreme macro vial glass / crystal meniscus | Micro push; light bloom settle | `99.99% PURITY — PEPTIDE SYNTHESIS` |
 
 ### 4.3 Caption package (video days)
 Grok still writes captions (existing Parse schema), with video-day tweaks:
@@ -141,7 +142,7 @@ Confirm `aspect_ratio` / `resolution` field names against live xAI docs during s
 Do **not** animate the abstract navy hex poster as the only path if Sal wants realism.
 
 **Preferred still pipeline for video days:**
-1. Generate a **photoreal research-vial + lab science still** (chemistry / synthesis / engineering / prototype atmosphere — **never a pen**) via Grok Imagine → `reel_still_url` (9:16)  
+1. Generate a **photoreal research-vial + futuristic peptide synthesis still** (cutting-edge lab / 99.99% purity atmosphere — **never a pen**) via Grok Imagine → `reel_still_url` (9:16)  
 2. Animate that still with `grok-imagine-video-1.5`  
 
 **Fallback:** image-to-video from today’s story still (`story_image_url`) if photoreal still node fails.
@@ -149,14 +150,15 @@ Do **not** animate the abstract navy hex poster as the only path if Sal wants re
 ### 5.4 Motion prompt skeleton (image-to-video)
 
 ```text
-Animate this photoreal Palm Beach Vitality laboratory science still into an 8-second premium vertical research catalog film.
-Keep the research VIAL and lab / chemistry / synthesis / engineering / prototype props exactly as in the source image.
-Camera: slow cinematic push-in with subtle parallax. Lighting: cool electric-blue rim light, soft volumetric haze, realistic glass refraction.
-Motion: gentle vial settle, light sweep across glassware, faint dust motes — physical and believable.
-Keep vial identity, label geometry, and all typography sharp and unchanged.
-On-screen text must remain exactly as in the source image — do not invent new words, claims, percentages, or approvals.
+Animate this photoreal Palm Beach Vitality futuristic peptide synthesis still into an 8-second premium vertical cutting-edge research film.
+Brand story in motion: next-gen technology, peptide synthesis precision, 99.99% purity atmosphere — photoreal, not cartoon sci-fi.
+Keep the research VIAL and futuristic lab / chemistry / synthesis / engineering / prototype props exactly as in the source image.
+Camera: slow cinematic push-in with subtle parallax. Lighting: cool cyan-blue electric rim light, soft volumetric haze, ultra-clean glass refraction.
+Motion: gentle vial settle, light sweep across advanced glassware, faint clean-room particles — physical and believable.
+Keep vial identity, label geometry, and all typography sharp and unchanged — including any 99.99% PURITY — PEPTIDE SYNTHESIS line.
+On-screen text must remain exactly as in the source image — do not invent new words, claims, other percentages, or approvals.
 HARD BAN — do not add: pens, pen injectors, autoinjectors, writing pens, syringes, needles, injection, people, hands, clinics, gyms, lifestyle, before/after.
-Mood: expensive American research catalog, precise, sterile, premium.
+Mood: expensive American cutting-edge research catalog, precise, sterile, premium, futuristic.
 End on a clean hold of the compound name with laboratory research-use framing.
 Today format: {{ daily_video_format }}. Color accents: {{ daily_color_scheme }}.
 ```
@@ -235,12 +237,12 @@ Full build steps: `marketing/n8n-video-nodes-step-by-step.md`
 
 #### `daily_video_format`
 ```text
-{{ ({1:'Vial Identity Macro',2:'Chemistry Class Spec',3:'Synthesis Prototype',4:'Assay Engineering Bench',5:'Lab Catalog Atmosphere',6:'Research Seal Lab',7:'Precision Glass Close'})[$now.weekday] || 'Vial Identity Macro' }}
+{{ ({1:'Futuristic Vial Identity',2:'Purity Spec Readout',3:'Peptide Synthesis Prototype',4:'Cutting-Edge Assay Bay',5:'Nano Catalog Drop',6:'Research Seal Future Lab',7:'99.99 Purity Glass Close'})[$now.weekday] || 'Futuristic Vial Identity' }}
 ```
 
 #### `daily_motion_brief`
 ```text
-{{ ({1:'Slow push-in on photoreal research vial; blue rim light sweep; compound name hold',2:'Gentle lateral slide across chemistry glassware; focus pull to class line; refraction',3:'Orbit a synthesis / prototype lab setup with vial hero; engineering calm; no use demo',4:'Bench dolly past assay instruments and vial rack; subtle LED glow; sterile health-science mood',5:'Rise onto acrylic riser with vial + lab props; settle; catalog CTA end card',6:'Calm hold on sealed research vial in lab; research-use seal fades in final 2 seconds',7:'Extreme macro vial glass / meniscus; micro push; premium quiet chemistry close'})[$now.weekday] || 'Slow push-in; photoreal vial lab catalog film' }}
+{{ ({1:'Slow push-in on photoreal research vial in a futuristic peptide synthesis lab; cool cyan-blue tech light sweep; compound name hold',2:'Gentle lateral slide past holographic-clean purity instrumentation; focus pull to 99.99% purity readout aesthetic; glass refraction',3:'Orbit a cutting-edge peptide synthesis / prototype reactor bay with vial hero; engineering calm; no use demo',4:'Bench dolly through a futuristic assay engineering bay; vial rack + precision instruments; subtle LED pulse',5:'Rise onto acrylic riser with vial + advanced lab tech props; settle; catalog CTA end card',6:'Calm hold on sealed research vial in sterile future-lab; research-use seal fades in final 2 seconds',7:'Extreme macro vial glass / crystal meniscus; micro push; premium 99.99% purity chemistry close'})[$now.weekday] || 'Slow push-in; futuristic vial peptide synthesis film' }}
 ```
 
 ### 6.4 Buffer bodies (pattern)
@@ -331,18 +333,20 @@ Optional: Code node `Compliance_Video_Guard` that rejects prompts containing ban
 Use a dedicated Imagine body (9:16), separate from the abstract hex poster:
 
 ```text
-Photoreal vertical 9:16 laboratory science catalog still for Palm Beach Vitality.
-HERO SUBJECT (required): a clear research vial of {{ chemical_name }} as laboratory research material.
-SCENE WORLD (required): science lab, chemistry glassware, synthesis bench, engineering / prototype fixtures, assay instruments, sterile health-science research atmosphere, vial racks, flasks, beakers, acrylic risers.
-Environment: dark premium American research lab, cool electric-blue rim lighting, soft haze, realistic glass refraction, shallow depth of field.
+Photoreal vertical 9:16 FUTURISTIC cutting-edge peptide synthesis catalog still for Palm Beach Vitality.
+Brand story: advanced technology peptide synthesis at 99.99% purity — precise, sterile, next-gen American research.
+HERO SUBJECT (required): a crystal-clear research vial of {{ chemical_name }} as laboratory research material.
+SCENE WORLD (required): futuristic science lab, peptide synthesis reactor / prototype bay, advanced chemistry glassware, engineering fixtures, assay instruments, cyan LED readouts, vial racks, flasks, acrylic risers.
+Environment: dark premium futuristic American research lab, cool cyan-blue rim lighting, soft volumetric haze, ultra-clean glass refraction, shallow depth of field.
 Typography on image (exact, no extras):
 - Headline: {{ figma_headline }}
 - Subhead: {{ figma_subhead }}
+- Purity line: 99.99% PURITY — PEPTIDE SYNTHESIS
 - Small footer: For laboratory research use only. Not for human use.
 HARD BAN — never depict: pens, pen injectors, autoinjectors, writing pens, pencils, markers, syringes in use, needles, injection acts, people, hands, clinics, gyms, lifestyle.
 Ignore product_form if it says Pen — always show a research VIAL, never a pen.
-No nicknames. No purity percentages unless provided in input. No FDA approval claims.
-Look like a high-end laboratory science / chemistry / engineering catalog photo, not an illustration.
+No nicknames. No other purity numbers. No FDA approval claims.
+Look like a high-end futuristic laboratory science / peptide synthesis technology catalog photo, not an illustration.
 ```
 
 ---

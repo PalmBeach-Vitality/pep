@@ -60,7 +60,7 @@ Edits only (not new nodes): `Prep_day_variant`, `Save_render_URL`, `Sheets_write
 | Value (fx ON) | below |
 
 ```text
-{{ ({1:'Vial Identity Macro',2:'Chemistry Class Spec',3:'Synthesis Prototype',4:'Assay Engineering Bench',5:'Lab Catalog Atmosphere',6:'Research Seal Lab',7:'Precision Glass Close'})[$now.weekday] || 'Vial Identity Macro' }}
+{{ ({1:'Futuristic Vial Identity',2:'Purity Spec Readout',3:'Peptide Synthesis Prototype',4:'Cutting-Edge Assay Bay',5:'Nano Catalog Drop',6:'Research Seal Future Lab',7:'99.99 Purity Glass Close'})[$now.weekday] || 'Futuristic Vial Identity' }}
 ```
 
 ### Field 2
@@ -70,7 +70,7 @@ Edits only (not new nodes): `Prep_day_variant`, `Save_render_URL`, `Sheets_write
 | Value (fx ON) | below |
 
 ```text
-{{ ({1:'Slow push-in on photoreal research vial; blue rim light sweep; compound name hold',2:'Gentle lateral slide across chemistry glassware; focus pull to class line; refraction',3:'Orbit a synthesis / prototype lab setup with vial hero; engineering calm; no use demo',4:'Bench dolly past assay instruments and vial rack; subtle LED glow; sterile health-science mood',5:'Rise onto acrylic riser with vial + lab props; settle; catalog CTA end card',6:'Calm hold on sealed research vial in lab; research-use seal fades in final 2 seconds',7:'Extreme macro vial glass / meniscus; micro push; premium quiet chemistry close'})[$now.weekday] || 'Slow push-in; photoreal vial lab catalog film' }}
+{{ ({1:'Slow push-in on photoreal research vial in a futuristic peptide synthesis lab; cool cyan-blue tech light sweep; compound name hold',2:'Gentle lateral slide past holographic-clean purity instrumentation; focus pull to 99.99% purity readout aesthetic; glass refraction',3:'Orbit a cutting-edge peptide synthesis / prototype reactor bay with vial hero; engineering calm; no use demo',4:'Bench dolly through a futuristic assay engineering bay; vial rack + precision instruments; subtle LED pulse',5:'Rise onto acrylic riser with vial + advanced lab tech props; settle; catalog CTA end card',6:'Calm hold on sealed research vial in sterile future-lab; research-use seal fades in final 2 seconds',7:'Extreme macro vial glass / crystal meniscus; micro push; premium 99.99% purity chemistry close'})[$now.weekday] || 'Slow push-in; futuristic vial peptide synthesis film' }}
 ```
 
 ### Field 3 — uniqueness (required so re-runs same day still differ)
@@ -119,24 +119,26 @@ Edits only (not new nodes): `Prep_day_variant`, `Save_render_URL`, `Sheets_write
   aspect_ratio: '9:16',
   n: 1,
   prompt: [
-    'Photoreal vertical 9:16 laboratory science catalog still for Palm Beach Vitality.',
-    'HERO SUBJECT (required): a clear research vial of ' + String($('Parse_Grok').item.json.display_name || $('Limit').item.json.compound_name || 'research compound') + ' as laboratory research material.',
-    'SCENE WORLD (required — pick and combine): science lab, chemistry glassware, synthesis bench, engineering / prototype fixtures, assay instruments, sterile health-science research atmosphere, HPLC-adjacent gear, pipettes on a rack (unused), beakers, flasks, vial racks, acrylic risers, cool instrument panels.',
-    'Compose for today format: ' + String($('Prep_day_variant').item.json.daily_video_format || 'Vial Identity Macro') + '.',
+    'Photoreal vertical 9:16 FUTURISTIC cutting-edge peptide synthesis catalog still for Palm Beach Vitality.',
+    'Brand story: advanced technology peptide synthesis at 99.99% purity — precise, sterile, next-gen American research.',
+    'HERO SUBJECT (required): a crystal-clear research vial of ' + String($('Parse_Grok').item.json.display_name || $('Limit').item.json.compound_name || 'research compound') + ' as laboratory research material.',
+    'SCENE WORLD (required — pick and combine): futuristic science lab, peptide synthesis reactor / prototype bay, advanced chemistry glassware, engineering fixtures, assay instruments, sterile health-science atmosphere, holographic-clean instrument panels, cyan LED readouts, vial racks, flasks, acrylic risers, precision robotics arms idle (no people).',
+    'Look: cutting-edge biotech / nanotech research facility — photoreal, not cartoon, not sci-fi spaceship kitsch. Premium dark lab with electric cyan-blue rim light, soft volumetric haze, ultra-clean glass, shallow depth of field.',
+    'Compose for today format: ' + String($('Prep_day_variant').item.json.daily_video_format || 'Futuristic Vial Identity') + '.',
     'Motion intent for later animation: ' + String($('Prep_day_variant').item.json.daily_motion_brief || '') + '.',
     'Camera / light variant: ' + String($('Prep_day_variant').item.json.daily_camera_variant || '') + '.',
     'Unique run stamp (do not print on image): ' + String($('Prep_day_variant').item.json.unique_run_stamp || '') + '.',
-    'Environment look: dark premium American research lab, cool electric-blue rim lighting, soft haze, realistic glass refraction, shallow depth of field.',
     'TYPOGRAPHY RULES: Use ONLY these exact strings. Do not invent other words.',
     'Exact headline: ' + String($('Parse_Grok').item.json.figma_headline || $('Parse_Grok').item.json.display_name || '') + '.',
     'Exact subhead: ' + String($('Parse_Grok').item.json.figma_subhead || '') + '.',
+    'Exact purity line: 99.99% PURITY — PEPTIDE SYNTHESIS',
     'Brand wordmark exactly: PALM BEACH VITALITY',
     'Footer exactly: FOR LABORATORY RESEARCH USE ONLY. NOT FOR HUMAN USE.',
     'Tiny date exactly: ' + $now.toISODate() + '.',
     'HARD BAN — never depict: pens, pen injectors, autoinjectors, writing pens, pencils, markers, syringes in use, needles, injection acts, people, hands, clinics, gyms, lifestyle, before/after, wellness icons.',
     'Ignore product_form if it says Pen — always show a research VIAL, never a pen.',
-    'No nicknames (no KLOW, Wolverine, GLOW). No purity percentages unless in input. No FDA approval claims.',
-    'Look like a high-end laboratory science / chemistry / engineering catalog photo, not an illustration, not a flat graphic poster.'
+    'No nicknames (no KLOW, Wolverine, GLOW). No FDA approval claims. Do not invent other purity numbers — only 99.99% as specified.',
+    'Look like a high-end futuristic laboratory science / peptide synthesis technology catalog photo, not an illustration, not a flat graphic poster.'
   ].join(' ')
 }) }}
 ```
@@ -184,19 +186,20 @@ If story URL used `$json.data[0].url`, change it to `$('Grok_imagine_story').ite
 {{ JSON.stringify({
   model: 'grok-imagine-video-1.5',
   prompt: [
-    'Animate this photoreal Palm Beach Vitality laboratory science still into an 8-second premium vertical research catalog film.',
-    'Keep the research VIAL and lab / chemistry / synthesis / engineering / prototype props exactly as in the source image.',
+    'Animate this photoreal Palm Beach Vitality futuristic peptide synthesis still into an 8-second premium vertical cutting-edge research film.',
+    'Brand story in motion: next-gen technology, peptide synthesis precision, 99.99% purity atmosphere — photoreal, not cartoon sci-fi.',
+    'Keep the research VIAL and futuristic lab / chemistry / synthesis / engineering / prototype props exactly as in the source image.',
     'Camera: ' + String($('Prep_day_variant').item.json.daily_camera_variant || 'slow cinematic push-in with subtle parallax') + '.',
-    'Lighting: cool electric-blue rim light, soft volumetric haze, realistic glass refraction.',
-    'Motion: ' + String($('Prep_day_variant').item.json.daily_motion_brief || 'gentle vial settle, light sweep across glassware, faint dust motes') + '.',
-    'Scene mood: science, lab, health-science research, chemistry, engineering, synthesis, prototype — sterile and premium.',
-    'Keep vial identity, label geometry, and all typography sharp and unchanged.',
-    'On-screen text must remain exactly as in the source image — do not invent new words, claims, percentages, or approvals.',
+    'Lighting: cool cyan-blue electric rim light, soft volumetric haze, ultra-clean glass refraction, subtle instrument LED pulse.',
+    'Motion: ' + String($('Prep_day_variant').item.json.daily_motion_brief || 'gentle vial settle, light sweep across advanced glassware, faint clean-room particles') + '.',
+    'Scene mood: futuristic science, cutting-edge biotech lab, health-science research, chemistry, engineering, peptide synthesis, prototype — sterile and premium.',
+    'Keep vial identity, label geometry, and all typography sharp and unchanged — including any 99.99% PURITY — PEPTIDE SYNTHESIS line.',
+    'On-screen text must remain exactly as in the source image — do not invent new words, claims, other percentages, or approvals.',
     'HARD BAN — do not add: pens, pen injectors, autoinjectors, writing pens, syringes, needles, injection, people, hands, clinics, gyms, lifestyle, before/after.',
-    'No voiceover and no spoken words. Ambient lab sound only or silent.',
-    'Mood: expensive American research catalog, precise, sterile, premium.',
+    'No voiceover and no spoken words. Ambient futuristic lab hum only or silent.',
+    'Mood: expensive American cutting-edge research catalog, precise, sterile, premium, futuristic.',
     'End on a clean hold of the compound name with laboratory research-use framing.',
-    'Today format: ' + String($('Prep_day_variant').item.json.daily_video_format || 'Vial Identity Macro') + '.',
+    'Today format: ' + String($('Prep_day_variant').item.json.daily_video_format || 'Futuristic Vial Identity') + '.',
     'Unique run: ' + String($('Prep_day_variant').item.json.unique_run_stamp || '') + '.'
   ].join(' '),
   image: { url: String($('Save_render_URL').item.json.reel_still_url || '') },
