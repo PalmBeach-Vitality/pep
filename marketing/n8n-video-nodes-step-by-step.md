@@ -73,7 +73,27 @@ Edits only (not new nodes): `Prep_day_variant`, `Save_render_URL`, `Sheets_write
 {{ ({1:'Slow push-in on photoreal product; blue rim light sweep; name hold',2:'Gentle lateral slide; focus pull to class line; glass refraction',3:'Orbit product; emphasize pen/vial format typography; no use demo',4:'Bench dolly; subtle instrument glow; assay-context calm',5:'Rise onto acrylic riser; settle; catalog CTA end card',6:'Calm hold; research-use seal fades in final 2 seconds',7:'Extreme macro glass; micro push; premium quiet close'})[$now.weekday] || 'Slow push-in; photoreal lab catalog film' }}
 ```
 
-**Test:** Execute `Prep_day_variant` → both fields appear.
+### Field 3 — uniqueness (required so re-runs same day still differ)
+| Setting | Value |
+|---|---|
+| Name | `unique_run_stamp` |
+| Value (fx ON) | below |
+
+```text
+{{ $now.toISO() + '-' + String(Math.floor(Math.random() * 1000000)).padStart(6, '0') }}
+```
+
+### Field 4 — unique camera / light variation
+| Setting | Value |
+|---|---|
+| Name | `daily_camera_variant` |
+| Value (fx ON) | below |
+
+```text
+{{ ({1:'camera starts slightly LOW-LEFT, push-in toward label',2:'camera starts HIGH-RIGHT, slow lateral slide left',3:'camera orbits CLOCKWISE ~15 degrees around product',4:'camera dolly LEFT-TO-RIGHT across bench plane',5:'camera rises from BELOW riser then settles eye-level',6:'locked tripod, subject scale breathes via focus pull only',7:'extreme MACRO start on glass edge, micro push to name'})[$now.weekday] || 'slow push-in' }}
+```
+
+**Test:** Execute `Prep_day_variant` → all four video fields appear; `unique_run_stamp` changes every run.
 
 ---
 
