@@ -60,7 +60,7 @@ Edits only (not new nodes): `Prep_day_variant`, `Save_render_URL`, `Sheets_write
 | Value (fx ON) | below |
 
 ```text
-{{ ({1:'Identity Macro',2:'Class Spec',3:'Format Proof',4:'Assay Bench',5:'Catalog Drop',6:'Research Seal',7:'Precision Close'})[$now.weekday] || 'Identity Macro' }}
+{{ ({1:'Vial Identity Macro',2:'Chemistry Class Spec',3:'Synthesis Prototype',4:'Assay Engineering Bench',5:'Lab Catalog Atmosphere',6:'Research Seal Lab',7:'Precision Glass Close'})[$now.weekday] || 'Vial Identity Macro' }}
 ```
 
 ### Field 2
@@ -70,7 +70,7 @@ Edits only (not new nodes): `Prep_day_variant`, `Save_render_URL`, `Sheets_write
 | Value (fx ON) | below |
 
 ```text
-{{ ({1:'Slow push-in on photoreal product; blue rim light sweep; name hold',2:'Gentle lateral slide; focus pull to class line; glass refraction',3:'Orbit product; emphasize pen/vial format typography; no use demo',4:'Bench dolly; subtle instrument glow; assay-context calm',5:'Rise onto acrylic riser; settle; catalog CTA end card',6:'Calm hold; research-use seal fades in final 2 seconds',7:'Extreme macro glass; micro push; premium quiet close'})[$now.weekday] || 'Slow push-in; photoreal lab catalog film' }}
+{{ ({1:'Slow push-in on photoreal research vial; blue rim light sweep; compound name hold',2:'Gentle lateral slide across chemistry glassware; focus pull to class line; refraction',3:'Orbit a synthesis / prototype lab setup with vial hero; engineering calm; no use demo',4:'Bench dolly past assay instruments and vial rack; subtle LED glow; sterile health-science mood',5:'Rise onto acrylic riser with vial + lab props; settle; catalog CTA end card',6:'Calm hold on sealed research vial in lab; research-use seal fades in final 2 seconds',7:'Extreme macro vial glass / meniscus; micro push; premium quiet chemistry close'})[$now.weekday] || 'Slow push-in; photoreal vial lab catalog film' }}
 ```
 
 ### Field 3 — uniqueness (required so re-runs same day still differ)
@@ -90,7 +90,7 @@ Edits only (not new nodes): `Prep_day_variant`, `Save_render_URL`, `Sheets_write
 | Value (fx ON) | below |
 
 ```text
-{{ ({1:'camera starts slightly LOW-LEFT, push-in toward label',2:'camera starts HIGH-RIGHT, slow lateral slide left',3:'camera orbits CLOCKWISE ~15 degrees around product',4:'camera dolly LEFT-TO-RIGHT across bench plane',5:'camera rises from BELOW riser then settles eye-level',6:'locked tripod, subject scale breathes via focus pull only',7:'extreme MACRO start on glass edge, micro push to name'})[$now.weekday] || 'slow push-in' }}
+{{ ({1:'camera starts slightly LOW-LEFT, push-in toward vial label',2:'camera starts HIGH-RIGHT, slow lateral slide across glassware',3:'camera orbits CLOCKWISE ~15 degrees around vial / synthesis setup',4:'camera dolly LEFT-TO-RIGHT across assay bench plane',5:'camera rises from BELOW riser then settles eye-level on vial',6:'locked tripod, vial scale breathes via focus pull only',7:'extreme MACRO start on vial glass edge, micro push to compound name'})[$now.weekday] || 'slow push-in on vial' }}
 ```
 
 **Test:** Execute `Prep_day_variant` → all four video fields appear; `unique_run_stamp` changes every run.
@@ -119,20 +119,24 @@ Edits only (not new nodes): `Prep_day_variant`, `Save_render_URL`, `Sheets_write
   aspect_ratio: '9:16',
   n: 1,
   prompt: [
-    'Photoreal vertical 9:16 product catalog still for Palm Beach Vitality.',
-    'Subject: ' + String($('Limit').item.json.product_form || $('Parse_Grok').item.json.product_form || 'research vial') + ' of ' + String($('Parse_Grok').item.json.display_name || $('Limit').item.json.compound_name || 'research compound') + ' as laboratory research material on a clear acrylic riser.',
-    'Environment: dark premium American research lab, cool electric-blue rim lighting, soft haze, realistic glass refraction, shallow depth of field.',
-    'Today video format: ' + String($('Prep_day_variant').item.json.daily_video_format || '') + '.',
-    'Motion intent for later animation (compose the still for this): ' + String($('Prep_day_variant').item.json.daily_motion_brief || '') + '.',
+    'Photoreal vertical 9:16 laboratory science catalog still for Palm Beach Vitality.',
+    'HERO SUBJECT (required): a clear research vial of ' + String($('Parse_Grok').item.json.display_name || $('Limit').item.json.compound_name || 'research compound') + ' as laboratory research material.',
+    'SCENE WORLD (required — pick and combine): science lab, chemistry glassware, synthesis bench, engineering / prototype fixtures, assay instruments, sterile health-science research atmosphere, HPLC-adjacent gear, pipettes on a rack (unused), beakers, flasks, vial racks, acrylic risers, cool instrument panels.',
+    'Compose for today format: ' + String($('Prep_day_variant').item.json.daily_video_format || 'Vial Identity Macro') + '.',
+    'Motion intent for later animation: ' + String($('Prep_day_variant').item.json.daily_motion_brief || '') + '.',
+    'Camera / light variant: ' + String($('Prep_day_variant').item.json.daily_camera_variant || '') + '.',
+    'Unique run stamp (do not print on image): ' + String($('Prep_day_variant').item.json.unique_run_stamp || '') + '.',
+    'Environment look: dark premium American research lab, cool electric-blue rim lighting, soft haze, realistic glass refraction, shallow depth of field.',
     'TYPOGRAPHY RULES: Use ONLY these exact strings. Do not invent other words.',
     'Exact headline: ' + String($('Parse_Grok').item.json.figma_headline || $('Parse_Grok').item.json.display_name || '') + '.',
     'Exact subhead: ' + String($('Parse_Grok').item.json.figma_subhead || '') + '.',
     'Brand wordmark exactly: PALM BEACH VITALITY',
     'Footer exactly: FOR LABORATORY RESEARCH USE ONLY. NOT FOR HUMAN USE.',
     'Tiny date exactly: ' + $now.toISODate() + '.',
-    'No people, no hands, no needles, no injection, no clinic, no gym, no lifestyle, no before/after, no wellness icons.',
+    'HARD BAN — never depict: pens, pen injectors, autoinjectors, writing pens, pencils, markers, syringes in use, needles, injection acts, people, hands, clinics, gyms, lifestyle, before/after, wellness icons.',
+    'Ignore product_form if it says Pen — always show a research VIAL, never a pen.',
     'No nicknames (no KLOW, Wolverine, GLOW). No purity percentages unless in input. No FDA approval claims.',
-    'Look like a high-end e-commerce lab catalog photo, not an illustration, not a flat graphic poster.'
+    'Look like a high-end laboratory science / chemistry / engineering catalog photo, not an illustration, not a flat graphic poster.'
   ].join(' ')
 }) }}
 ```
@@ -180,17 +184,20 @@ If story URL used `$json.data[0].url`, change it to `$('Grok_imagine_story').ite
 {{ JSON.stringify({
   model: 'grok-imagine-video-1.5',
   prompt: [
-    'Animate this photoreal Palm Beach Vitality laboratory research product still into an 8-second premium vertical catalog film.',
-    'Camera: slow cinematic push-in with subtle parallax.',
+    'Animate this photoreal Palm Beach Vitality laboratory science still into an 8-second premium vertical research catalog film.',
+    'Keep the research VIAL and lab / chemistry / synthesis / engineering / prototype props exactly as in the source image.',
+    'Camera: ' + String($('Prep_day_variant').item.json.daily_camera_variant || 'slow cinematic push-in with subtle parallax') + '.',
     'Lighting: cool electric-blue rim light, soft volumetric haze, realistic glass refraction.',
-    'Motion: ' + String($('Prep_day_variant').item.json.daily_motion_brief || 'gentle product settle, light sweep across glass, faint dust motes') + '.',
-    'Keep product identity, label geometry, and all typography sharp and unchanged.',
+    'Motion: ' + String($('Prep_day_variant').item.json.daily_motion_brief || 'gentle vial settle, light sweep across glassware, faint dust motes') + '.',
+    'Scene mood: science, lab, health-science research, chemistry, engineering, synthesis, prototype — sterile and premium.',
+    'Keep vial identity, label geometry, and all typography sharp and unchanged.',
     'On-screen text must remain exactly as in the source image — do not invent new words, claims, percentages, or approvals.',
-    'No people, no hands, no needles, no injection, no clinic, no gym, no lifestyle scenes, no before/after.',
+    'HARD BAN — do not add: pens, pen injectors, autoinjectors, writing pens, syringes, needles, injection, people, hands, clinics, gyms, lifestyle, before/after.',
     'No voiceover and no spoken words. Ambient lab sound only or silent.',
     'Mood: expensive American research catalog, precise, sterile, premium.',
     'End on a clean hold of the compound name with laboratory research-use framing.',
-    'Today format: ' + String($('Prep_day_variant').item.json.daily_video_format || 'Identity Macro') + '.'
+    'Today format: ' + String($('Prep_day_variant').item.json.daily_video_format || 'Vial Identity Macro') + '.',
+    'Unique run: ' + String($('Prep_day_variant').item.json.unique_run_stamp || '') + '.'
   ].join(' '),
   image: { url: String($('Save_render_URL').item.json.reel_still_url || '') },
   duration: 8,

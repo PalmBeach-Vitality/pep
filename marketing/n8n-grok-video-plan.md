@@ -51,20 +51,21 @@ Still images can continue for feed/stories on some days; **video is the primary 
 Sal requirement: videos must look **real**, not generic AI poster motion.
 
 ### Do
-- Photoreal **vial / pen macro** on acrylic or clean lab bench (match current product photography energy: cool blue rim light, dark navy lab, glass refraction)  
+- Photoreal **research vial** hero plus lab world: science, chemistry glassware, synthesis benches, engineering / prototype fixtures, assay instruments, sterile health-science atmosphere  
 - Slow cinematic camera: push-in, lateral slide, shallow DOF rack  
 - Subtle condensation / particle dust / light sweep — physical, not cartoon  
 - End hold: chemical name + “For laboratory research use only”  
 
 ### Don’t
-- People, faces, hands injecting, clinics, gyms, bathrooms, lifestyle wellness  
+- **Pens of any kind** (injection pens, autoinjectors, writing pens, pencils, markers)  
+- People, faces, hands injecting, needles/syringes in use, clinics, gyms, bathrooms, lifestyle wellness  
 - Before/after bodies, weight-loss montage, “results” overlays  
 - Nicknames (KLOW, Wolverine, GLOW)  
 - Invented purity %, FDA approvals, certifications  
 - Loud meme / glitch / cartoon molecule mascots as the default look  
 
 ### Brand feel
-Palm Beach Vitality = **premium American research catalog film** — clinical, precise, expensive glassware, controlled light. Same world as the vial product stills with electric-blue energy, but motion stays believable.
+Palm Beach Vitality = **premium American research catalog film** — clinical, precise, expensive glassware, controlled light. Same world as the vial product stills with electric-blue energy, but motion stays believable. Reels are **vial + lab science**, never pen product shots — even when Sheets `product_form` says Pen.
 
 ---
 
@@ -79,13 +80,13 @@ Palm Beach Vitality = **premium American research catalog film** — clinical, p
 
 | Day | Format | Photoreal scene | Motion | On-screen text (from Parse only) |
 |---|---|---|---|---|
-| Mon | **Identity Macro** | Hero vial/pen centered, dark lab void | Slow push-in; soft blue sweep | Chemical name → “Laboratory research material” |
-| Tue | **Class Spec** | Macro label + glass + cool HUD-free light | Gentle orbit / slide; focus pull to name | Biochemical class line |
-| Wed | **Format Proof** | Pen vs vial geometry (abstract product still, no use demo) | Orbit product; format word reveals | “Research vial” or “Pre-filled research format” |
-| Thu | **Assay Bench** | Clean bench, assay-plate / HPLC-adjacent props (no patient care) | Lateral dolly; subtle instrument LEDs pulse | “In-vitro / analytical research context” |
-| Fri | **Catalog Drop** | Product on acrylic riser; catalog card motif | Rise + settle; CTA frame | “View laboratory listing” + URL spoken never; on-screen optional short CTA |
-| Sat | **Research Seal** | Product + stamped research-use seal aesthetic | Calm hold; seal fades in last 2s | FAQ: research use only (not human use) |
-| Sun | **Precision Close** | Extreme macro glass/refraction; premium mineral calm | Micro push; light bloom settle | Quality / documentation neutral close |
+| Mon | **Vial Identity Macro** | Hero research vial centered, dark lab void | Slow push-in; soft blue sweep | Chemical name → “Laboratory research material” |
+| Tue | **Chemistry Class Spec** | Vial + chemistry glassware; cool HUD-free light | Gentle slide; focus pull to class line | Biochemical class line |
+| Wed | **Synthesis Prototype** | Synthesis / prototype engineering bench with vial hero | Orbit setup; calm engineering reveal | “Laboratory research material” |
+| Thu | **Assay Engineering Bench** | Assay instruments, vial rack, HPLC-adjacent props (no patient care) | Lateral dolly; subtle instrument LEDs | “In-vitro / analytical research context” |
+| Fri | **Lab Catalog Atmosphere** | Vial on acrylic riser with lab props; catalog card motif | Rise + settle; CTA frame | “View laboratory listing” (no spoken URL) |
+| Sat | **Research Seal Lab** | Sealed research vial in sterile lab + research-use seal aesthetic | Calm hold; seal fades in last 2s | FAQ: research use only (not human use) |
+| Sun | **Precision Glass Close** | Extreme macro vial glass / meniscus; chemistry calm | Micro push; light bloom settle | Quality / documentation neutral close |
 
 ### 4.3 Caption package (video days)
 Grok still writes captions (existing Parse schema), with video-day tweaks:
@@ -101,6 +102,7 @@ For laboratory research use only. Not for human use or consumption. Not a drug, 
 ```
 
 ### 4.4 What never appears in video
+- Pens / pen injectors / autoinjectors / writing instruments  
 - Voiceover promising outcomes  
 - “Healing,” “weight loss,” “anti-aging,” “stack for gains,” etc.  
 - Human skin, needles entering bodies, syringes aimed at people  
@@ -139,7 +141,7 @@ Confirm `aspect_ratio` / `resolution` field names against live xAI docs during s
 Do **not** animate the abstract navy hex poster as the only path if Sal wants realism.
 
 **Preferred still pipeline for video days:**
-1. Reuse / generate a **photoreal product still** (vial or pen) via Grok Imagine with a **photoreal lab macro** prompt (same compound, research-only text) → `reel_still_url` (9:16)  
+1. Generate a **photoreal research-vial + lab science still** (chemistry / synthesis / engineering / prototype atmosphere — **never a pen**) via Grok Imagine → `reel_still_url` (9:16)  
 2. Animate that still with `grok-imagine-video-1.5`  
 
 **Fallback:** image-to-video from today’s story still (`story_image_url`) if photoreal still node fails.
@@ -147,12 +149,13 @@ Do **not** animate the abstract navy hex poster as the only path if Sal wants re
 ### 5.4 Motion prompt skeleton (image-to-video)
 
 ```text
-Animate this photoreal Palm Beach Vitality laboratory research product still into an 8-second premium vertical catalog film.
+Animate this photoreal Palm Beach Vitality laboratory science still into an 8-second premium vertical research catalog film.
+Keep the research VIAL and lab / chemistry / synthesis / engineering / prototype props exactly as in the source image.
 Camera: slow cinematic push-in with subtle parallax. Lighting: cool electric-blue rim light, soft volumetric haze, realistic glass refraction.
-Motion: gentle product settle, light sweep across glass, faint dust motes — physical and believable.
-Keep product identity, label geometry, and all typography sharp and unchanged.
+Motion: gentle vial settle, light sweep across glassware, faint dust motes — physical and believable.
+Keep vial identity, label geometry, and all typography sharp and unchanged.
 On-screen text must remain exactly as in the source image — do not invent new words, claims, percentages, or approvals.
-No people, no hands, no needles, no injection, no clinic, no gym, no lifestyle scenes, no before/after.
+HARD BAN — do not add: pens, pen injectors, autoinjectors, writing pens, syringes, needles, injection, people, hands, clinics, gyms, lifestyle, before/after.
 Mood: expensive American research catalog, precise, sterile, premium.
 End on a clean hold of the compound name with laboratory research-use framing.
 Today format: {{ daily_video_format }}. Color accents: {{ daily_color_scheme }}.
@@ -232,12 +235,12 @@ Full build steps: `marketing/n8n-video-nodes-step-by-step.md`
 
 #### `daily_video_format`
 ```text
-{{ ({1:'Identity Macro',2:'Class Spec',3:'Format Proof',4:'Assay Bench',5:'Catalog Drop',6:'Research Seal',7:'Precision Close'})[$now.weekday] || 'Identity Macro' }}
+{{ ({1:'Vial Identity Macro',2:'Chemistry Class Spec',3:'Synthesis Prototype',4:'Assay Engineering Bench',5:'Lab Catalog Atmosphere',6:'Research Seal Lab',7:'Precision Glass Close'})[$now.weekday] || 'Vial Identity Macro' }}
 ```
 
 #### `daily_motion_brief`
 ```text
-{{ ({1:'Slow push-in on photoreal product; blue rim light sweep; name hold',2:'Gentle lateral slide; focus pull to class line; glass refraction',3:'Orbit product; emphasize pen/vial format typography; no use demo',4:'Bench dolly; subtle instrument glow; assay-context calm',5:'Rise onto acrylic riser; settle; catalog CTA end card',6:'Calm hold; research-use seal fades in final 2 seconds',7:'Extreme macro glass; micro push; premium quiet close'})[$now.weekday] || 'Slow push-in; photoreal lab catalog film' }}
+{{ ({1:'Slow push-in on photoreal research vial; blue rim light sweep; compound name hold',2:'Gentle lateral slide across chemistry glassware; focus pull to class line; refraction',3:'Orbit a synthesis / prototype lab setup with vial hero; engineering calm; no use demo',4:'Bench dolly past assay instruments and vial rack; subtle LED glow; sterile health-science mood',5:'Rise onto acrylic riser with vial + lab props; settle; catalog CTA end card',6:'Calm hold on sealed research vial in lab; research-use seal fades in final 2 seconds',7:'Extreme macro vial glass / meniscus; micro push; premium quiet chemistry close'})[$now.weekday] || 'Slow push-in; photoreal vial lab catalog film' }}
 ```
 
 ### 6.4 Buffer bodies (pattern)
@@ -328,16 +331,18 @@ Optional: Code node `Compliance_Video_Guard` that rejects prompts containing ban
 Use a dedicated Imagine body (9:16), separate from the abstract hex poster:
 
 ```text
-Photoreal vertical 9:16 product catalog still for Palm Beach Vitality.
-Subject: {{ product_form }} of {{ chemical_name }} as laboratory research material on a clear acrylic riser.
+Photoreal vertical 9:16 laboratory science catalog still for Palm Beach Vitality.
+HERO SUBJECT (required): a clear research vial of {{ chemical_name }} as laboratory research material.
+SCENE WORLD (required): science lab, chemistry glassware, synthesis bench, engineering / prototype fixtures, assay instruments, sterile health-science research atmosphere, vial racks, flasks, beakers, acrylic risers.
 Environment: dark premium American research lab, cool electric-blue rim lighting, soft haze, realistic glass refraction, shallow depth of field.
 Typography on image (exact, no extras):
 - Headline: {{ figma_headline }}
 - Subhead: {{ figma_subhead }}
 - Small footer: For laboratory research use only. Not for human use.
-No people, no hands, no needles, no injection, no clinic, no gym, no lifestyle, no before/after, no wellness icons.
+HARD BAN — never depict: pens, pen injectors, autoinjectors, writing pens, pencils, markers, syringes in use, needles, injection acts, people, hands, clinics, gyms, lifestyle.
+Ignore product_form if it says Pen — always show a research VIAL, never a pen.
 No nicknames. No purity percentages unless provided in input. No FDA approval claims.
-Look like a high-end e-commerce lab catalog photo, not an illustration.
+Look like a high-end laboratory science / chemistry / engineering catalog photo, not an illustration.
 ```
 
 ---
