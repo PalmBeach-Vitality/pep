@@ -12,7 +12,7 @@ The WordPress theme (`palmbeach-vitality`) is hosted on WordPress.com Atomic and
 ## Apply (fastest)
 
 1. WP Admin → **Appearance → Customize → Additional CSS**
-2. Paste the contents of `additional-css-hero-match-logo.css`
+2. Paste the **whole contents** of `additional-css-hero-match-logo.css` (not the filename)
 3. Publish
 
 ## Apply (theme file)
