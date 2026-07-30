@@ -106,3 +106,45 @@
     margin-bottom: 0.4rem !important;
   }
 }
+
+/* --- Peptides category title: centered + electric blue energy glow --- */
+.term-peptides .page-title {
+  display: block !important;
+  width: 100% !important;
+  margin: 1.25rem auto 0.85rem !important;
+  padding: 0 1rem !important;
+  text-align: center !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.18em !important;
+  font-family: var(--pbv-font-display, system-ui, sans-serif) !important;
+  font-size: clamp(2rem, 7vw, 3.4rem) !important;
+  font-weight: 700 !important;
+  line-height: 1.1 !important;
+  color: #7ec8ff !important;
+  text-shadow:
+    0 0 4px #ffffff,
+    0 0 10px #4db8ff,
+    0 0 22px #1a8cff,
+    0 0 42px #0077ff,
+    0 0 70px rgba(0, 140, 255, 0.65) !important;
+  animation: pbv-peptides-glow 2.8s ease-in-out infinite alternate !important;
+}
+
+@keyframes pbv-peptides-glow {
+  from {
+    text-shadow:
+      0 0 3px #ffffff,
+      0 0 8px #4db8ff,
+      0 0 18px #1a8cff,
+      0 0 34px #0077ff,
+      0 0 55px rgba(0, 140, 255, 0.5);
+  }
+  to {
+    text-shadow:
+      0 0 6px #ffffff,
+      0 0 14px #7ec8ff,
+      0 0 28px #2ea8ff,
+      0 0 52px #0088ff,
+      0 0 90px rgba(0, 170, 255, 0.85);
+  }
+}

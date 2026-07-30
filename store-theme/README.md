@@ -23,7 +23,10 @@ Live site: [palmbeach-vitality.store](https://palmbeach-vitality.store)
 2. Paste the **whole contents** of `additional-css-hero-match-logo.css` (not the filename)
 3. Publish
 
-That CSS swaps in the new logo URL and matches hero aspect ratio on desktop + mobile.
+That CSS:
+- Swaps in the new logo URL
+- Matches hero aspect ratio on desktop + mobile
+- Centers **PEPTIDES** on the category page with an electric blue energy glow (like the vial product shots)
 
 ## Optional permanent theme file replace
 
