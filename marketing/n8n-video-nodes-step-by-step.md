@@ -1,9 +1,10 @@
 # n8n Video Reels — Step-by-step node build
 
-Do these **in order**. Each step says **DUPLICATE** or **CREATE FROM SCRATCH**.  
-Exact canvas names matter for `$('NodeName')` expressions.
+Do these **in order**. Each step says **DUPLICATE** or **CREATE FROM SCRATCH**, plus the **n8n node type**.  
+**New nodes use lowercase names only** (example: `lower_case_node`).  
+Exact canvas names matter for `$('node_name')` expressions.
 
-### Assumed existing chain (already working)
+### Assumed existing chain (already working — keep these names)
 ```text
 Schedule → Sheets → Limit → Prep_day_variant → Edit Fields → GROK_HTTP
   → Parse_Grok → GROK_Imagine → Grok_imagine_story → Save_render_URL
@@ -13,66 +14,84 @@ Schedule → Sheets → Limit → Prep_day_variant → Edit Fields → GROK_HTTP
 ### Target chain after this guide
 ```text
 … → Grok_imagine_story
-  → Grok_Imagine_Reel_Still          ← NEW
-  → Save_render_URL                  ← EDIT (not new)
-  → Grok_Video_Start                 ← NEW
-  → Wait_Video                       ← NEW
-  → Grok_Video_Poll                  ← NEW
-  → IF_Video_Ready                   ← NEW
-       ├─ (pending) loop back to Wait_Video
-       ├─ (failed) stop / notify
-       └─ (done) Save_video_URL      ← NEW
-            → Buffer_IG_Reel         ← NEW
-            → Buffer_FB_Reel         ← NEW
-            → Buffer_TT_Reel         ← NEW (only if TikTok connected)
-            → Buffer_post_IG         ← existing (keep or disconnect later)
-            → … → Sheets_writeback   ← EDIT
+  → grok_imagine_reel_still      ← NEW (HTTP Request)
+  → Save_render_URL              ← EDIT existing
+  → grok_video_start             ← NEW (HTTP Request)
+  → wait_video                   ← NEW (Wait)
+  → grok_video_poll              ← NEW (HTTP Request)
+  → if_video_ready               ← NEW (IF)
+       ├─ pending → loop wait_video
+       ├─ failed  → stop
+       └─ done → save_video_url  ← NEW (Edit Fields)
+            → buffer_ig_reel     ← NEW (HTTP Request)
+            → buffer_fb_reel     ← NEW (HTTP Request)
+            → buffer_tt_reel     ← NEW (HTTP Request, TikTok later)
+            → Buffer_post_IG     ← existing
+            → … → Sheets_writeback ← EDIT existing
 ```
+
+### New nodes — quick list (name · type · how)
+
+| New node name | n8n node type | How to make it |
+|---|---|---|
+| `grok_imagine_reel_still` | **HTTP Request** | **DUPLICATE** `Grok_imagine_story` |
+| `grok_video_start` | **HTTP Request** | **DUPLICATE** `GROK_Imagine` |
+| `wait_video` | **Wait** | **CREATE FROM SCRATCH** |
+| `grok_video_poll` | **HTTP Request** | **DUPLICATE** `grok_video_start` |
+| `if_video_ready` | **IF** | **CREATE FROM SCRATCH** |
+| `save_video_url` | **Edit Fields** (Set) | **DUPLICATE** `Save_render_URL` |
+| `buffer_ig_reel` | **HTTP Request** | **DUPLICATE** your working IG Buffer HTTP node |
+| `buffer_fb_reel` | **HTTP Request** | **DUPLICATE** `buffer_ig_reel` |
+| `buffer_tt_reel` | **HTTP Request** | **DUPLICATE** `buffer_fb_reel` (later) |
+
+Edits only (not new nodes): `Prep_day_variant`, `Save_render_URL`, `Sheets_writeback`.
 
 ---
 
 ## STEP 0 — Prep_day_variant (EDIT existing — do not create new)
 
-**Type:** Edit existing node  
+**Node type:** Edit Fields (Set) — existing  
 **Action:** Open `Prep_day_variant` → add 2 fields (Include Other Input Fields = **ON**)
 
-### Field 1 — create new field in this node
+### Field 1
 | Setting | Value |
 |---|---|
 | Name | `daily_video_format` |
-| Value (fx ON) | see below |
+| Value (fx ON) | below |
 
 ```text
 {{ ({1:'Identity Macro',2:'Class Spec',3:'Format Proof',4:'Assay Bench',5:'Catalog Drop',6:'Research Seal',7:'Precision Close'})[$now.weekday] || 'Identity Macro' }}
 ```
 
-### Field 2 — create new field in this node
+### Field 2
 | Setting | Value |
 |---|---|
 | Name | `daily_motion_brief` |
-| Value (fx ON) | see below |
+| Value (fx ON) | below |
 
 ```text
 {{ ({1:'Slow push-in on photoreal product; blue rim light sweep; name hold',2:'Gentle lateral slide; focus pull to class line; glass refraction',3:'Orbit product; emphasize pen/vial format typography; no use demo',4:'Bench dolly; subtle instrument glow; assay-context calm',5:'Rise onto acrylic riser; settle; catalog CTA end card',6:'Calm hold; research-use seal fades in final 2 seconds',7:'Extreme macro glass; micro push; premium quiet close'})[$now.weekday] || 'Slow push-in; photoreal lab catalog film' }}
 ```
 
-**Test:** Execute `Prep_day_variant` only → confirm both fields appear.
+**Test:** Execute `Prep_day_variant` → both fields appear.
 
 ---
 
-## STEP 1 — Grok_Imagine_Reel_Still
+## STEP 1 — `grok_imagine_reel_still`
 
-**Action:** **DUPLICATE** node `Grok_imagine_story`  
-**Rename to:** `Grok_Imagine_Reel_Still`  
-**Wire:** After `Grok_imagine_story` → Before `Save_render_URL`  
-(Disconnect `Grok_imagine_story` → `Save_render_URL`, insert this in between.)
+| | |
+|---|---|
+| **Node type** | **HTTP Request** |
+| **Action** | **DUPLICATE** `Grok_imagine_story` |
+| **Rename to** | `grok_imagine_reel_still` |
+| **Wire** | After `Grok_imagine_story` → Before `Save_render_URL` |
 
 ### Keep from the duplicate
-- Same credential / auth as Imagine (xAI Bearer)
-- Same URL as Imagine images (`POST https://api.x.ai/v1/images/generations` — same as your other Imagine nodes)
-- Method POST, JSON body, fx ON
+- Same xAI Bearer auth  
+- Same Imagine URL: `POST https://api.x.ai/v1/images/generations`  
+- Method POST, JSON body, fx ON  
 
-### Change the Body (fx ON) — replace whole body with this
+### Replace Body (fx ON)
 
 ```text
 {{ JSON.stringify({
@@ -98,36 +117,37 @@ Schedule → Sheets → Limit → Prep_day_variant → Edit Fields → GROK_HTTP
 }) }}
 ```
 
-**Test:** Run through this node → confirm `data[0].url` is a photoreal product still.
+**Test:** `data[0].url` is a photoreal product still.
 
 ---
 
 ## STEP 2 — Save_render_URL (EDIT existing — do not create new)
 
-**Action:** Open existing `Save_render_URL`  
-**Wire:** Should now sit after `Grok_Imagine_Reel_Still`
+**Node type:** Edit Fields (Set) — existing  
+**Wire:** After `grok_imagine_reel_still`
 
-### Add one new field
+### Add one field
 | Name | Value (fx ON) |
 |---|---|
-| `reel_still_url` | `{{ $('Grok_Imagine_Reel_Still').item.json.data[0].url }}` |
+| `reel_still_url` | `{{ $('grok_imagine_reel_still').item.json.data[0].url }}` |
 
-Keep existing fields (`spotlight_image_url`, `story_image_url`, captions, etc.).
+Keep existing image/caption fields.  
+If story URL used `$json.data[0].url`, change it to `$('Grok_imagine_story').item.json.data[0].url`.
 
-**Important:** Because Save now comes after Reel Still, any field that used `$json.data[0].url` for the story image must use `$('Grok_imagine_story')...` instead (case-sensitive exact name).
-
-**Test:** Execute Save → confirm `reel_still_url` is a full https URL.
+**Test:** `reel_still_url` is a full https URL.
 
 ---
 
-## STEP 3 — Grok_Video_Start
+## STEP 3 — `grok_video_start`
 
-**Action:** **DUPLICATE** your `GROK_Imagine` HTTP Request node (easiest way to keep xAI auth)  
-**Rename to:** `Grok_Video_Start`  
-**Wire:** After `Save_render_URL` → Before new Wait node  
-(Do **not** delete your Buffer image path yet — for first smoke, you can temporarily disconnect Buffer and only run video.)
+| | |
+|---|---|
+| **Node type** | **HTTP Request** |
+| **Action** | **DUPLICATE** `GROK_Imagine` |
+| **Rename to** | `grok_video_start` |
+| **Wire** | After `Save_render_URL` → Before `wait_video` |
 
-### Change these settings on the duplicate
+### Change settings
 | Setting | Value |
 |---|---|
 | Method | `POST` |
@@ -159,17 +179,19 @@ Keep existing fields (`spotlight_image_url`, `story_image_url`, captions, etc.).
 }) }}
 ```
 
-**Test:** Execute → response must include `request_id` (or equivalent id field).  
-If the API errors on `aspect_ratio` / `resolution`, remove those two keys and retry (some REST shapes only need model/prompt/image/duration).
+**Test:** Response includes `request_id`.  
+If API errors on `aspect_ratio` / `resolution`, remove those keys and retry.
 
 ---
 
-## STEP 4 — Wait_Video
+## STEP 4 — `wait_video`
 
-**Action:** **CREATE FROM SCRATCH**  
-**Node type:** `Wait`  
-**Rename to:** `Wait_Video`  
-**Wire:** After `Grok_Video_Start` → Before `Grok_Video_Poll`
+| | |
+|---|---|
+| **Node type** | **Wait** |
+| **Action** | **CREATE FROM SCRATCH** |
+| **Rename to** | `wait_video` |
+| **Wire** | After `grok_video_start` → Before `grok_video_poll` |
 
 | Setting | Value |
 |---|---|
@@ -179,36 +201,40 @@ If the API errors on `aspect_ratio` / `resolution`, remove those two keys and re
 
 ---
 
-## STEP 5 — Grok_Video_Poll
+## STEP 5 — `grok_video_poll`
 
-**Action:** **DUPLICATE** `Grok_Video_Start` (keeps auth)  
-**Rename to:** `Grok_Video_Poll`  
-**Wire:** After `Wait_Video` → Before `IF_Video_Ready`
+| | |
+|---|---|
+| **Node type** | **HTTP Request** |
+| **Action** | **DUPLICATE** `grok_video_start` |
+| **Rename to** | `grok_video_poll` |
+| **Wire** | After `wait_video` → Before `if_video_ready` |
 
 ### Change settings
 | Setting | Value |
 |---|---|
 | Method | `GET` |
 | URL (fx ON) | below |
-| Body | **none** (clear body) |
+| Body | **none** (clear it) |
 
-**URL (fx ON):**
 ```text
-https://api.x.ai/v1/videos/{{ $('Grok_Video_Start').item.json.request_id }}
+https://api.x.ai/v1/videos/{{ $('grok_video_start').item.json.request_id }}
 ```
 
-If your Start response nests the id (e.g. `json.id`), adjust to that path after the first smoke.
+If Start nests the id differently (e.g. `json.id`), fix after first smoke.
 
-**Test:** After Wait, Poll should return `status`: `pending` / `done` / `failed`.
+**Test:** `status` is `pending` / `done` / `failed`.
 
 ---
 
-## STEP 6 — IF_Video_Ready
+## STEP 6 — `if_video_ready`
 
-**Action:** **CREATE FROM SCRATCH**  
-**Node type:** `IF`  
-**Rename to:** `IF_Video_Ready`  
-**Wire:** After `Grok_Video_Poll`
+| | |
+|---|---|
+| **Node type** | **IF** |
+| **Action** | **CREATE FROM SCRATCH** |
+| **Rename to** | `if_video_ready` |
+| **Wire** | After `grok_video_poll` |
 
 ### Condition
 | | |
@@ -217,102 +243,96 @@ If your Start response nests the id (e.g. `json.id`), adjust to that path after 
 | Operation | Equal |
 | Value 2 | `done` |
 
-### Wiring the three outcomes
-1. **True (done)** → `Save_video_URL`  
-2. **False** → add a second IF or Switch:
-   - If `status` is `failed` or `expired` → stop (optional sticky note / no Buffer)  
-   - Else (still pending) → wire back to `Wait_Video` (loop)
-
-**Simple starter (recommended first day):**  
-Only check `done`. If not done, Wait again manually / re-run. Add the loop after first success.
-
-**Loop version:** False branch → `Wait_Video` (same node). Cap with a counter later so it can’t spin forever.
+### Branches
+1. **True (done)** → `save_video_url`  
+2. **False** → for starter: stop / re-run; later loop false → `wait_video`  
 
 ---
 
-## STEP 7 — Save_video_URL
+## STEP 7 — `save_video_url`
 
-**Action:** **DUPLICATE** `Save_render_URL` (Edit Fields)  
-**Rename to:** `Save_video_URL`  
-**Wire:** After `IF_Video_Ready` true branch → Before Buffer Reel nodes
+| | |
+|---|---|
+| **Node type** | **Edit Fields** (Set) |
+| **Action** | **DUPLICATE** `Save_render_URL` |
+| **Rename to** | `save_video_url` |
+| **Wire** | After `if_video_ready` true → Before `buffer_ig_reel` |
 
-### Turn Include Other Input Fields **ON** (so captions/urls from Save_render_URL stay available if merged — or re-map from `$('Save_render_URL')` in Buffer)
+Include Other Input Fields = **ON** (or remap captions from `$('Save_render_URL')`).
 
-### Set these fields (replace duplicate’s old mappings)
+### Fields
 
 | Name | Value (fx ON) |
 |---|---|
-| `video_url` | `{{ $('Grok_Video_Poll').item.json.video.url }}` |
-| `video_request_id` | `{{ $('Grok_Video_Start').item.json.request_id }}` |
+| `video_url` | `{{ $('grok_video_poll').item.json.video.url }}` |
+| `video_request_id` | `{{ $('grok_video_start').item.json.request_id }}` |
 | `video_model` | `grok-imagine-video-1.5` |
 | `video_seconds` | `8` |
 | `reel_still_url` | `{{ $('Save_render_URL').item.json.reel_still_url }}` |
 | `ig_caption_draft` | `{{ $('Save_render_URL').item.json.ig_caption_draft }}` |
 | `fb_caption_draft` | `{{ $('Save_render_URL').item.json.fb_caption_draft }}` |
 
-If Poll nests differently (e.g. `json.url` instead of `json.video.url`), fix after first `done` response.
+If poll nests as `json.url` instead of `json.video.url`, fix after first `done`.
 
-**Test:** Open `video_url` in a browser — confirm 8s vertical clip looks photoreal.
+**Test:** Open `video_url` — 8s vertical photoreal clip.
 
 ---
 
-## STEP 8 — Buffer_IG_Reel
+## STEP 8 — `buffer_ig_reel`
 
-**Action:** **DUPLICATE** `Buffer_post_IG` (or whatever your working IG HTTP node is named — often `Buffer_post_IG` / `Buffer_post`)  
-**Rename to:** `Buffer_IG_Reel`  
-**Wire:** After `Save_video_URL` → Before `Buffer_FB_Reel`
+| | |
+|---|---|
+| **Node type** | **HTTP Request** |
+| **Action** | **DUPLICATE** `Buffer_post_IG` (or your working IG Buffer HTTP node) |
+| **Rename to** | `buffer_ig_reel` |
+| **Wire** | After `save_video_url` → Before `buffer_fb_reel` |
 
-### Keep
-- `POST https://api.buffer.com`
-- Same Buffer auth
-- JSON body, fx ON
+Keep: `POST https://api.buffer.com`, Buffer auth, JSON body fx ON.
 
-### Replace Body (fx ON) with this
+### Body (fx ON)
 
 ```text
 {{ JSON.stringify({
   query: 'mutation CreatePost($input: CreatePostInput!) { createPost(input: $input) { ... on PostActionSuccess { post { id text dueAt } } ... on MutationError { message } } }',
   variables: {
     input: {
-      text: String($('Save_video_URL').item.json.ig_caption_draft || $('Save_render_URL').item.json.ig_caption_draft || ''),
+      text: String($('save_video_url').item.json.ig_caption_draft || $('Save_render_URL').item.json.ig_caption_draft || ''),
       channelId: '6a668d534b2d03035f478536',
       schedulingType: 'automatic',
       mode: 'addToQueue',
       metadata: { instagram: { type: 'reel', shouldShareToFeed: true } },
-      assets: [{ video: { url: String($('Save_video_URL').item.json.video_url || '') } }]
+      assets: [{ video: { url: String($('save_video_url').item.json.video_url || '') } }]
     }
   }
 }) }}
 ```
 
-**Test:** Execute → PostActionSuccess with `post.id`.
+**Test:** PostActionSuccess + `post.id`.
 
 ---
 
-## STEP 9 — Buffer_FB_Reel
+## STEP 9 — `buffer_fb_reel`
 
-**Action:** **DUPLICATE** `Buffer_IG_Reel`  
-**Rename to:** `Buffer_FB_Reel`  
-**Wire:** After `Buffer_IG_Reel` → Before TikTok or Sheets
+| | |
+|---|---|
+| **Node type** | **HTTP Request** |
+| **Action** | **DUPLICATE** `buffer_ig_reel` |
+| **Rename to** | `buffer_fb_reel` |
+| **Wire** | After `buffer_ig_reel` → Before TikTok or Sheets |
 
-### Change only
-- `channelId` → `6a668d6b4b2d03035f478575`
-- `metadata` → `{ facebook: { type: 'reel' } }`
-- `text` → FB caption
-
-**Body (fx ON):**
+### Body (fx ON)
 
 ```text
 {{ JSON.stringify({
   query: 'mutation CreatePost($input: CreatePostInput!) { createPost(input: $input) { ... on PostActionSuccess { post { id text dueAt } } ... on MutationError { message } } }',
   variables: {
     input: {
-      text: String($('Save_video_URL').item.json.fb_caption_draft || $('Save_render_URL').item.json.fb_caption_draft || ''),
+      text: String($('save_video_url').item.json.fb_caption_draft || $('Save_render_URL').item.json.fb_caption_draft || ''),
       channelId: '6a668d6b4b2d03035f478575',
       schedulingType: 'automatic',
       mode: 'addToQueue',
       metadata: { facebook: { type: 'reel' } },
-      assets: [{ video: { url: String($('Save_video_URL').item.json.video_url || '') } }]
+      assets: [{ video: { url: String($('save_video_url').item.json.video_url || '') } }]
     }
   }
 }) }}
@@ -320,18 +340,16 @@ If Poll nests differently (e.g. `json.url` instead of `json.video.url`), fix aft
 
 ---
 
-## STEP 10 — Buffer_TT_Reel (only if TikTok is connected in Buffer)
+## STEP 10 — `buffer_tt_reel` (only if TikTok connected)
 
-**Action:** **DUPLICATE** `Buffer_FB_Reel`  
-**Rename to:** `Buffer_TT_Reel`  
-**Wire:** After `Buffer_FB_Reel` → Before Sheets_writeback
+| | |
+|---|---|
+| **Node type** | **HTTP Request** |
+| **Action** | **DUPLICATE** `buffer_fb_reel` |
+| **Rename to** | `buffer_tt_reel` |
+| **Wire** | After `buffer_fb_reel` → Before Sheets_writeback |
 
-### Before building
-1. Buffer → connect TikTok channel  
-2. Copy that channel’s ID  
-3. Paste into `channelId` below  
-
-### Body (fx ON) — update channelId + caption prefix
+Paste TikTok `channelId` from Buffer. Skip until connected.
 
 ```text
 {{ JSON.stringify({
@@ -343,83 +361,75 @@ If Poll nests differently (e.g. `json.url` instead of `json.video.url`), fix aft
       schedulingType: 'automatic',
       mode: 'addToQueue',
       metadata: { tiktok: { } },
-      assets: [{ video: { url: String($('Save_video_URL').item.json.video_url || '') } }]
+      assets: [{ video: { url: String($('save_video_url').item.json.video_url || '') } }]
     }
   }
 }) }}
 ```
 
-If Buffer rejects `metadata.tiktok`, try omitting metadata or check Buffer’s TikTok createPost docs for the exact key. The `TT —` prefix avoids duplicate-guard vs IG.
-
-**Skip this whole step** until TikTok is connected — IG + FB Reels can go live without it.
-
 ---
 
 ## STEP 11 — Sheets_writeback (EDIT existing — do not create new)
 
-**Action:** Edit existing Sheets writeback node  
-**Wire:** Keep at end (after Reel Buffer nodes)
-
-### Add / map columns (create columns in Google Sheet first if missing)
+**Node type:** Google Sheets — existing  
+**Wire:** End of chain after reel Buffer nodes
 
 | Sheet column | n8n value (fx) |
 |---|---|
-| `reel_still_url` | `{{ $('Save_video_URL').item.json.reel_still_url }}` |
-| `video_url` | `{{ $('Save_video_URL').item.json.video_url }}` |
-| `video_request_id` | `{{ $('Save_video_URL').item.json.video_request_id }}` |
+| `reel_still_url` | `{{ $('save_video_url').item.json.reel_still_url }}` |
+| `video_url` | `{{ $('save_video_url').item.json.video_url }}` |
+| `video_request_id` | `{{ $('save_video_url').item.json.video_request_id }}` |
 | `video_model` | `grok-imagine-video-1.5` |
 | `video_seconds` | `8` |
 | `daily_video_format` | `{{ $('Prep_day_variant').item.json.daily_video_format }}` |
-| `buffer_ig_reel_id` | `{{ $('Buffer_IG_Reel').item.json.data.createPost.post.id }}` (confirm path from response) |
-| `buffer_fb_reel_id` | same pattern from `Buffer_FB_Reel` |
-| `buffer_tt_reel_id` | from `Buffer_TT_Reel` if used |
-
-Response paths for Buffer IDs can vary — click the Buffer node output once and copy the real `post.id` path.
+| `buffer_ig_reel_id` | from `buffer_ig_reel` response `post.id` path |
+| `buffer_fb_reel_id` | from `buffer_fb_reel` |
+| `buffer_tt_reel_id` | from `buffer_tt_reel` if used |
 
 ---
 
 ## STEP 12 — Optional: keep or pause old image Buffer posts
 
-For first video week, either:
+**A)** Keep image feed + video Reels  
+**B)** Disconnect `Buffer_post_IG` / `Buffer_post_FB` temporarily  
 
-**A) Keep both** (image feed + video Reel) — more exposure, more cost  
-**B) Disconnect** `Buffer_post_IG` / `Buffer_post_FB` image nodes temporarily so only Reels post  
-
-Recommendation: **A for 2–3 days**, then decide.
+Start with **A** for 2–3 days.
 
 ---
 
-## Smoke-test checklist (do before enabling Schedule)
+## Smoke-test checklist
 
-1. Prep shows `daily_video_format` + `daily_motion_brief`  
-2. `Grok_Imagine_Reel_Still` returns photoreal 9:16 URL  
-3. `Grok_Video_Start` returns `request_id`  
-4. Poll reaches `status: done` and `video.url` plays  
-5. Video has **no people / needles / claims**; type matches still  
-6. `Buffer_IG_Reel` + `Buffer_FB_Reel` return success ids  
-7. Captions still end with full disclaimer  
-8. Sheets writeback row updated  
-
----
-
-## Quick reference — Duplicate vs Scratch
-
-| Node | Duplicate or Scratch? | Source to duplicate |
-|---|---|---|
-| Prep fields | **EDIT existing** | `Prep_day_variant` |
-| `Grok_Imagine_Reel_Still` | **DUPLICATE** | `Grok_imagine_story` |
-| `Save_render_URL` | **EDIT existing** | add `reel_still_url` |
-| `Grok_Video_Start` | **DUPLICATE** | `GROK_Imagine` (change URL + body) |
-| `Wait_Video` | **CREATE FROM SCRATCH** | Wait node |
-| `Grok_Video_Poll` | **DUPLICATE** | `Grok_Video_Start` (change to GET) |
-| `IF_Video_Ready` | **CREATE FROM SCRATCH** | IF node |
-| `Save_video_URL` | **DUPLICATE** | `Save_render_URL` |
-| `Buffer_IG_Reel` | **DUPLICATE** | `Buffer_post_IG` / working IG HTTP |
-| `Buffer_FB_Reel` | **DUPLICATE** | `Buffer_IG_Reel` |
-| `Buffer_TT_Reel` | **DUPLICATE** (later) | `Buffer_FB_Reel` |
-| Sheets writeback | **EDIT existing** | add video columns |
+1. Prep has `daily_video_format` + `daily_motion_brief`  
+2. `grok_imagine_reel_still` → photoreal URL  
+3. `grok_video_start` → `request_id`  
+4. `grok_video_poll` → `status: done` + playable `video.url`  
+5. No people / needles / claims in video  
+6. `buffer_ig_reel` + `buffer_fb_reel` success  
+7. Captions end with full disclaimer  
+8. Sheets writeback updated  
 
 ---
 
-## FDA reminder (every run)
-Chemical names only. Laboratory research use only. Not for human use. Full disclaimer at end of IG + FB + TikTok captions. No nickname packs. No efficacy claims on video or caption.
+## Quick reference
+
+| Node name | n8n type | Duplicate / Scratch / Edit | Source |
+|---|---|---|---|
+| `Prep_day_variant` | Edit Fields | **EDIT** | existing |
+| `grok_imagine_reel_still` | **HTTP Request** | **DUPLICATE** | `Grok_imagine_story` |
+| `Save_render_URL` | Edit Fields | **EDIT** | add `reel_still_url` |
+| `grok_video_start` | **HTTP Request** | **DUPLICATE** | `GROK_Imagine` |
+| `wait_video` | **Wait** | **CREATE FROM SCRATCH** | — |
+| `grok_video_poll` | **HTTP Request** | **DUPLICATE** | `grok_video_start` |
+| `if_video_ready` | **IF** | **CREATE FROM SCRATCH** | — |
+| `save_video_url` | **Edit Fields** | **DUPLICATE** | `Save_render_URL` |
+| `buffer_ig_reel` | **HTTP Request** | **DUPLICATE** | working IG Buffer HTTP |
+| `buffer_fb_reel` | **HTTP Request** | **DUPLICATE** | `buffer_ig_reel` |
+| `buffer_tt_reel` | **HTTP Request** | **DUPLICATE** (later) | `buffer_fb_reel` |
+| `Sheets_writeback` | Google Sheets | **EDIT** | add video columns |
+
+**Naming rule for all new nodes:** `lower_case_with_underscores` only.
+
+---
+
+## FDA reminder
+Chemical names only. Laboratory research use only. Not for human use. Full disclaimer at end of IG + FB + TikTok captions. No nicknames. No efficacy claims on video or caption.

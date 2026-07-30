@@ -192,37 +192,41 @@ Schedule
   → Parse_Grok
   → GROK_Imagine                  (1:1 feed still — keep)
   → Grok_imagine_story            (9:16 story still — keep)
-  → Grok_Imagine_Reel_Still       (NEW — 9:16 PHOTOREAL product still)
+  → grok_imagine_reel_still       (NEW HTTP Request — 9:16 PHOTOREAL still)
   → Save_render_URL               (extend with reel_still_url)
-  → Grok_Video_Start              (NEW — POST video 1.5, image=reel_still_url)
-  → Wait_Video
-  → Grok_Video_Poll               (NEW — GET until done)
-  → IF_Video_Ready
-       ├─ true → Save_video_URL
-       │         → Buffer_IG_Reel
-       │         → Buffer_FB_Reel
-       │         → Buffer_TT_Reel      (after TikTok channel connected)
+  → grok_video_start              (NEW HTTP Request — POST video 1.5)
+  → wait_video                    (NEW Wait)
+  → grok_video_poll               (NEW HTTP Request — GET until done)
+  → if_video_ready                (NEW IF)
+       ├─ true → save_video_url   (NEW Edit Fields)
+       │         → buffer_ig_reel (NEW HTTP Request)
+       │         → buffer_fb_reel (NEW HTTP Request)
+       │         → buffer_tt_reel (NEW HTTP Request — TikTok later)
        │         → (optional) existing image feed/story posts
        │         → Sheets_writeback
        └─ false → Error_Notify / Sheets flag video_failed
 ```
 
+**Naming rule:** all **new** nodes use `lower_case_with_underscores` only.
+
 ### 6.2 New / changed nodes
 
-| Node | After | Before | Purpose |
-|---|---|---|---|
-| **Prep_day_variant** fields | — | — | Add `daily_video_format`, `daily_motion_brief` |
-| **Grok_Imagine_Reel_Still** | `Grok_imagine_story` | `Save_render_URL` | 9:16 photoreal product still for video |
-| **Save_render_URL** | — | — | Add `reel_still_url`, keep image URLs + captions |
-| **Grok_Video_Start** | `Save_render_URL` | `Wait_Video` | `POST https://api.x.ai/v1/videos/generations` |
-| **Wait_Video** | Start | Poll | 8–12s |
-| **Grok_Video_Poll** | Wait | IF | `GET https://api.x.ai/v1/videos/{{request_id}}` |
-| **IF_Video_Ready** | Poll | Save / loop / fail | `status === 'done'` |
-| **Save_video_URL** | IF true | Buffer reels | Map `video_url`, `video_request_id`, `video_seconds` |
-| **Buffer_IG_Reel** | Save_video | Buffer_FB_Reel | GraphQL createPost, IG `type: reel`, `assets: [{video:{url}}]` |
-| **Buffer_FB_Reel** | IG Reel | Buffer_TT_Reel | FB `type: reel` |
-| **Buffer_TT_Reel** | FB Reel | Sheets | TikTok channel + video asset (confirm Buffer metadata key) |
-| **Sheets_writeback** | — | — | Add video columns + Buffer reel IDs |
+| Node | n8n type | After | Before | Purpose |
+|---|---|---|---|---|
+| **Prep_day_variant** fields | Edit Fields (edit) | — | — | Add `daily_video_format`, `daily_motion_brief` |
+| **grok_imagine_reel_still** | HTTP Request | `Grok_imagine_story` | `Save_render_URL` | 9:16 photoreal product still |
+| **Save_render_URL** | Edit Fields (edit) | — | — | Add `reel_still_url` |
+| **grok_video_start** | HTTP Request | `Save_render_URL` | `wait_video` | `POST /v1/videos/generations` |
+| **wait_video** | Wait | start | poll | 10s |
+| **grok_video_poll** | HTTP Request | `wait_video` | `if_video_ready` | `GET /v1/videos/{id}` |
+| **if_video_ready** | IF | poll | save / loop | `status === 'done'` |
+| **save_video_url** | Edit Fields | IF true | buffer reels | Map `video_url` + ids |
+| **buffer_ig_reel** | HTTP Request | `save_video_url` | `buffer_fb_reel` | IG `type: reel` |
+| **buffer_fb_reel** | HTTP Request | IG reel | TT / Sheets | FB `type: reel` |
+| **buffer_tt_reel** | HTTP Request | FB reel | Sheets | TikTok (later) |
+| **Sheets_writeback** | Google Sheets (edit) | — | — | Video columns + Buffer reel IDs |
+
+Full build steps: `marketing/n8n-video-nodes-step-by-step.md`
 
 ### 6.3 Prep_day_variant — new fields
 
