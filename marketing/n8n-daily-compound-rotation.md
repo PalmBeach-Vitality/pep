@@ -1,184 +1,151 @@
-# Daily compound rotation — 1 different compound per day
+# Daily product rotation — pens + vials (1 unique product / day)
 
-## LIVE SHEET FIX (Sal — do this first)
+## What you have
+2 Google Sheets tabs:
+1. `1-compounds-pens`
+2. `1-compounds-vials`
 
-Your exported `1-compounds-pens` still has weekly locking. That is why the same compound/reel style keeps repeating.
+**Merged import file (use this):** `marketing/sheets/1-compounds-all-daily.csv`  
+Tab name: **`1-compounds-all`**
 
-| Problem in your sheet | Fix |
-|---|---|
-| `week_start_date` = `2026-07-27` on `P-KLO-001` | **Clear all `week_start_date` cells** (or delete the column) |
-| `posts_this_week` still used | Ignore it — do not Filter on it |
-| **Two** columns named `last_spotlight_date` | Keep **one** only; delete the empty duplicate |
-| `P-BPC-001` already has a Reel | Set its `last_spotlight_date` = `2026-07-30` so it is **not** picked again tomorrow |
-| n8n Filter on `week_start_date` | **Delete that Filter** |
+| | Count |
+|---|---:|
+| Total rows | 47 |
+| **Active (daily cycle)** | **44** |
+| Paused (skipped) | 3 |
 
-**Import-ready cleaned file:** `marketing/sheets/1-compounds-pens-daily-ready.csv`  
-(built from your upload — week lock removed, one `last_spotlight_date`, BPC marked done)
-
-**Pens-only Active count in your file = 22** (not 56). Add vials / more SKUs later for a longer cycle.
+Each Active row = **one product day** (Pen SKU and Vial SKU of the same chemical are **different days**).
 
 ---
 
 ## Goal
-- **1 Reel per day**
-- **1 different compound every day** (not the same compound for a week)
-- Rotate through the **full Active catalog**, then loop
-- Each Reel must look **completely different** (new compound + unique visual seed)
+Every day must produce:
+1. **Different product** (`compound_id`)
+2. **Unique feed image** for that product
+3. **Unique story image** for that product (if used)
+4. **Unique Reel still + video** for that product
+
+No weekly lock. No repeating yesterday’s product until the full Active list cycles.
 
 ```text
 Schedule (daily)
-  → Sheets read: 1-compounds-all
+  → Sheets: 1-compounds-all
   → Filter status = Active
   → Sort last_spotlight_date ASC (empty first), then rotation_order ASC
   → Limit 1
-  → Prep_day_variant
-  → Grok → still → video → Buffer → Sheets writeback (last_spotlight_date = today)
+  → Prep_day_variant   (+ daily_scene_seed from compound_id)
+  → Grok captions (for THIS compound only)
+  → GROK_Imagine (feed)     ← must use today’s compound + scene seed
+  → Grok_imagine_story      ← must use today’s compound + scene seed
+  → grok_imagine_reel_still ← vial + futuristic lab, THIS compound only
+  → video → Buffer → Sheets writeback last_spotlight_date = today
 ```
 
 ---
 
-## Inventory (current repo)
+## Sheets — do this once
 
-| Pool | Rows | Active | Paused |
-|---|---:|---:|---:|
-| Pens | 23 | 22 | 1 |
-| Vials | 24 | 22 | 2 |
-| **Merged `1-compounds-all`** | **47** | **44** | **3** |
+1. Import `1-compounds-all-daily.csv` as tab **`1-compounds-all`**
+2. Point n8n Sheets **read** at that tab only
+3. Keep pens/vials tabs as backups (do not read them in the daily workflow)
+4. Remove any Filter on `week_start_date`
+5. `P-BPC-001` is already marked `last_spotlight_date=2026-07-30` (Reel already ran)
 
-**Not 56 yet.** Active rotation length today = **44 days**, then it loops.  
-To reach **56 compounds**: add **12 more Active rows** to `1-compounds-all` (new SKUs / pages), then re-number `rotation_order`.
-
----
-
-## Sheets setup
-
-### 1) Import merged queue
-1. Upload `marketing/sheets/1-compounds-all.csv`
-2. Tab name exactly: **`1-compounds-all`**
-3. Keep pens/vials tabs as backups — daily Reels read **only** `1-compounds-all`
-
-### 2) Columns used for rotation
+### Columns that matter
 | Column | Role |
 |---|---|
-| `status` | `Active` = in the daily queue |
-| `rotation_order` | Stable order 1…N |
-| `last_spotlight_date` | YYYY-MM-DD of last successful Reel/post — oldest / empty goes next |
-| `compound_id` | Unique per row (Pen SKU and Vial SKU are different days) |
-
-### 3) Stop weekly locking
-- Do **not** filter on `week_start_date`
-- Do **not** require `posts_this_week`
-- Remove / ignore any “same compound all week” Filter
+| `compound_id` | Unique product key (e.g. `P-BPC-001`, `V-BPC-001`) |
+| `compound_name` | Chemical / product name for captions + visuals |
+| `canonical_url` | Catalog link for that exact product |
+| `status` | Only `Active` enters the queue |
+| `rotation_order` | Stable order 1…44 |
+| `last_spotlight_date` | When this product last got a full day (image + reel) |
 
 ---
 
-## n8n changes (do these now)
+## n8n selection (required)
 
-### A) Sheets read node
-- Document / sheet tab: **`1-compounds-all`**
-- Return all rows (Filter/Sort/Limit handle selection)
+| Node | Setting |
+|---|---|
+| Sheets | Read `1-compounds-all` |
+| Filter | `status` equals `Active` |
+| Sort | 1) `last_spotlight_date` ASC (empty first) 2) `rotation_order` ASC |
+| Limit | **1** |
 
-### B) Filter
-- `status` **equals** `Active`
+**Delete / bypass** `Pick_week_compound` and any `week_start_date` filter.
 
-### C) Sort (add if missing)
-1. `last_spotlight_date` — ascending (empty / blank first)
-2. `rotation_order` — ascending
-
-### D) Limit
-- Max Items = **`1`**
-
-### E) Delete or bypass `Pick_week_compound`
-If that node still locks one compound for 7 days, disconnect it.
-
-### F) Sheets writeback (after successful Buffer reel)
-Update the **same `compound_id` row**:
+### Writeback after success
+Update the row matching today’s `compound_id`:
 | Field | Value |
 |---|---|
 | `last_spotlight_date` | `{{ $now.toISODate() }}` |
-
-Optional: keep reel URL / Buffer IDs columns as already mapped.
-
----
-
-## Why Reels looked similar
-1. Same compound all week (weekly lock)
-2. Same product still style
-3. Weekday-only variants recycle every 7 days
-
-## How each day becomes a different Reel
-1. **New compound_id every day** (this doc)
-2. Still + video prompts use that compound’s chemical name as hero
-3. `unique_run_stamp` changes every run
-4. `daily_scene_seed` (below) hashes **compound + date** so visuals don’t repeat on the same weekday
+| `reel_video_url` | from `save_video_url` |
+| `buffer_ig_reel_id` / `buffer_fb_reel_id` | from Buffer nodes |
+| optional `feed_image_url` / `story_image_url` / `reel_still_url` | today’s image URLs |
 
 ---
 
-## Prep_day_variant — add `daily_scene_seed`
+## Prep_day_variant — uniqueness fields
 
-**Include Other Input Fields = ON**
+Include Other Input Fields = **ON**
 
-| Name | Value (fx ON) |
-|---|---|
-| `daily_scene_seed` | below |
-
+### `daily_scene_seed` (required)
 ```text
-{{ String($json.compound_id || '') + '|' + $now.toISODate() + '|' + String($json.rotation_order || '') + '|' + String($json.compound_name || '') }}
+{{ String($json.compound_id || '') + '|' + String($json.compound_name || '') + '|' + String($json.product_form || '') + '|' + $now.toISODate() + '|' + String($json.rotation_order || '') }}
 ```
 
-Also keep / refresh:
-- `daily_video_format`
-- `daily_motion_brief`
-- `daily_camera_variant`
-- `unique_run_stamp`
-
-### Make format depend on compound (not only weekday)
-
-Replace `daily_video_format` with:
-
+### `daily_video_format` (by product, not weekday)
 ```text
-{{ ({0:'Futuristic Vial Identity',1:'Purity Spec Readout',2:'Peptide Synthesis Prototype',3:'Cutting-Edge Assay Bay',4:'Nano Catalog Drop',5:'Research Seal Future Lab',6:'99.99 Purity Glass Close'})[Number($json.rotation_order || $now.weekday) % 7] }}
+{{ ({0:'Futuristic Vial Identity',1:'Purity Spec Readout',2:'Peptide Synthesis Prototype',3:'Cutting-Edge Assay Bay',4:'Nano Catalog Drop',5:'Research Seal Future Lab',6:'99.99 Purity Glass Close'})[Number($json.rotation_order || 1) % 7] }}
 ```
 
-Replace `daily_motion_brief` with:
-
+### `daily_motion_brief`
 ```text
-{{ ({0:'Slow push-in on photoreal research vial in a futuristic peptide synthesis lab; cool cyan-blue tech light sweep; compound name hold',1:'Gentle lateral slide past holographic-clean purity instrumentation; focus pull to 99.99% purity readout aesthetic; glass refraction',2:'Orbit a cutting-edge peptide synthesis / prototype reactor bay with vial hero; engineering calm; no use demo',3:'Bench dolly through a futuristic assay engineering bay; vial rack + precision instruments; subtle LED pulse',4:'Rise onto acrylic riser with vial + advanced lab tech props; settle; catalog CTA end card',5:'Calm hold on sealed research vial in sterile future-lab; research-use seal fades in final 2 seconds',6:'Extreme macro vial glass / crystal meniscus; micro push; premium 99.99% purity chemistry close'})[Number($json.rotation_order || $now.weekday) % 7] }}
+{{ ({0:'Slow push-in on photoreal research vial in a futuristic peptide synthesis lab; cool cyan-blue tech light sweep; compound name hold',1:'Gentle lateral slide past holographic-clean purity instrumentation; focus pull to 99.99% purity readout aesthetic; glass refraction',2:'Orbit a cutting-edge peptide synthesis / prototype reactor bay with vial hero; engineering calm; no use demo',3:'Bench dolly through a futuristic assay engineering bay; vial rack + precision instruments; subtle LED pulse',4:'Rise onto acrylic riser with vial + advanced lab tech props; settle; catalog CTA end card',5:'Calm hold on sealed research vial in sterile future-lab; research-use seal fades in final 2 seconds',6:'Extreme macro vial glass / crystal meniscus; micro push; premium 99.99% purity chemistry close'})[Number($json.rotation_order || 1) % 7] }}
 ```
 
-Replace `daily_camera_variant` with:
-
+### `daily_camera_variant`
 ```text
-{{ ({0:'camera starts slightly LOW-LEFT, push-in toward vial label',1:'camera starts HIGH-RIGHT, slow lateral slide across glassware',2:'camera orbits CLOCKWISE ~15 degrees around vial / synthesis setup',3:'camera dolly LEFT-TO-RIGHT across assay bench plane',4:'camera rises from BELOW riser then settles eye-level on vial',5:'locked tripod, vial scale breathes via focus pull only',6:'extreme MACRO start on vial glass edge, micro push to compound name'})[Number($json.rotation_order || $now.weekday) % 7] }}
+{{ ({0:'camera starts slightly LOW-LEFT, push-in toward vial label',1:'camera starts HIGH-RIGHT, slow lateral slide across glassware',2:'camera orbits CLOCKWISE ~15 degrees around vial / synthesis setup',3:'camera dolly LEFT-TO-RIGHT across assay bench plane',4:'camera rises from BELOW riser then settles eye-level on vial',5:'locked tripod, vial scale breathes via focus pull only',6:'extreme MACRO start on vial glass edge, micro push to compound name'})[Number($json.rotation_order || 1) % 7] }}
+```
+
+### `unique_run_stamp`
+```text
+{{ $now.toISO() + '-' + String(Math.floor(Math.random() * 1000000)).padStart(6, '0') }}
 ```
 
 ---
 
-## Still / video prompts — force uniqueness
+## Hard rule for ALL image + reel nodes
 
-In **`grok_imagine_reel_still`** and **`grok_video_start`**, keep the vial-only + futuristic + 99.99% purity rules, and add this line into both prompts:
+Every Imagine / video body must include today’s product identity:
 
 ```text
-'This Reel is UNIQUE for compound ' + String($('Limit').item.json.compound_id || $('Prep_day_variant').item.json.compound_id || '') + ' — ' + String($('Parse_Grok').item.json.display_name || $('Limit').item.json.compound_name || '') + '. Scene seed: ' + String($('Prep_day_variant').item.json.daily_scene_seed || '') + '. Do not reuse prior compositions, prop layouts, or camera angles from other compounds.',
+'Today product ONLY: ' + String($('Prep_day_variant').item.json.compound_id) + ' — ' + String($('Parse_Grok').item.json.display_name || $('Prep_day_variant').item.json.compound_name) + '. Catalog: ' + String($('Prep_day_variant').item.json.canonical_url || '') + '. Scene seed: ' + String($('Prep_day_variant').item.json.daily_scene_seed || '') + '. Do not show any other compound name or reuse yesterday’s composition.'
 ```
 
-(If your Limit node has a different name, use the node that outputs the single compound row.)
+### Reel visual rules (unchanged)
+- Hero = **glass research vial** only
+- Futuristic peptide synthesis lab + **99.99% PURITY — PEPTIDE SYNTHESIS**
+- **Never** injector devices / writing instruments
+- Ignore `product_form` for the picture (Pen rows still get a vial hero; captions/URL stay that product’s)
+
+### Feed / story images
+- Must show **today’s chemical name** from Parse/Prep
+- Must use `daily_scene_seed` + color/pattern/motif variants
+- Must look different from every other product day
 
 ---
 
 ## Smoke test
-1. Run workflow → note `compound_id` A  
-2. Manually set that row’s `last_spotlight_date` to today (or let writeback do it)  
-3. Run again → must get a **different** `compound_id` B  
-4. Still image must be glass **vial** only (no injector / writing instrument)  
-5. Video must match that new still
+1. Run once → note `compound_id` A + open feed image + reel still  
+2. Confirm name on images matches product A  
+3. Writeback sets `last_spotlight_date`  
+4. Run again → must get **different** `compound_id` B  
+5. Images/reel for B must not look like A and must name B
 
 ---
 
-## Reaching 56 compounds
-1. Add 12 new Active product rows to Sheets (`compound_id`, name, URL, etc.)
-2. Set `status=Active`
-3. Assign new `rotation_order` values (45–56)
-4. Re-export / sync `1-compounds-all.csv` when ready
-
-Until then, automation correctly rotates **all 44 Active** compounds, one per day.
+## Cycle
+- **44 days** through all Active products, then loops (oldest `last_spotlight_date` first)
+- To add more products later: append Active rows to `1-compounds-all` and continue the same Sort → Limit 1 flow

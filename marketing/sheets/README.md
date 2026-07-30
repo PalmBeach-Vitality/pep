@@ -3,11 +3,12 @@
 ## Files
 | File | Tab name to use |
 |---|---|
-| `1-compounds-all.csv` | `1-compounds-all` (**daily Reel queue**) |
-| `1-compounds-pens.csv` | `1-compounds-pens` (backup / pens-only) |
-| `1-compounds-vials.csv` | `1-compounds-vials` (backup / vials-only) |
-| `2-product-page-mapping-pens.csv` | `2-product-page-mapping-pens` |
-| `2-product-page-mapping-vials.csv` | `2-product-page-mapping-vials` |
+| `1-compounds-all-daily.csv` | `1-compounds-all` (**daily queue — pens + vials merged from Sal live sheets**) |
+| `1-compounds-all.csv` | same merge (alias) |
+| `1-compounds-pens.csv` | `1-compounds-pens` (backup) |
+| `1-compounds-vials.csv` | `1-compounds-vials` (backup) |
+| `2-product-page-mapping-pens.csv` | `2-product-page-mapping-pens` (SKU map, not daily picker) |
+| `2-product-page-mapping-vials.csv` | `2-product-page-mapping-vials` (SKU map, not daily picker) |
 
 ## What changed (FDA-aligned)
 - Chemical / peptide names only (no KLOW, Wolverine, GLOW nicknames)
@@ -33,19 +34,19 @@
    - Rename the tab exactly as in the table above
 3. Share the spreadsheet with the Google account connected to n8n
 
-## n8n daily queue (1 different compound / day)
-Point Sheets read node at tab: **`1-compounds-all`**
+## n8n daily queue (1 different product / day)
+Point Sheets read node at tab: **`1-compounds-all`**  
+(import from `1-compounds-all-daily.csv` — merged from your live pens + vials sheets)
 
 Cadence:
 - Schedule = **Days / 1**
 - Filter `status=Active` → Sort `last_spotlight_date` ASC → Limit **1**
-- Each day: **new compound** + unique Reel still/video
+- Each day: **new product** + unique **feed image + story image + Reel**
 - After post: write `last_spotlight_date` = today
-- Loops after all Active compounds are used
+- **44 Active products** → 44-day cycle, then loops
 
 See `marketing/n8n-daily-compound-rotation.md`.
 
-**To reach 56 compounds:** add 12 more Active rows to `1-compounds-all`, then continue the same Sort → Limit 1 flow.
-
 ## Vials / pens
-Both are already merged into `1-compounds-all` as separate SKUs (Pen row and Vial row = different days). Reel visuals always use a **glass research vial** hero (no injector devices), regardless of `product_form`.
+Merged as separate SKUs (Pen row and Vial row = different days).  
+Reel visuals always use a **glass research vial** hero (no injector devices), regardless of `product_form`. Captions/URL stay specific to that day’s product.
