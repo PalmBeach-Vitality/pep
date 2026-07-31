@@ -114,6 +114,14 @@ Include Other Input Fields = **ON**
 {{ $now.toISO() + '-' + String(Math.floor(Math.random() * 1000000)).padStart(6, '0') }}
 ```
 
+### `daily_color_scheme` (required — changes every weekday for images AND reels)
+```text
+{{ ({1:'Matte black #050505 + neon lime #B6FF3B + white',2:'Pure white #F7F7F5 + ink black #111111 + signal red #E11D48 accents',3:'Deep indigo #111827 + hot magenta #F472B6 + ice #E0F2FE',4:'Sandstone #E7E5E4 + espresso #1C1917 + copper #B45309',5:'Ocean #082F49 + aqua #2DD4BF + foam white',6:'Burgundy #4C0519 + gold #F5D0A0 + cream type',7:'Slate blue #0F172A + orange #FB923C + pale gray type'})[$now.weekday] || 'Matte black + neon lime + white' }}
+```
+
+Feed/story Imagine already read this field. Reel still + video must also include:
+`COLOR SYSTEM TODAY: ' + String($('Prep_day_variant').item.json.daily_color_scheme) + '.'`
+
 ---
 
 ## Hard rule for ALL image + reel nodes
