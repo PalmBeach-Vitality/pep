@@ -9,9 +9,9 @@ Each weekday is a **different poster system**: color + pattern + layout + motif.
 {{ ({1:'Matte black #050505 + neon lime #B6FF3B + white',2:'Pure white #F7F7F5 + ink black #111111 + signal red #E11D48 accents',3:'Deep indigo #111827 + hot magenta #F472B6 + ice #E0F2FE',4:'Sandstone #E7E5E4 + espresso #1C1917 + copper #B45309',5:'Ocean #082F49 + aqua #2DD4BF + foam white',6:'Burgundy #4C0519 + gold #F5D0A0 + cream type',7:'Slate blue #0F172A + orange #FB923C + pale gray type'})[$now.weekday] || 'Matte black + neon lime + white' }}
 ```
 
-### `daily_pattern`
+### `daily_pattern` (refined — less clutter = higher quality)
 ```text
-{{ ({1:'Diagonal hazard stripes faded in background',2:'Giant oversized typography as texture filling half the frame',3:'Isometric cube wireframe city of molecules',4:'Halftone print dots + torn-paper collage edges',5:'Concentric radar circles / sonar rings',6:'Vertical film-strip frames / storyboard gutters',7:'Cracked stone / mineral texture with clean type overlays'})[$now.weekday] || 'Diagonal abstract pattern' }}
+{{ ({1:'ultra-fine blueprint grid, 8% opacity',2:'soft paper grain + thin hairline rules',3:'faint isometric molecular wireframe',4:'subtle micro-dot matrix',5:'soft concentric sonar rings, very low contrast',6:'vertical hairline columns like a catalog folio',7:'polished dark glass reflection with sparse geometry'})[$now.weekday] || 'ultra-fine blueprint grid, 8% opacity' }}
 ```
 
 ### `daily_image_brief`
@@ -19,10 +19,12 @@ Each weekday is a **different poster system**: color + pattern + layout + motif.
 {{ ({1:'Split poster: left solid color block with huge compound name, right motif zone',2:'Editorial magazine cover layout, name massive top, thin rules, lots of whitespace',3:'Centered badge/medallion composition with orbiting motif elements',4:'Bottom-heavy collage: type top-left, dense pattern lower two-thirds',5:'Top banner bar + clean center hero name + motif peeking corners',6:'Asymmetric diagonal divide; name on one side, motif on the other',7:'Full-bleed texture background with frosted glass card in center holding text'})[$now.weekday] || 'Split poster composition' }}
 ```
 
-### `daily_visual_motif`
+### `daily_visual_motif` (no pen / injector)
 ```text
-{{ ({1:'Abstract crystalline shard cluster',2:'Bold stencil compound-name as graphic shape',3:'Floating geometric pen/capsule blueprint (no needles)',4:'Layered translucent circles like assay wells',5:'Folded blueprint ribbon / catalog folio shape',6:'Minimal research-use seal stamp graphic',7:'Faceted mineral + soft lens flare (abstract, not lifestyle)'})[$now.weekday] || 'Abstract crystalline shard cluster' }}
+{{ ({1:'crystalline molecular lattice, glass refraction',2:'oversized compound-name as elegant typographic form',3:'research vial silhouette in frosted glass (no injector)',4:'translucent assay-well circles',5:'folded catalog folio ribbon',6:'minimal research-use seal emboss',7:'faceted mineral shard + clean specular highlight'})[$now.weekday] || 'crystalline molecular lattice' }}
 ```
+
+> For 2K Quality Mode paste bodies, see `marketing/n8n-image-quality-upgrade.md`.
 
 ### keep existing
 `day_of_week`, `daily_angle`, `daily_caption_mode`
