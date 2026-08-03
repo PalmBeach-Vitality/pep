@@ -27,6 +27,7 @@
     'Footer exactly: FOR LABORATORY RESEARCH USE ONLY. NOT FOR HUMAN USE.',
     'Tiny date exactly: ' + $now.toISODate() + '.',
     'Do not invent other products, studies, FDA approvals, dosing, or human-use claims.',
-    'HARD BAN: people, faces, hands, syringes in use, needles in use, clinics, gyms, lifestyle, before/after, warped text.'
+    'HARD BAN: people, faces, hands, syringes in use, needles in use, clinics, gyms, lifestyle, before/after, warped text.',
+    'SIGNAGE RULE: premium clean research lab only. No safety placards, no industrial alert graphics, no trefoil icons, no striped hazard floor tape, no danger banners. Do not print alert words on walls, floors, labels, or posters. Only neutral room names and the exact product typography listed above.'
   ].join(' ')
 }) }}
