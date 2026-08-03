@@ -1,6 +1,7 @@
 # Image quality upgrade — 2K Grok Imagine Quality
 
-Stay on **image-only** workflow. Goal: sharpest possible feed + story posters.
+Stay on **image-only** workflow. Goal: sharpest possible feed + story posters as **full lab scenes** (no product close-ups).  
+Scene library + caption matching: `marketing/n8n-scene-caption-matching.md` + `marketing/sheets/3-image-scenes-150.csv`.
 
 ## API upgrades (both Imagine nodes)
 

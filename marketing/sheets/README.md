@@ -7,6 +7,7 @@
 | `1-compounds-vials.csv` | `1-compounds-vials` |
 | `2-product-page-mapping-pens.csv` | `2-product-page-mapping-pens` |
 | `2-product-page-mapping-vials.csv` | `2-product-page-mapping-vials` |
+| `3-image-scenes-150.csv` | `3-image-scenes-150` (**image scene library — captions match scene product**) |
 
 ## What changed (FDA-aligned)
 - Chemical / peptide names only (no KLOW, Wolverine, GLOW nicknames)
@@ -31,16 +32,17 @@
    - Rename the tab exactly as in the table above
 3. Share the spreadsheet with the Google account connected to n8n
 
-## n8n daily queue (7 posts / compound / week)
-Point Sheets read node at tab: **`1-compounds-pens`**
+## n8n daily image queue (scene + matching caption)
+Point Sheets read node at tab: **`3-image-scenes-150`**
 
 Cadence:
-- Schedule = **Days / 1** (post every day)
-- Same compound for 7 days (`week_start_date` + `posts_this_week`)
-- Each day: different `daily_angle` → different Grok captions + image
-- Next week: next Active compound
+- Schedule = **Days / 1**
+- Filter Active → Sort `last_used_date` ASC → Limit **1** scene
+- That scene row carries `compound_id` + `scene_brief`
+- Captions and images both lock to that product
+- Writeback `last_used_date` on the scene row
 
-See `marketing/n8n-weekly-sheets-rotation.md`.
+See `marketing/n8n-scene-caption-matching.md`.
 
-## Vials
-Keep `1-compounds-vials` ready. Do not mix into the daily pens week unless you intentionally want a second daily stream.
+## Compound tabs
+Keep `1-compounds-pens` / `1-compounds-vials` as product masters. Image automation reads the **scene library**.
