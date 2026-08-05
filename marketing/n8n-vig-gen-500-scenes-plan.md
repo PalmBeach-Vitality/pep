@@ -50,7 +50,8 @@ manual_trigger
   → grok_imagine_reel_still_url
   → prep_grok_video_start
   → wait_video
-  → grok_video_url
+  → grok_video_poll
+  → save_video_url
   → sheets_update_creation
 ```
 

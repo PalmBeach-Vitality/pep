@@ -1,15 +1,15 @@
 # Node: save_video_url (Edit Fields / Set)
-# After: grok_video_url (status=done)
+# After: grok_video_poll (status=done)
 # Before: sheets_update_creation / Buffer
 # Include Other Input Fields: ON (optional)
 
 # Fields:
 
-video_url = {{ $('grok_video_url').item.json.video.url }}
+video_url = {{ $('grok_video_poll').item.json.video.url }}
 video_request_id = {{ $('grok_video_start').item.json.request_id }}
 video_model = grok-imagine-video-1.5
 video_seconds = 15
-video_status = {{ $('grok_video_url').item.json.status }}
+video_status = {{ $('grok_video_poll').item.json.status }}
 reel_still_url = {{ $('prep_grok_video_start').item.json.reel_still_url }}
 scene_id = {{ $('prep_grok_video_start').item.json.scene_id || $('pick_creation').item.json.scene_id }}
 creation_id = {{ $('prep_grok_video_start').item.json.creation_id || $('pick_creation').item.json.creation_id || $('pick_creation').item.json.scene_id }}
