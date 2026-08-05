@@ -34,22 +34,28 @@ See `marketing/AGENT_RULEBOOK.md`.
 ## Target chain (build in this order)
 
 ```text
-manual_trigger                 (keep schedule off until smoke-tested)
-  → pull_sheets                (read 500_peptide_wellness_reel_scenes)
-  → filter_active              (status = Active)
-  → sort_rotation              (last_used_at ASC, times_used ASC, rank ASC)
-  → limit_one                  (Limit = 1)
-  → prep_scene                 (map scene + product + prompts)
-  → edit_fields                (system_prompt + user_prompt for grok_api)
-  → grok_api                   (grok-4.5 captions)
+manual_trigger
+  → pull_sheets                (500_peptide_wellness_reel_scenes)
+  → filter_active
+  → sort_rotation
+  → limit_one
+  → prep_scene
+  → edit_fields
+  → grok_api
   → parse_grok
-  → grok_imagine               (9:16 / 2K / scene_brief)
-  → save_render_url
-  → creatomate_render_landscape   ← Phase C later (new template)
-  → buffer_post_ig
-  → buffer_post_fb
-  → sheets_writeback           (last_used_at + times_used on creation_id)
+  → if_compliance
+  → get_reel_creations         ⚠ must NOT re-pick a different scene
+  → filter_creations_active
+  → pick_creation
+  → grok_imagine_reel_still_url
+  → prep_grok_video_start
+  → wait_video
+  → grok_video_url
+  → sheets_update_creation
 ```
+
+**Critical:** Caption was locked to `limit_one` / `prep_scene` (`creation_id`).  
+Image/video nodes must use **that same row** — do not independently rotate a second creation.
 
 If your duplicate already has some of these under different names, we **rename or rewire in place** — we do not rebuild the original workflow.
 
