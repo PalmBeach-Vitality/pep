@@ -38,7 +38,7 @@ manual_trigger
   → pull_sheets                (500_peptide_wellness_reel_scenes)
   → filter_active
   → sort_rotation
-  → limit_one
+  → Limit
   → Prep_day_variant
   → edit_fields
   → grok_api
@@ -55,7 +55,7 @@ manual_trigger
   → sheets_update_creation
 ```
 
-**Critical:** Caption was locked to `limit_one` / `Prep_day_variant` (`creation_id`).  
+**Critical:** Caption was locked to `Limit` / `Prep_day_variant` (`creation_id`).  
 Image/video nodes must use **that same row** — do not independently rotate a second creation.
 
 If your duplicate already has some of these under different names, we **rename or rewire in place** — we do not rebuild the original workflow.
@@ -71,9 +71,9 @@ If your duplicate already has some of these under different names, we **rename o
 | A1 | `pull_sheets` | Document ID: **`1S6UQmD4ZFW3oL4vx8BKmhWAZrt7KMGwsBS7jW3S9HPo`** · Sheet: **`500_peptide_wellness_reel_scenes`** · return all rows |
 | A2 | `filter_active` | Keep rows where `status` = `Active` |
 | A3 | `sort_rotation` | Sort 1: `last_used_at` ASC (empties first) · Sort 2: `times_used` ASC · Sort 3: `rank` ASC |
-| A4 | `limit_one` | Max items = **1** |
+| A4 | `Limit` | Max items = **1** |
 
-**Smoke A:** Execute through `limit_one`. Paste:
+**Smoke A:** Execute through `Limit`. Paste:
 - `creation_id`
 - `category` (expect product OR environment)
 - `compound_id`
@@ -137,7 +137,7 @@ If your duplicate already has some of these under different names, we **rename o
 | # | Phase | First node |
 |---|---|---|
 | 1 | **A** | `pull_sheets` |
-| 2 | A | `filter_active` → `sort_rotation` → `limit_one` |
+| 2 | A | `filter_active` → `sort_rotation` → `Limit` |
 | 3 | B | `Prep_day_variant` |
 | 4 | B | `grok_http` → `grok_api` → `parse_grok` |
 | 5 | B | `grok_imagine` → `save_render_url` |
