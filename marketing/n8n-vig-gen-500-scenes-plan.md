@@ -1,8 +1,10 @@
 # vid_gen_landscape_scenes — separate 500-scene workflow plan
 
 **Workflow name (n8n):** `vid_gen_landscape_scenes`  
-**Scenes CSV:** `marketing/sheets/4-vid-gen-landscape-scenes-500.csv`  
-**Sheet tab name:** `4-vid-gen-landscape-scenes-500`
+**Scenes CSV:** `marketing/sheets/500_peptide_wellness_reel_scenes.csv`  
+**Sheet tab name:** `500_peptide_wellness_reel_scenes`  
+**Schema reference:** `marketing/n8n-vid-gen-landscape-scenes-schema.md`  
+**Do not modify:** `9-lab-item-creations-500`
 
 **Goal:** Build this **duplicated** landscape vid/visual workflow from a **500-scene spreadsheet**, with a **different Creatomate template** (later).  
 **Rule:** Do **not** change the original image/vig workflow. Keep both side by side.

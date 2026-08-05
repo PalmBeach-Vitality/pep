@@ -48,7 +48,7 @@
 ## n8n pick chain (when building nodes)
 
 ```text
-sheets (9-lab-item-creations-500)
+sheets (500_peptide_wellness_reel_scenes)
   → filter_active (status = Active)
   → sort_rotation (last_used_at ASC / times_used ASC, then rank ASC)
   → Limit 1
