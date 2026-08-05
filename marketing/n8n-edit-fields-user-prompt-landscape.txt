@@ -4,30 +4,30 @@
 # Node name: edit_fields
 
 # ---------------------------------------------------------------------------
-# Field: system_prompt  (String)
-# Keep your existing plain-language sales + research-compliant system prompt.
-# If rebuilding, paste the system prompt text as a fixed string (not expression).
+# Field: system_prompt  (String · fixed text)
+# Paste full contents of: marketing/n8n-system-prompt-landscape.txt
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
 # Field: user_prompt  (String · Expression)
-# Paste everything below the line into the expression box (including {{ }}).
 # ---------------------------------------------------------------------------
 
 {{
-'Write platform captions for this exact scene + product. Soft plain-language sales tone is OK, but stay research-compliant. Instagram, Facebook, and TikTok captions MUST all end with the mandatory disclaimer.\n\nHARD CAPTION LOCK (do not switch products):\n' + String($json.caption_lock || '') + '\n\nSCENE CONTEXT (match vibe; do not invent a different product):\n' + JSON.stringify({
-  creation_id: $json.creation_id,
-  category: $json.category,
-  shot_family: $json.shot_family,
-  compound_id: $json.compound_id,
-  compound_name: $json.compound_name,
-  canonical_url: $json.canonical_url,
-  material_detail: $json.material_detail,
-  hero_style: $json.hero_style,
-  vibe: $json.vibe,
-  theme: $json.theme,
-  lighting: $json.lighting,
-  aspect_ratio: $json.aspect_ratio || '9:16',
-  scene_brief: $json.scene_brief
+'Write science and research-only captions for this exact scene + product. Chemical names only. No marketing, no human-use language.\n\nHARD RULES:\n- IG, FB, TikTok captions MUST all end with the mandatory disclaimer.\n- Today: ' + String($now.weekdayLong).trim() + ' / ' + $now.toISODate() + '\n- Aspect: 9:16 social vertical\n- Include exact marker in IG + FB: Catalog note — ' + $now.toISODate() + '\n- Captions MUST match this product only (do not switch compounds).\n- creative_brief.visual_notes must match the scene_brief vibe (environment vs vial/pen) and stay full-scene, not extreme macro.\n\nHARD CAPTION LOCK:\n' + String($json.caption_lock || $('prep_scene').item.json.caption_lock || '') + '\n\nscene:\n' + JSON.stringify({
+  creation_id: $json.creation_id || $('prep_scene').item.json.creation_id || $('limit_one').item.json.creation_id,
+  rank: $json.rank || $('prep_scene').item.json.rank || $('limit_one').item.json.rank,
+  category: $json.category || $('prep_scene').item.json.category || $('limit_one').item.json.category,
+  shot_family: $json.shot_family || $('prep_scene').item.json.shot_family || $('limit_one').item.json.shot_family,
+  compound_id: $json.compound_id || $('prep_scene').item.json.compound_id || $('limit_one').item.json.compound_id,
+  compound_name: $json.compound_name || $('prep_scene').item.json.compound_name || $('limit_one').item.json.compound_name,
+  canonical_url: $json.canonical_url || $('prep_scene').item.json.canonical_url || $('limit_one').item.json.canonical_url,
+  material_detail: $json.material_detail || $('prep_scene').item.json.material_detail || $('limit_one').item.json.material_detail,
+  hero_style: $json.hero_style || $('prep_scene').item.json.hero_style || $('limit_one').item.json.hero_style,
+  vibe: $json.vibe || $('prep_scene').item.json.vibe || $('limit_one').item.json.vibe,
+  theme: $json.theme || $('prep_scene').item.json.theme || $('limit_one').item.json.theme,
+  lighting: $json.lighting || $('prep_scene').item.json.lighting || $('limit_one').item.json.lighting,
+  aspect_ratio: '9:16',
+  scene_brief: $json.scene_brief || $('prep_scene').item.json.scene_brief || $('limit_one').item.json.scene_brief,
+  catalog_note_date: $now.toISODate()
 }, null, 2)
 }}
