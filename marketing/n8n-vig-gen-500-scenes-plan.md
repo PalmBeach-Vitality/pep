@@ -40,7 +40,7 @@ manual_trigger                 (keep schedule off until smoke-tested)
   → sort_rotation              (last_used_at ASC, times_used ASC, rank ASC)
   → limit_one                  (Limit = 1)
   → prep_scene                 (map scene + product + prompts)
-  → grok_http                  (system + user prompts)
+  → edit_fields                (system_prompt + user_prompt for grok_api)
   → grok_api                   (grok-4.5 captions)
   → parse_grok
   → grok_imagine               (9:16 / 2K / scene_brief)
@@ -81,8 +81,8 @@ If your duplicate already has some of these under different names, we **rename o
 | Step | Node | What it does |
 |---|---|---|
 | B1 | `prep_scene` | Map from Limit: `creation_id`, `category`, `material_detail`, `compound_id`, `compound_name`, `canonical_url`, `caption_lock`, `scene_brief`, `shot_family`, `aspect_ratio`, `still_resolution`, `video_prompt`, `video_motion_prompt`, `hero_style`, `lighting`, `camera_move`, `vibe`, `theme` |
-| B2 | `grok_http` | Plain-language sales system prompt + harden caption to `caption_lock` / scene product |
-| B3 | `grok_api` | Model `grok-4.5` (fallback `grok-4.3`), max_tokens 2000 |
+| B2 | `edit_fields` | Build `system_prompt` + `user_prompt` (scene + `caption_lock`). Spec: `marketing/n8n-edit-fields-user-prompt-landscape.txt` |
+| B3 | `grok_api` | Model `grok-4.5` (fallback `grok-4.3`), max_tokens 2000 · messages from `edit_fields` |
 | B4 | `parse_grok` | Parse JSON captions; no hardcoded product URLs |
 | B5 | `grok_imagine` | Still from `scene_brief` · aspect **9:16** · `resolution: 2k` · vial rules when `category=vial_10ml` · no caution/biohazard signage |
 | B6 | `save_render_url` | Persist Imagine URL for Creatomate/Buffer |
