@@ -4,7 +4,8 @@
 **Scenes CSV:** `marketing/sheets/500_peptide_wellness_reel_scenes.csv`  
 **Sheet tab name:** `500_peptide_wellness_reel_scenes`  
 **Schema reference:** `marketing/n8n-vid-gen-landscape-scenes-schema.md`  
-**Do not modify:** `9-lab-item-creations-500`
+**HARD RULE:** Do not touch any spreadsheet unless Sal names it by **exact name**.  
+`9-lab-item-creations-500` is reference-only unless he names it explicitly.
 
 **Goal:** Build this **duplicated** landscape vid/visual workflow from a **500-scene spreadsheet**, with a **different Creatomate template** (later).  
 **Rule:** Do **not** change the original image/vig workflow. Keep both side by side.

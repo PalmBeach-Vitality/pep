@@ -1,8 +1,12 @@
 # vid_gen_landscape_scenes — spreadsheet schema (for node builds)
 
+## HARD RULE — spreadsheets
+**Do not create, rename, overwrite, import instructions for, or modify any spreadsheet unless Sal names that sheet by its exact name in the request.**  
+Reference-only mentions (e.g. column style of `9-lab-item-creations-500`) do **not** grant permission to touch that sheet.
+
 **Workflow:** `vid_gen_landscape_scenes`  
-**Sheet / CSV:** `9-lab-item-creations-500`  
-**Aligned to:** original `9-lab-item-creations-500` column style  
+**Sheet / CSV:** `500_peptide_wellness_reel_scenes`  
+**Column style aligned to:** `9-lab-item-creations-500` (reference only — never modify unless Sal names it exactly)  
 **Omitted on purpose:** `lab_item`, `lab_item_id` (not used for this landscape workflow)
 
 ## Canonical columns
