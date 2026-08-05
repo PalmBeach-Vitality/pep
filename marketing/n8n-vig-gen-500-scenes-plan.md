@@ -1,6 +1,7 @@
 # vid_gen_landscape_scenes — node build plan
 
 **Workflow (n8n):** `vid_gen_landscape_scenes`  
+**Google Sheets document ID:** `1S6UQmD4ZFW3oL4vx8BKmhWAZrt7KMGwsBS7jW3S9HPo`  
 **Sheet tab:** `500_peptide_wellness_reel_scenes`  
 **CSV:** `marketing/sheets/500_peptide_wellness_reel_scenes.csv`  
 **Schema:** `marketing/n8n-vid-gen-landscape-scenes-schema.md`
@@ -57,7 +58,7 @@ If your duplicate already has some of these under different names, we **rename o
 
 | Step | Node | Exact settings |
 |---|---|---|
-| A1 | `pull_sheets` | Document: your PB Vitality sheet · Sheet: **`500_peptide_wellness_reel_scenes`** · return all rows |
+| A1 | `pull_sheets` | Document ID: **`1S6UQmD4ZFW3oL4vx8BKmhWAZrt7KMGwsBS7jW3S9HPo`** · Sheet: **`500_peptide_wellness_reel_scenes`** · return all rows |
 | A2 | `filter_active` | Keep rows where `status` = `Active` |
 | A3 | `sort_rotation` | Sort 1: `last_used_at` ASC (empties first) · Sort 2: `times_used` ASC · Sort 3: `rank` ASC |
 | A4 | `limit_one` | Max items = **1** |

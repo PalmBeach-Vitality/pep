@@ -5,6 +5,7 @@
 Reference-only mentions (e.g. column style of `9-lab-item-creations-500`) do **not** grant permission to touch that sheet.
 
 **Workflow:** `vid_gen_landscape_scenes`  
+**Google Sheets document ID:** `1S6UQmD4ZFW3oL4vx8BKmhWAZrt7KMGwsBS7jW3S9HPo`  
 **Sheet / CSV:** `500_peptide_wellness_reel_scenes`  
 **Column style aligned to:** `9-lab-item-creations-500` (reference only — never modify unless Sal names it exactly)  
 **Omitted on purpose:** `lab_item`, `lab_item_id` (not used for this landscape workflow)
@@ -52,7 +53,9 @@ Reference-only mentions (e.g. column style of `9-lab-item-creations-500`) do **n
 ## n8n pick chain (when building nodes)
 
 ```text
-sheets (500_peptide_wellness_reel_scenes)
+pull_sheets
+  documentId: 1S6UQmD4ZFW3oL4vx8BKmhWAZrt7KMGwsBS7jW3S9HPo
+  sheet: 500_peptide_wellness_reel_scenes
   → filter_active (status = Active)
   → sort_rotation (last_used_at ASC / times_used ASC, then rank ASC)
   → Limit 1
