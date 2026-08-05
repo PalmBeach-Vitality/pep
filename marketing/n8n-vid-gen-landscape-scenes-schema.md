@@ -30,7 +30,7 @@ Reference-only mentions (e.g. column style of `9-lab-item-creations-500`) do **n
 | `quality_var_count` | Default `1` |
 | `quality_suffix` | From vibe |
 | `aspect_ratio` | `9:16` (always — social vertical) |
-| `duration_seconds` | `8` |
+| `duration_seconds` | `15` (social reel length) |
 | `resolution` | Video resolution `720p` |
 | `model_still` | `grok-imagine-image-quality` |
 | `model_video` | `grok-imagine-video-1.5` |
@@ -40,6 +40,8 @@ Reference-only mentions (e.g. column style of `9-lab-item-creations-500`) do **n
 | `status` | `Active` / `Paused` |
 | `times_used` | Starts at `0` |
 | `last_used_at` | Fill on writeback |
+| `reel_still_url` | Writeback from Imagine still |
+| `video_url` | Writeback from completed reel video |
 | `surface` | Set / surface cue |
 | `lighting` | Lighting cue |
 | `camera_move` | Push-in / slide / orbit, etc. |
