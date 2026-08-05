@@ -1,0 +1,33 @@
+# edit_fields (before grok_api) — vid_gen_landscape_scenes
+# Place after: prep_scene
+# Place before: grok_api
+# Node name: edit_fields
+
+# ---------------------------------------------------------------------------
+# Field: system_prompt  (String)
+# Keep your existing plain-language sales + research-compliant system prompt.
+# If rebuilding, paste the system prompt text as a fixed string (not expression).
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Field: user_prompt  (String · Expression)
+# Paste everything below the line into the expression box (including {{ }}).
+# ---------------------------------------------------------------------------
+
+{{
+'Write platform captions for this exact scene + product. Soft plain-language sales tone is OK, but stay research-compliant. Instagram, Facebook, and TikTok captions MUST all end with the mandatory disclaimer.\n\nHARD CAPTION LOCK (do not switch products):\n' + String($json.caption_lock || '') + '\n\nSCENE CONTEXT (match vibe; do not invent a different product):\n' + JSON.stringify({
+  creation_id: $json.creation_id,
+  category: $json.category,
+  shot_family: $json.shot_family,
+  compound_id: $json.compound_id,
+  compound_name: $json.compound_name,
+  canonical_url: $json.canonical_url,
+  material_detail: $json.material_detail,
+  hero_style: $json.hero_style,
+  vibe: $json.vibe,
+  theme: $json.theme,
+  lighting: $json.lighting,
+  aspect_ratio: $json.aspect_ratio || '9:16',
+  scene_brief: $json.scene_brief
+}, null, 2)
+}}
