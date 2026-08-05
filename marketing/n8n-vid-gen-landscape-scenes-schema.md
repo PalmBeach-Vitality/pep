@@ -29,7 +29,7 @@ Reference-only mentions (e.g. column style of `9-lab-item-creations-500`) do **n
 | `scene_brief` | Full still/scene brief |
 | `quality_var_count` | Default `1` |
 | `quality_suffix` | From vibe |
-| `aspect_ratio` | `16:9` |
+| `aspect_ratio` | `9:16` (always — social vertical) |
 | `duration_seconds` | `8` |
 | `resolution` | Video resolution `720p` |
 | `model_still` | `grok-imagine-image-quality` |

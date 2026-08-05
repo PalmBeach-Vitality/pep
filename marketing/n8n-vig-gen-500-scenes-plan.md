@@ -21,7 +21,7 @@
 | Rows | **750** Active |
 | Mix | `set_environment` 374 · `vial_10ml` 329 · `pen_3ml` 47 |
 | Rank order | **Staggered** product ↔ environment (vial/pen → landscape → …) |
-| Aspect | **16:9** |
+| Aspect | **9:16** |
 | Key id | `creation_id` (use like old `scene_id`) |
 | Rotation cols | `last_used_at`, `times_used`, `rank` |
 | `workflow` col | `vid_gen_landscape_scenes` |
@@ -40,7 +40,7 @@ manual_trigger                 (keep schedule off until smoke-tested)
   → grok_http                  (system + user prompts)
   → grok_api                   (grok-4.5 captions)
   → parse_grok
-  → grok_imagine               (16:9 / 2K / scene_brief)
+  → grok_imagine               (9:16 / 2K / scene_brief)
   → save_render_url
   → creatomate_render_landscape   ← Phase C later (new template)
   → buffer_post_ig
@@ -81,7 +81,7 @@ If your duplicate already has some of these under different names, we **rename o
 | B2 | `grok_http` | Plain-language sales system prompt + harden caption to `caption_lock` / scene product |
 | B3 | `grok_api` | Model `grok-4.5` (fallback `grok-4.3`), max_tokens 2000 |
 | B4 | `parse_grok` | Parse JSON captions; no hardcoded product URLs |
-| B5 | `grok_imagine` | Still from `scene_brief` · aspect **16:9** · `resolution: 2k` · vial rules when `category=vial_10ml` · no caution/biohazard signage |
+| B5 | `grok_imagine` | Still from `scene_brief` · aspect **9:16** · `resolution: 2k` · vial rules when `category=vial_10ml` · no caution/biohazard signage |
 | B6 | `save_render_url` | Persist Imagine URL for Creatomate/Buffer |
 
 **Smoke B:** Caption product = image product = scene `compound_id`. Category matches scene type (vial vs landscape).
