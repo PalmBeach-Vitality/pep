@@ -1,6 +1,10 @@
-# VIG Gen 500 — separate workflow plan
+# vid_gen_landscape_scenes — separate 500-scene workflow plan
 
-**Goal:** Build a **new** visual-generation workflow (your duplicated vig gen), driven by a **500-scene spreadsheet**, with a **different Creatomate template** (later).  
+**Workflow name (n8n):** `vid_gen_landscape_scenes`  
+**Scenes CSV:** `marketing/sheets/4-vid-gen-landscape-scenes-500.csv`  
+**Sheet tab name:** `4-vid-gen-landscape-scenes-500`
+
+**Goal:** Build this **duplicated** landscape vid/visual workflow from a **500-scene spreadsheet**, with a **different Creatomate template** (later).  
 **Rule:** Do **not** change the original image/vig workflow. Keep both side by side.
 
 ---
