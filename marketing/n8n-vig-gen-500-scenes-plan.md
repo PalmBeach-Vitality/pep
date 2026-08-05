@@ -13,40 +13,45 @@
 
 | Item | Original workflow | New VIG Gen 500 |
 |---|---|---|
-| n8n workflow | Existing (leave as-is) | Duplicated copy — rename e.g. `vig_gen_500` |
-| Scenes sheet | `3-image-scenes-150` (or current) | **New 500-scene spreadsheet** |
+| n8n workflow | Existing (leave as-is) | **`vid_gen_landscape_scenes`** (your duplicate) |
+| Scenes sheet | original scenes / compounds tabs | **`4-vid-gen-landscape-scenes-500`** |
 | Creatomate | Current template | **New template** (Phase C — later) |
 | Node names | Existing names | Prefer `lower_case_with_underscores` on any **new** nodes |
 | Buffer / Sheets writeback | Existing columns | Own writeback columns or own tab (avoid collisions) |
 
 ---
 
-## What we need from you
+## Spreadsheet ready
 
-1. **Export / share the 500-scene spreadsheet** (CSV) — columns + 2–3 sample rows  
-2. Confirm workflow name of the duplicate in n8n  
-3. Later: new Creatomate **template ID** + which fields it expects  
+| | |
+|---|---|
+| File | `4-vid-gen-landscape-scenes-500.csv` |
+| Rows | **500** Active |
+| Mix | 200 lab · 150 × 10mL vial · 150 × 3mL pen |
+| Aspect | **16:9** landscape |
+| `workflow` column | `vid_gen_landscape_scenes` |
+
+Later: new Creatomate **template ID** + field map.
 
 ---
 
-## Assumed chain (new workflow only)
+## Assumed chain (`vid_gen_landscape_scenes` only)
 
 ```text
-schedule_vig_500
-  → sheets_scenes_500          (read NEW 500-scene tab)
+schedule
+  → sheets (read 4-vid-gen-landscape-scenes-500)
   → filter_active
   → sort_rotation              (last_used_date ASC, rotation_order ASC)
-  → limit_1
+  → Limit
   → prep_day_variant           (scene + product + caption lock + colors)
   → grok_http                  (system + user prompts)
   → grok_api                   (grok-4.5 captions)
   → parse_grok
-  → grok_imagine               (2K full-lab / scene_brief)     [or keep if already in dup]
-  → grok_imagine_story         (optional)
+  → grok_imagine               (16:9 / 2K / scene_brief)
   → save_render_url
-  → creatomate_render_500      ← NEW template (Phase C)
+  → creatomate_render_landscape ← NEW template (Phase C)
   → buffer_post_ig / buffer_post_fb
-  → sheets_writeback_500       (last_used_date on scene_id)
+  → sheets_writeback           (last_used_date on scene_id)
 ```
 
 Exact node list will match **your duplicate**; we only rename/add what’s missing.
@@ -55,10 +60,10 @@ Exact node list will match **your duplicate**; we only rename/add what’s missi
 
 ## Phase A — Isolate & point at 500 scenes (start here)
 
-1. Rename duplicated workflow → `vig_gen_500` (or your preferred name)  
+1. Workflow already named **`vid_gen_landscape_scenes`**  
 2. Disable Schedule on the duplicate until smoke-tested (Manual only)  
-3. Import 500-scene CSV as its own tab, e.g. `4-vig-scenes-500`  
-4. Edit **`sheets` / Google Sheets read** in the **duplicate only** → that tab  
+3. Import CSV as tab **`4-vid-gen-landscape-scenes-500`**  
+4. Edit **Google Sheets read** in **`vid_gen_landscape_scenes` only** → that tab  
 5. Confirm **`filter_active` → `sort_rotation` → `Limit`** use:
    - `status = Active`
    - sort: `last_used_date` ASC, then `rotation_order` ASC  
@@ -122,9 +127,9 @@ Exact node list will match **your duplicate**; we only rename/add what’s missi
 
 | Step | Action | Owner |
 |---|---|---|
-| 1 | You upload / share the **500-scene CSV** | Sal |
-| 2 | Phase A — sheet + Limit pick | Together |
-| 3 | Phase B — prompts + Imagine | Together |
+| 1 | Import **`4-vid-gen-landscape-scenes-500.csv`** | Sal |
+| 2 | Phase A — sheet + Limit pick in `vid_gen_landscape_scenes` | Together |
+| 3 | Phase B — prompts + Imagine (16:9) | Together |
 | 4 | Phase C — Creatomate new template | Later |
 | 5 | Phase D — Buffer + writeback | Together |
 
