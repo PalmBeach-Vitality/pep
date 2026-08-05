@@ -1,6 +1,7 @@
-# Palm Beach Peptides Website
+# Palm Beach Vitality .Store
 
-A modern, professional multi-page website designed to closely match the structure, tone, and features of [East Coast Peptides (ecwlw.com)](https://ecwlw.com/).
+B2C E-commerce brand
+
 
 ## Brand
 **Palm Beach Peptides** — Precision. Purity. Palm Beach Made.
