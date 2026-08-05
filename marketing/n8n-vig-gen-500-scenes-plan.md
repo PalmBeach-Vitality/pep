@@ -9,6 +9,9 @@
 **HARD RULE:** Do not touch any spreadsheet unless Sal names it by **exact name**.  
 `9-lab-item-creations-500` = reference only.
 
+**HARD RULE:** After any file update Sal needs, always paste the **hard GitHub link** in the same reply.  
+See `marketing/AGENT_RULEBOOK.md`.
+
 **Rule:** Do **not** change the original image/vig workflow. Build only inside `vid_gen_landscape_scenes`.  
 **New node names:** `lower_case_with_underscores`.
 
