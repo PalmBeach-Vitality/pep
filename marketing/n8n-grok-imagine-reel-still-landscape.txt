@@ -20,7 +20,7 @@
     'Lighting: ' + String($('pick_creation').item.json.lighting || '') + '.',
     'Color grade: ' + String($('pick_creation').item.json.color_grade || '') + '.',
     'Surface cue: ' + String($('pick_creation').item.json.surface || '') + '.',
-    'Product lock: ' + String($('parse_grok').item.json.display_name || $('pick_creation').item.json.compound_name || '') + ' (' + String($('pick_creation').item.json.compound_id || '') + ').',
+    'Product lock: ' + String($('Parse_Grok').item.json.display_name || $('Parse_Grok').item.json.figma_headline || $('pick_creation').item.json.compound_name || '') + ' (' + String($('pick_creation').item.json.compound_id || '') + ').',
     'If a vial is visible: 10mL sterile injectable-style clear glass vial with rubber stopper and aluminum crimp seal only. FORBIDDEN: black twist caps, screw caps, droppers, child-resistant twist lids.',
     'SIGNAGE RULE: premium clean set only. No safety placards, no industrial alert graphics, no trefoil icons, no striped floor tape, no danger banners. No alert words on walls, floors, labels, or posters.',
     'No people, no hands, no needles, no injection, no clinic, no gym, no lifestyle models, no before/after.',
