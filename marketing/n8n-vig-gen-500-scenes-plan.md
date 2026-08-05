@@ -39,7 +39,7 @@ manual_trigger
   → filter_active
   → sort_rotation
   → limit_one
-  → prep_scene
+  → prep_day_variant
   → edit_fields
   → grok_api
   → parse_grok
@@ -55,7 +55,7 @@ manual_trigger
   → sheets_update_creation
 ```
 
-**Critical:** Caption was locked to `limit_one` / `prep_scene` (`creation_id`).  
+**Critical:** Caption was locked to `limit_one` / `prep_day_variant` (`creation_id`).  
 Image/video nodes must use **that same row** — do not independently rotate a second creation.
 
 If your duplicate already has some of these under different names, we **rename or rewire in place** — we do not rebuild the original workflow.
@@ -87,7 +87,7 @@ If your duplicate already has some of these under different names, we **rename o
 
 | Step | Node | What it does |
 |---|---|---|
-| B1 | `prep_scene` | Map from Limit: `creation_id`, `category`, `material_detail`, `compound_id`, `compound_name`, `canonical_url`, `caption_lock`, `scene_brief`, `shot_family`, `aspect_ratio`, `still_resolution`, `video_prompt`, `video_motion_prompt`, `hero_style`, `lighting`, `camera_move`, `vibe`, `theme` |
+| B1 | `prep_day_variant` | Map from Limit: `creation_id`, `category`, `material_detail`, `compound_id`, `compound_name`, `canonical_url`, `caption_lock`, `scene_brief`, `shot_family`, `aspect_ratio`, `still_resolution`, `video_prompt`, `video_motion_prompt`, `hero_style`, `lighting`, `camera_move`, `vibe`, `theme` |
 | B2 | `edit_fields` | Build `system_prompt` + `user_prompt` (scene + `caption_lock`). Spec: `marketing/n8n-edit-fields-user-prompt-landscape.txt` |
 | B3 | `grok_api` | Model `grok-4.5` (fallback `grok-4.3`), max_tokens 2000 · messages from `edit_fields` |
 | B4 | `parse_grok` | Parse JSON captions; no hardcoded product URLs |
@@ -138,7 +138,7 @@ If your duplicate already has some of these under different names, we **rename o
 |---|---|---|
 | 1 | **A** | `pull_sheets` |
 | 2 | A | `filter_active` → `sort_rotation` → `limit_one` |
-| 3 | B | `prep_scene` |
+| 3 | B | `prep_day_variant` |
 | 4 | B | `grok_http` → `grok_api` → `parse_grok` |
 | 5 | B | `grok_imagine` → `save_render_url` |
 | 6 | C | `creatomate_render_landscape` (later) |
