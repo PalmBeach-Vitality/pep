@@ -14,7 +14,7 @@ Reference-only mentions (e.g. column style of `9-lab-item-creations-500`) do **n
 | Column | Notes |
 |---|---|
 | `creation_id` | Unique id (`LI-001` …) — use like old `scene_id` |
-| `rank` | Rotation rank 1…500 |
+| `rank` | Rotation rank 1…750 (500 original + 250 ENV landscape rows) |
 | `category` | `set_environment` \| `vial_10ml` \| `pen_3ml` |
 | `material_detail` | Vial/pen material spec (blank for set_environment) |
 | `compound_id` | Product lock (**added** for n8n captions) |

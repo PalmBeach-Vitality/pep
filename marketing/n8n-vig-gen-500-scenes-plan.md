@@ -29,7 +29,7 @@
 | | |
 |---|---|
 | File | `4-vid-gen-landscape-scenes-500.csv` |
-| Rows | **500** Active |
+| Rows | **750** Active (500 original + 250 pure environment/landscape) |
 | Mix | 200 lab · 150 × 10mL vial · 150 × 3mL pen |
 | Aspect | **16:9** landscape |
 | `workflow` column | `vid_gen_landscape_scenes` |
