@@ -1,145 +1,136 @@
-# vid_gen_landscape_scenes — separate 500-scene workflow plan
+# vid_gen_landscape_scenes — node build plan
 
-**Workflow name (n8n):** `vid_gen_landscape_scenes`  
-**Scenes CSV:** `marketing/sheets/500_peptide_wellness_reel_scenes.csv`  
-**Sheet tab name:** `500_peptide_wellness_reel_scenes`  
-**Schema reference:** `marketing/n8n-vid-gen-landscape-scenes-schema.md`  
+**Workflow (n8n):** `vid_gen_landscape_scenes`  
+**Sheet tab:** `500_peptide_wellness_reel_scenes`  
+**CSV:** `marketing/sheets/500_peptide_wellness_reel_scenes.csv`  
+**Schema:** `marketing/n8n-vid-gen-landscape-scenes-schema.md`
+
 **HARD RULE:** Do not touch any spreadsheet unless Sal names it by **exact name**.  
-`9-lab-item-creations-500` is reference-only unless he names it explicitly.
+`9-lab-item-creations-500` = reference only.
 
-**Goal:** Build this **duplicated** landscape vid/visual workflow from a **500-scene spreadsheet**, with a **different Creatomate template** (later).  
-**Rule:** Do **not** change the original image/vig workflow. Keep both side by side.
-
----
-
-## Separation checklist
-
-| Item | Original workflow | New VIG Gen 500 |
-|---|---|---|
-| n8n workflow | Existing (leave as-is) | **`vid_gen_landscape_scenes`** (your duplicate) |
-| Scenes sheet | original scenes / compounds tabs | **`4-vid-gen-landscape-scenes-500`** |
-| Creatomate | Current template | **New template** (Phase C — later) |
-| Node names | Existing names | Prefer `lower_case_with_underscores` on any **new** nodes |
-| Buffer / Sheets writeback | Existing columns | Own writeback columns or own tab (avoid collisions) |
+**Rule:** Do **not** change the original image/vig workflow. Build only inside `vid_gen_landscape_scenes`.  
+**New node names:** `lower_case_with_underscores`.
 
 ---
 
-## Spreadsheet ready
+## Current sheet state
 
 | | |
 |---|---|
-| File | `4-vid-gen-landscape-scenes-500.csv` |
-| Rows | **750** Active (500 original + 250 pure environment/landscape) |
-| Mix | 200 lab · 150 × 10mL vial · 150 × 3mL pen |
-| Aspect | **16:9** landscape |
-| `workflow` column | `vid_gen_landscape_scenes` |
-
-Later: new Creatomate **template ID** + field map.
+| Rows | **750** Active |
+| Mix | `set_environment` 374 · `vial_10ml` 329 · `pen_3ml` 47 |
+| Rank order | **Staggered** product ↔ environment (vial/pen → landscape → …) |
+| Aspect | **16:9** |
+| Key id | `creation_id` (use like old `scene_id`) |
+| Rotation cols | `last_used_at`, `times_used`, `rank` |
+| `workflow` col | `vid_gen_landscape_scenes` |
 
 ---
 
-## Assumed chain (`vid_gen_landscape_scenes` only)
+## Target chain (build in this order)
 
 ```text
-schedule
-  → sheets (read 4-vid-gen-landscape-scenes-500)
-  → filter_active
-  → sort_rotation              (last_used_date ASC, rotation_order ASC)
-  → Limit
-  → prep_day_variant           (scene + product + caption lock + colors)
+manual_trigger                 (keep schedule off until smoke-tested)
+  → pull_sheets                (read 500_peptide_wellness_reel_scenes)
+  → filter_active              (status = Active)
+  → sort_rotation              (last_used_at ASC, times_used ASC, rank ASC)
+  → limit_one                  (Limit = 1)
+  → prep_scene                 (map scene + product + prompts)
   → grok_http                  (system + user prompts)
   → grok_api                   (grok-4.5 captions)
   → parse_grok
   → grok_imagine               (16:9 / 2K / scene_brief)
   → save_render_url
-  → creatomate_render_landscape ← NEW template (Phase C)
-  → buffer_post_ig / buffer_post_fb
-  → sheets_writeback           (last_used_date on scene_id)
+  → creatomate_render_landscape   ← Phase C later (new template)
+  → buffer_post_ig
+  → buffer_post_fb
+  → sheets_writeback           (last_used_at + times_used on creation_id)
 ```
 
-Exact node list will match **your duplicate**; we only rename/add what’s missing.
+If your duplicate already has some of these under different names, we **rename or rewire in place** — we do not rebuild the original workflow.
 
 ---
 
-## Phase A — Isolate & point at 500 scenes (start here)
+## Phase A — Pick one staggered row (START HERE)
 
-1. Workflow already named **`vid_gen_landscape_scenes`**  
-2. Disable Schedule on the duplicate until smoke-tested (Manual only)  
-3. Import CSV as tab **`4-vid-gen-landscape-scenes-500`**  
-4. Edit **Google Sheets read** in **`vid_gen_landscape_scenes` only** → that tab  
-5. Confirm **`filter_active` → `sort_rotation` → `Limit`** use:
-   - `status = Active`
-   - sort: `last_used_date` ASC, then `rotation_order` ASC  
-   - Limit = 1  
-6. Execute through Limit → paste `scene_id` + `compound_id`
+**Goal:** Manual run returns exactly 1 Active row; next run flips product ↔ landscape via rank/writeback.
 
-**Done when:** one scene row picks cleanly; original workflow untouched.
+| Step | Node | Exact settings |
+|---|---|---|
+| A1 | `pull_sheets` | Document: your PB Vitality sheet · Sheet: **`500_peptide_wellness_reel_scenes`** · return all rows |
+| A2 | `filter_active` | Keep rows where `status` = `Active` |
+| A3 | `sort_rotation` | Sort 1: `last_used_at` ASC (empties first) · Sort 2: `times_used` ASC · Sort 3: `rank` ASC |
+| A4 | `limit_one` | Max items = **1** |
 
----
+**Smoke A:** Execute through `limit_one`. Paste:
+- `creation_id`
+- `category` (expect product OR environment)
+- `compound_id`
+- `rank`
 
-## Phase B — Scene → caption → image lock
-
-1. **`prep_day_variant`** (in duplicate): map `scene_id`, `scene_category`, `scene_brief`, `caption_lock`, `compound_id`, `compound_name`, `canonical_url`, `product_form_detail`  
-2. **`grok_http`**: plain-language sales system prompt + caption lock to scene product  
-3. **`grok_api`**: `grok-4.5`, max_tokens 2000  
-4. **`parse_grok`**: unchanged mapping (verify URLs aren’t hardcoded)  
-5. **`grok_imagine` / story**: full-lab scene_brief, 10mL sterile crimp vial rules, no caution/biohazard signage, `resolution: 2k`  
-6. Smoke: caption product = image product = scene product  
-
-**Done when:** one manual run produces matching caption + image for the picked scene.
+**Done when:** one row picks cleanly; original workflow untouched.
 
 ---
 
-## Phase C — Creatomate duplicate (later)
+## Phase B — Prep → caption → image
 
-1. Duplicate the Creatomate node / sub-path into `vig_gen_500` only  
-2. Point to **new template ID**  
-3. Remap template fields from `parse_grok` + image URL(s)  
-4. Do **not** edit the original Creatomate template or node  
-5. Smoke render → inspect output  
+| Step | Node | What it does |
+|---|---|---|
+| B1 | `prep_scene` | Map from Limit: `creation_id`, `category`, `material_detail`, `compound_id`, `compound_name`, `canonical_url`, `caption_lock`, `scene_brief`, `shot_family`, `aspect_ratio`, `still_resolution`, `video_prompt`, `video_motion_prompt`, `hero_style`, `lighting`, `camera_move`, `vibe`, `theme` |
+| B2 | `grok_http` | Plain-language sales system prompt + harden caption to `caption_lock` / scene product |
+| B3 | `grok_api` | Model `grok-4.5` (fallback `grok-4.3`), max_tokens 2000 |
+| B4 | `parse_grok` | Parse JSON captions; no hardcoded product URLs |
+| B5 | `grok_imagine` | Still from `scene_brief` · aspect **16:9** · `resolution: 2k` · vial rules when `category=vial_10ml` · no caution/biohazard signage |
+| B6 | `save_render_url` | Persist Imagine URL for Creatomate/Buffer |
 
-**Done when:** new template renders with today’s scene copy + asset.
-
----
-
-## Phase D — Buffer + writeback (duplicate only)
-
-1. Buffer IG/FB nodes post the Creatomate (or Imagine) asset  
-2. **`sheets_writeback_500`**: update **500-scene** tab  
-   - match `scene_id`  
-   - set `last_used_date = today`  
-   - optional: image URL, Buffer IDs  
-3. Enable Schedule when stable  
-
-**Done when:** run 2 picks a **different** `scene_id`.
+**Smoke B:** Caption product = image product = scene `compound_id`. Category matches scene type (vial vs landscape).
 
 ---
 
-## Hard rules (carry into 500 workflow)
+## Phase C — Creatomate (later)
 
-- Keep **separate** from original  
-- Full lab / environmental scenes (no product close-ups) unless a scene row says otherwise  
+| Step | Node | Notes |
+|---|---|---|
+| C1 | `creatomate_render_landscape` | **New** template ID only — do not edit original Creatomate node/template |
+| C2 | Field map | From `parse_grok` + `save_render_url` |
+
+**Done when:** new template renders today’s copy + asset.
+
+---
+
+## Phase D — Buffer + writeback
+
+| Step | Node | Notes |
+|---|---|---|
+| D1 | `buffer_post_ig` / `buffer_post_fb` | Post Creatomate (or Imagine) asset |
+| D2 | `sheets_writeback` | Tab **`500_peptide_wellness_reel_scenes`** only · match `creation_id` · set `last_used_at` = now · `times_used` = +1 |
+
+**Smoke D:** Run 2 picks a **different** `creation_id` and the **other** family (product ↔ environment).
+
+---
+
+## Hard rules
+
+- Keep **separate** from original workflow  
+- Full environmental scenes (no product close-ups) unless the row says otherwise  
 - Vials = **10mL sterile crimp-seal** (no black twist caps)  
-- No caution / biohazard signage or alert words  
+- No caution / biohazard / alert signage or alert words  
 - Captions always match scene `compound_id`  
 - New nodes: `lower_case_with_underscores`  
+- Spreadsheet touch: **only** `500_peptide_wellness_reel_scenes` when Sal names it  
 
 ---
 
-## Order of work
+## Execution order (together)
 
-| Step | Action | Owner |
+| # | Phase | First node |
 |---|---|---|
-| 1 | Import **`4-vid-gen-landscape-scenes-500.csv`** | Sal |
-| 2 | Phase A — sheet + Limit pick in `vid_gen_landscape_scenes` | Together |
-| 3 | Phase B — prompts + Imagine (16:9) | Together |
-| 4 | Phase C — Creatomate new template | Later |
-| 5 | Phase D — Buffer + writeback | Together |
+| 1 | **A** | `pull_sheets` |
+| 2 | A | `filter_active` → `sort_rotation` → `limit_one` |
+| 3 | B | `prep_scene` |
+| 4 | B | `grok_http` → `grok_api` → `parse_grok` |
+| 5 | B | `grok_imagine` → `save_render_url` |
+| 6 | C | `creatomate_render_landscape` (later) |
+| 7 | D | Buffer + `sheets_writeback` |
 
----
-
-## Out of scope for this plan
-
-- Editing the original vig/image workflow  
-- Replacing the original Creatomate template  
-- Video / Reel nodes (unless you add a separate vid workflow later)
+**We execute one node (or one tight group) at a time.** After each smoke, Sal pastes the key fields before we continue.
