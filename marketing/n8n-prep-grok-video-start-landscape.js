@@ -22,7 +22,7 @@ if (!stillUrl) {
 const displayName = parsed.display_name || parsed.figma_headline || pick.compound_name || 'research compound';
 const motion = pick.video_motion_prompt || pick.camera_move || 'gentle environmental motion, slow push-in';
 const videoPrompt = [
-  'Animate this photoreal Palm Beach Vitality 9:16 still into an 8-second premium vertical catalog film.',
+  'Animate this photoreal Palm Beach Vitality 9:16 still into a 15-second premium vertical catalog film.',
   'Follow source scene and keep product identity unchanged.',
   'Scene brief: ' + String(pick.scene_brief || ''),
   'Source video prompt: ' + String(pick.video_prompt || ''),
@@ -42,7 +42,7 @@ const videoRequestBody = {
   model: 'grok-imagine-video-1.5',
   prompt: videoPrompt,
   image: { url: String(stillUrl) },
-  duration: 8,
+  duration: 15,
   aspect_ratio: '9:16',
   resolution: '720p',
 };
@@ -58,7 +58,7 @@ return [{
     video_prompt: videoPrompt,
     video_motion_prompt: motion,
     aspect_ratio: '9:16',
-    duration_seconds: 8,
+    duration_seconds: 15,
     resolution: '720p',
     model_video: 'grok-imagine-video-1.5',
     video_request_body: videoRequestBody,
