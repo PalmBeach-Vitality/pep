@@ -23,8 +23,8 @@ Reference-only mentions (e.g. column style of `9-lab-item-creations-500`) do **n
 | `canonical_url` | Catalog URL (**added** for n8n captions) |
 | `caption_lock` | Hard caption lock (**added** for n8n) |
 | `shot_family` | `environment_landscape` / `vial_landscape` / `pen_landscape` |
-| `camera_angle` | eye-level, low-angle, etc. |
-| `camera_direction` | front, front-left, etc. |
+| `camera_angle` | Product-focused angles; 100+ unique angle/direction/move combos across sheet |
+| `camera_direction` | Varied product-facing directions |
 | `framing` | 16:9 environmental framing notes |
 | `scene_brief` | Full still/scene brief |
 | `quality_var_count` | Default `1` |
@@ -44,7 +44,7 @@ Reference-only mentions (e.g. column style of `9-lab-item-creations-500`) do **n
 | `video_url` | Writeback from completed reel video |
 | `surface` | Set / surface cue |
 | `lighting` | Lighting cue |
-| `camera_move` | Push-in / slide / orbit, etc. |
+| `camera_move` | Varied moves; synced into video_motion_prompt |
 | `color_grade` | Grade from vibe |
 | `hero_style` | How product appears |
 | `source_id` | Original wellness CSV ID |
