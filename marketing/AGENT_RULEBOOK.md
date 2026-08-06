@@ -29,6 +29,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - One node (or tight group) at a time, with exact node names
 - Keep `vid_gen_landscape_scenes` separate from the original workflow
 - Keep `vid_gen_palm_beach_pep` separate from other video workflows
+- Pep weekly plan: `marketing/n8n-vid-gen-palm-beach-pep-weekly-plan.md`
 
 ## Social / Imagine
-- Aspect ratio for this landscape/social workflow: always **9:16**
+- Aspect ratio for Pep + landscape social workflows: always **9:16**
