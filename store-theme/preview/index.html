@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hero / Logo aspect preview (mobile + desktop)</title>
+  <style>
+    :root {
+      --pbv-font-body: system-ui, sans-serif;
+    }
+    body { margin: 0; font-family: system-ui, sans-serif; background: #f6f6f6; color: #111; }
+    h1 { font-size: 1.1rem; margin: 1rem; }
+    .note { margin: 0 1rem 1rem; color: #555; font-size: 0.9rem; }
+    .viewport-label {
+      display: inline-block; margin: 0 1rem 0.75rem; padding: 0.25rem 0.55rem;
+      background: #111; color: #fff; font-size: 0.7rem; border-radius: 999px;
+    }
+    .pbv-logo-banner {
+      display: flex; justify-content: center; align-items: center;
+      width: 100%; padding: 1rem 1rem 0.85rem; background: #fff; border-bottom: 1px solid #eee;
+    }
+    .pbv-logo-card {
+      display: block; width: min(100% - 2rem, 56rem); aspect-ratio: 2.35 / 1;
+      border-radius: 1.25rem; overflow: hidden; line-height: 0;
+      box-shadow: 0 12px 28px rgba(0,0,0,.12); background: #e8e4ef;
+    }
+    .pbv-logo-card__img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .pbv-hero { display: flex; justify-content: center; width: 100%; padding: 0.75rem 1rem 0.5rem; }
+    .pbv-hero-photo {
+      position: relative; display: grid; place-items: center;
+      width: min(100% - 2rem, 56rem); aspect-ratio: 2.35 / 1; margin: 0 auto;
+      border-radius: 1.25rem; overflow: hidden; color: #fff; height: auto;
+      background: var(--pbv-hero-image) center / cover no-repeat, #12304a;
+      box-shadow: 0 18px 40px rgba(0,0,0,.18);
+    }
+    .pbv-hero-photo__overlay { position: absolute; inset: 0; background: rgba(0,0,0,.5); z-index: 1; }
+    .pbv-hero-photo__content {
+      position: relative; z-index: 2; width: 100%; height: 100%;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      padding: 0.7rem 0.95rem; text-align: center;
+    }
+    .pbv-hero-photo__title { margin: 0 0 0.2rem; font-size: clamp(1.05rem, 4.5vw, 1.35rem); font-weight: 700; }
+    .pbv-hero-photo__subtitle { margin: 0 0 0.35rem; font-size: clamp(0.72rem, 3vw, 0.88rem); font-weight: 700; color: #7ec8ff; }
+    .pbv-hero-photo__body { display: none; }
+    .pbv-hero-photo__welcome { margin: 0.25rem 0; font-size: clamp(0.78rem, 3.1vw, 0.95rem); font-weight: 700; }
+    .pbv-hero-photo__wholesale { margin: 0; font-size: clamp(0.58rem, 2.2vw, 0.68rem); }
+    .pbv-hero-photo__wholesale a { color: #7ec8ff; }
+    @media (min-width: 750px) {
+      .pbv-logo-card, .pbv-hero-photo { width: min(100% - 2rem, 64rem); border-radius: 1.5rem; }
+      .pbv-hero-photo__content { padding: 1.25rem 1.75rem; }
+      .pbv-hero-photo__body { display: block; margin: 0 0 0.4rem; font-size: 0.72rem; line-height: 1.35; }
+      .pbv-hero-photo__title { font-size: 1.85rem; }
+      .pbv-hero-photo__subtitle { font-size: 1.1rem; margin-bottom: 0.75rem; }
+      .pbv-hero-photo__welcome { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Fixed: logo + hero both 2.35:1 (mobile + desktop)</h1>
+  <p class="note">Resize under 750px — both frames stay the same wide ratio and width.</p>
+  <span class="viewport-label">logo + hero = 2.35:1</span>
+
+  <div class="pbv-logo-banner">
+    <a class="pbv-logo-card" href="#">
+      <img class="pbv-logo-card__img" src="https://palmbeach-vitality.store/wp-content/uploads/2026/07/PBV_NEW_LOGO.jpg" alt="Palm Beach Vitality" width="1280" height="720" />
+    </a>
+  </div>
+
+  <section class="pbv-hero" aria-label="Homepage banner">
+    <div class="pbv-hero-photo" style="--pbv-hero-image:url(https://palmbeach-vitality.store/wp-content/themes/palmbeach-vitality/assets/images/hero.jpg)">
+      <div class="pbv-hero-photo__overlay" aria-hidden="true"></div>
+      <div class="pbv-hero-photo__content">
+        <h2 class="pbv-hero-photo__title">Palm Beach Vitality</h2>
+        <p class="pbv-hero-photo__subtitle">Premium Peptides. Precision Crafted.</p>
+        <p class="pbv-hero-photo__body">Every product is manufactured in state-of-the-art U.S. facilities using advanced automated peptide synthesis technology.</p>
+        <p class="pbv-hero-photo__welcome">Welcome to Palm Beach Vitality.<br>Where premium meets performance.</p>
+        <p class="pbv-hero-photo__wholesale">For wholesale information please visit <a href="https://www.palmbeach-vitality.com">www.palmbeach-vitality.com</a></p>
+      </div>
+    </div>
+  </section>
+</body>
+</html>
