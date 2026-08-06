@@ -44,7 +44,7 @@ const videoRequestBody = {
   image: { url: String(stillUrl) },
   duration: 15,
   aspect_ratio: '9:16',
-  resolution: '720p',
+  resolution: '1080p',
 };
 
 return [{
@@ -59,7 +59,7 @@ return [{
     video_motion_prompt: motion,
     aspect_ratio: '9:16',
     duration_seconds: 15,
-    resolution: '720p',
+    resolution: '1080p',
     model_video: 'grok-imagine-video-1.5',
     video_request_body: videoRequestBody,
     video_request_body_string: JSON.stringify(videoRequestBody),

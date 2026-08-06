@@ -31,7 +31,7 @@ Reference-only mentions (e.g. column style of `9-lab-item-creations-500`) do **n
 | `quality_suffix` | From vibe |
 | `aspect_ratio` | `9:16` (always — social vertical) |
 | `duration_seconds` | `15` (social reel length) |
-| `resolution` | Video resolution `720p` |
+| `resolution` | Video resolution `1080p` |
 | `model_still` | `grok-imagine-image-quality` |
 | `model_video` | `grok-imagine-video-1.5` |
 | `still_resolution` | `2k` |
