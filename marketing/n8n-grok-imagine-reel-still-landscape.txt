@@ -1,0 +1,31 @@
+# Node: grok_imagine_reel_still
+# After: pick_creation
+# Before: prep_grok_video_start (or save URL node)
+# Method: POST
+# URL: https://api.x.ai/v1/images/generations
+# Body Content Type: JSON
+# Expression (fx ON):
+
+{{ JSON.stringify({
+  model: 'grok-imagine-image-quality',
+  aspect_ratio: '9:16',
+  resolution: '2k',
+  n: 1,
+  prompt: [
+    'Photoreal vertical 9:16 social still for Palm Beach Vitality.',
+    'FULL ENVIRONMENTAL SCENE — not a void packshot, not extreme macro.',
+    'Scene brief (follow closely): ' + String($('pick_creation').item.json.scene_brief || '') + '.',
+    'Category: ' + String($('pick_creation').item.json.scene_category || $('pick_creation').item.json.category || '') + '.',
+    'Hero style: ' + String($('pick_creation').item.json.hero_style || '') + '.',
+    'Lighting: ' + String($('pick_creation').item.json.lighting || '') + '.',
+    'Color grade: ' + String($('pick_creation').item.json.color_grade || '') + '.',
+    'Surface cue: ' + String($('pick_creation').item.json.surface || '') + '.',
+    'Product lock: ' + String($('Parse_Grok').item.json.display_name || $('Parse_Grok').item.json.figma_headline || $('pick_creation').item.json.compound_name || '') + ' (' + String($('pick_creation').item.json.compound_id || '') + ').',
+    'If a vial is visible: 10mL sterile injectable-style clear glass vial with rubber stopper and aluminum crimp seal only. FORBIDDEN: black twist caps, screw caps, droppers, child-resistant twist lids.',
+    'SIGNAGE RULE: premium clean set only. No safety placards, no industrial alert graphics, no trefoil icons, no striped floor tape, no danger banners. No alert words on walls, floors, labels, or posters.',
+    'No people, no hands, no needles, no injection, no clinic, no gym, no lifestyle models, no before/after.',
+    'No nicknames on any text in the image (no KLOW, Wolverine, GLOW). Prefer no on-image text at all unless tiny research-use mark is required by the scene.',
+    'Compose for later gentle motion: ' + String($('pick_creation').item.json.video_motion_prompt || $('pick_creation').item.json.camera_move || '') + '.',
+    'Look like a high-end photoreal catalog / cinematic product-environment still, not an illustration, not a flat graphic poster.'
+  ].join(' ')
+}) }}

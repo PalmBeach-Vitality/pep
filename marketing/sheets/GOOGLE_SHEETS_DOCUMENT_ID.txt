@@ -1,0 +1,4 @@
+# Google Sheets document ID for vid_gen_landscape_scenes
+# Tab: 500_peptide_wellness_reel_scenes
+
+1S6UQmD4ZFW3oL4vx8BKmhWAZrt7KMGwsBS7jW3S9HPo
