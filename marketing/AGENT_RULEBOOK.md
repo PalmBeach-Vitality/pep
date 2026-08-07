@@ -17,7 +17,7 @@ Do not only say “updated the CSV” — always paste the link(s).
 
 Example (current Pep scenes sheet):
 
-`https://github.com/PalmBeach-Vitality/pep/blob/cursor/palm-beach-pep-scenes-8510/marketing/sheets/50_palm_beach_pep_reel_scenes.csv`
+`https://github.com/PalmBeach-Vitality/pep/blob/cursor/palm-beach-pep-scenes-8510/marketing/sheets/150-pb-pep-scenes.csv`
 
 ## Always send hard links after file updates
 Whenever you update a file Sal needs to download, import, or open, **immediately include the hard link** in the same reply.

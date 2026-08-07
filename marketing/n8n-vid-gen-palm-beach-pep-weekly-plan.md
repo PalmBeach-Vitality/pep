@@ -5,8 +5,8 @@
 **Workflow name (n8n):** `vid_gen_palm_beach_pep`  
 **Cadence:** **Once per week** (Cron or Manual)  
 **Approach:** Option 2 — **story-beat assembly** (quality / likeability / compliance first)  
-**Sheet / CSV:** `50_palm_beach_pep_reel_scenes` / `marketing/sheets/50_palm_beach_pep_reel_scenes.csv`  
-**Current batch:** 20 scenes drafted (target 50 after Sal approves tone)
+**Sheet / CSV:** `150-pb-pep-scenes` / `marketing/sheets/150-pb-pep-scenes.csv`  
+**Current batch:** 150 unique scenes in `150-pb-pep-scenes.csv`
 
 **HARD RULES**
 - Do **not** modify any spreadsheet unless Sal names it by **exact name**.
@@ -120,7 +120,7 @@ Likeability rule: friendly and simple > hype. Pep sounds like a helpful lab budd
 ## 4) Sheet / CSV plan
 
 ### 4.1 Current file
-- `marketing/sheets/50_palm_beach_pep_reel_scenes.csv`
+- `marketing/sheets/150-pb-pep-scenes.csv`
 - Same base columns as `500_peptide_wellness_reel_scenes`
 - Extra: `voice_over`, `pep_script`, `product_description`, `disclaimer_short`
 - `workflow` = `vid_gen_palm_beach_pep`
@@ -147,7 +147,7 @@ Do **not** edit the sheet until Sal says yes. Proposed adds:
 Until those exist, Phase 1 can derive beats in `prep_pep_beats` from `scene_brief` + `voice_over`.
 
 ### 4.3 Spreadsheet touch rule
-Only touch a sheet Sal names exactly. Candidate tab name when imported: **`50_palm_beach_pep_reel_scenes`**.
+Only touch a sheet Sal names exactly. Candidate tab name when imported: **`150-pb-pep-scenes`**.
 
 ---
 
@@ -214,7 +214,7 @@ schedule_weekly
 | Node | Type | Purpose |
 |---|---|---|
 | `schedule_weekly` | Schedule Trigger | Cron weekly (e.g. Monday 10:00 local). Also keep Manual Trigger sibling for smoke tests. |
-| `pull_pep_sheets` | Google Sheets | Read tab Sal names (`50_palm_beach_pep_reel_scenes` when ready) |
+| `pull_pep_sheets` | Google Sheets | Read tab Sal names (`150-pb-pep-scenes` when ready) |
 | `filter_pep_active` | Filter | `status = Active` |
 | `sort_pep_rotation` | Sort | `last_used_at` ASC → `times_used` ASC → `rank` ASC |
 | `limit_one_pep` | Limit | Max items = **1** |
@@ -369,7 +369,7 @@ Please mark yes/no or choose:
 2. **TTS vendor/voice:** ElevenLabs vs OpenAI — any house voice already?  
 3. **Human approval gate:** stills only / master before posting / fully automatic?  
 4. **Channels at launch:** IG only, IG+FB, or IG+FB+TT?  
-5. **Sheet name when imported:** confirm exact tab name `50_palm_beach_pep_reel_scenes`?  
+5. **Sheet name when imported:** confirm exact tab name `150-pb-pep-scenes`?  
 6. **CSV beat columns now?** add beat/VO split columns before scenes 21–50, or derive in Code for batch 1?  
 7. **Pep visual style:** keep sticker/cartoon mascot (current) — confirm not pivoting to photoreal vial-only for this workflow.
 
@@ -397,7 +397,7 @@ Please mark yes/no or choose:
 ## 12) Out of scope for this plan
 - Building the n8n nodes yet  
 - Editing Google Sheets yet  
-- Expanding to scenes 21–50 before Sal approves batch-1 tone  
+- Further scene expansions beyond the 150-row sheet  
 - Switching to Seedance/Kling as primary (revisit only if Pep motion quality disappoints on Grok)
 
 ---
