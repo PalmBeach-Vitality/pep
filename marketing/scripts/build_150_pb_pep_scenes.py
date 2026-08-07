@@ -551,15 +551,16 @@ def unique_script(i: int, chemical_name: str, science: str, surface: str) -> tup
         f"Keep it curious. {chemical_name} is laboratory research material.",
         f"Friendly reminder from Pep — {chemical_name} is not for people.",
     ][i % 5]
+    # Keep VO as one tight spreadsheet line (no embedded newlines).
     script = (
-        f"{opener}\n\n"
-        f"Today we're looking at {chemical_name}.\n\n"
-        f"{science}\n\n"
-        f"Today's unique set: {surface}.\n\n"
+        f"{opener} "
+        f"Today we're looking at {chemical_name}. "
+        f"{science} "
+        f"Today's unique set: {surface}. "
         "Everything stays in the research and laboratory space. No treatment claims. No human-use advice. "
-        "Palm Beach Vitality focuses on documentation, purity verification, and clear catalog labeling.\n\n"
-        f"{pep_bit}\n\n"
-        f"{closer}\n\n"
+        "Palm Beach Vitality focuses on documentation, purity verification, and clear catalog labeling. "
+        f"{pep_bit} "
+        f"{closer} "
         f"{DISCLAIMER}"
     )
     return script, pep_bit
