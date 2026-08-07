@@ -4,7 +4,7 @@
 **Owner:** Sal + cloud agent  
 **Branch:** `cursor/idea-to-video-nodes-0b73`
 
-Standalone workflow: type an idea → Grok still (9:16 / 2k) → human Approve/Change gate → type a **video/motion prompt** → animate that still → 15s / 1080p / 9:16 MP4.
+Standalone workflow: type an idea → Grok still (9:16 / 2k) → human Approve/Change gate → **only then** save the still → type a **video/motion prompt** → animate that still → 15s / 1080p / 9:16 MP4.
 
 House rules from `AGENT_RULEBOOK.md` + live Grok guides (`n8n-video-nodes-step-by-step.md`, `n8n-prep-grok-video-start-landscape.js`, `n8n-image-quality-upgrade.md`):
 
@@ -15,6 +15,7 @@ House rules from `AGENT_RULEBOOK.md` + live Grok guides (`n8n-video-nodes-step-b
 - Still: `grok-imagine-image-quality`, **`2k`**, **9:16**
 - Auth: same xAI Header Auth / Bearer as your working `GROK_Imagine` / `GROK_API` credential
 - Poll: `GET /v1/videos/{request_id}` until `status = done`
+- **`save_still_url` runs only after Approve** (after any adjust loops). Draft stills during review are not saved.
 
 ---
 
@@ -24,17 +25,17 @@ House rules from `AGENT_RULEBOOK.md` + live Grok guides (`n8n-video-nodes-step-b
 idea_form                 Form Trigger   ← TEXT INPUT #1: idea
   → build_prompt          Edit Fields    wrap idea → image_prompt
   → image_gen             HTTP Request   Grok Imagine still
-  → save_still_url        Edit Fields    still_url
-  → review_image          Form           Approve / Change (+ what to change)
+  → review_image          Form           preview from image_gen; Approve / Change
   → if_change             IF
-       true  → adjust_prompt → image_gen   (regen loop)
-       false → video_prompt_form           ← TEXT INPUT #2: video prompt
-             → grok_video_start            still + typed video prompt
+       true  → adjust_prompt → image_gen → review_image   (regen loop)
+       false → save_still_url          ← ONLY here: commit approved still
+             → video_prompt_form       ← TEXT INPUT #2: video prompt
+             → grok_video_start        still + typed video prompt
              → wait_video
              → grok_video_poll
              → if_video_ready
-                  false → wait_video       (poll loop)
-                  true  → save_video_url   final MP4 URL
+                  false → wait_video   (poll loop)
+                  true  → save_video_url
 ```
 
 Two typed text inputs (not one hardcoded motion string):
@@ -51,10 +52,10 @@ Two typed text inputs (not one hardcoded motion string):
 | 1 | `idea_form` | Form Trigger | Field: `idea` (text, required) |
 | 2 | `build_prompt` | Edit Fields | Sets `image_prompt` from idea |
 | 3 | `image_gen` | HTTP Request | `POST /v1/images/generations` |
-| 4 | `save_still_url` | Edit Fields | `still_url` from Imagine response |
-| 5 | `review_image` | Form | Shows still; `decision` = Approve / Change; optional `change_notes` |
-| 6 | `if_change` | IF | Change → adjust; Approve → video prompt form |
-| 7 | `adjust_prompt` | Edit Fields | Appends change notes onto `image_prompt`; wires back to `image_gen` |
+| 4 | `review_image` | Form | Preview from `image_gen`; `decision` = Approve / Change; optional `change_notes` |
+| 5 | `if_change` | IF | Change → adjust; Approve → `save_still_url` |
+| 6 | `adjust_prompt` | Edit Fields | Appends change notes onto `image_prompt`; wires back to `image_gen` |
+| 7 | `save_still_url` | Edit Fields | **Approve path only** — commits latest `image_gen` URL |
 | 8 | `video_prompt_form` | Form | Field: `video_prompt` (text, required) |
 | 9 | `grok_video_start` | HTTP Request | `POST /v1/videos/generations` + `image.url` |
 | 10 | `wait_video` | Wait | 60s (15s @ 1080p) |
@@ -120,40 +121,13 @@ Duplicate your working Imagine node (e.g. `Grok_imagine_story` / `GROK_Imagine`)
 }) }}
 ```
 
-**Test:** Response has `data[0].url`.
+**Test:** Response has `data[0].url`. Do **not** save yet — go to review.
 
 ---
 
-### 4 — `save_still_url` (Edit Fields)
+### 4 — `review_image` (Form)
 
-Include Other Input Fields = **ON**
-
-| Name | Value (fx ON) |
-|---|---|
-| `still_url` | `{{ $('image_gen').item.json.data[0].url }}` |
-| `image_prompt` | `{{ $('build_prompt').item.json.image_prompt || $json.image_prompt }}` |
-
-After the adjust loop, prefer:
-
-```text
-{{ $('adjust_prompt').item.json.image_prompt || $('build_prompt').item.json.image_prompt }}
-```
-
-only if `adjust_prompt` has run; simplest safe pattern once both exist:
-
-```text
-{{ $json.image_prompt || $('build_prompt').item.json.image_prompt }}
-```
-
-(with `adjust_prompt` always rewriting `image_prompt` into the item).
-
-**Test:** `still_url` is a full https URL; open it — 9:16 still.
-
----
-
-### 5 — `review_image` (Form)
-
-Pauses the execution for human review.
+Pauses the execution for human review. Preview the **latest** `image_gen` URL (no `save_still_url` yet).
 
 | Setting | Value |
 |---|---|
@@ -165,14 +139,14 @@ Pauses the execution for human review.
 HTML preview element (adapt to your n8n Form HTML field):
 
 ```html
-<img src="{{ $json.still_url }}" alt="still" style="max-width:100%;height:auto;border-radius:8px;" />
+<img src="{{ $('image_gen').item.json.data[0].url }}" alt="still" style="max-width:100%;height:auto;border-radius:8px;" />
 ```
 
 **Test:** Form shows the still; submitting Approve or Change continues the run.
 
 ---
 
-### 6 — `if_change` (IF)
+### 5 — `if_change` (IF)
 
 | | |
 |---|---|
@@ -180,12 +154,12 @@ HTML preview element (adapt to your n8n Form HTML field):
 | Operation | Equal |
 | Value 2 | `Change` |
 
-- **True** → `adjust_prompt`  
-- **False** (Approve) → `video_prompt_form`
+- **True** → `adjust_prompt` → `image_gen` → `review_image` (loop; still not saved)  
+- **False** (Approve) → `save_still_url`
 
 ---
 
-### 7 — `adjust_prompt` (Edit Fields)
+### 6 — `adjust_prompt` (Edit Fields)
 
 Include Other Input Fields = **ON**
 
@@ -193,21 +167,50 @@ Default = **append** change notes onto current prompt:
 
 | Name | Value (fx ON) |
 |---|---|
-| `image_prompt` | `{{ [String($('save_still_url').item.json.image_prompt || ''), String($json.change_notes || '').trim()].filter(Boolean).join('. Change: ') }}` |
+| `image_prompt` | `{{ [String($json.image_prompt || $('adjust_prompt').item.json.image_prompt || $('build_prompt').item.json.image_prompt || ''), String($json.change_notes || '').trim()].filter(Boolean).join('. Change: ') }}` |
 
-One-line tweak for **full rewrite** instead of append:
+Safer first-pass expression (avoids self-reference on first Change):
 
 ```text
-{{ String($json.change_notes || '').trim() || String($('save_still_url').item.json.image_prompt || '') }}
+{{ [String($('build_prompt').item.json.image_prompt || ''), String($json.change_notes || '').trim()].filter(Boolean).join('. Change: ') }}
 ```
 
-**Wire:** `adjust_prompt` → back into `image_gen` (same node). Then `image_gen` → `save_still_url` → `review_image` again.
+On later Change passes, either keep appending from the last approved prompt field you carry on the item, or switch to full rewrite:
+
+```text
+{{ String($json.change_notes || '').trim() || String($('build_prompt').item.json.image_prompt || '') }}
+```
+
+**Wire:** `adjust_prompt` → `image_gen` → `review_image` again. **No** `save_still_url` on this branch.
+
+---
+
+### 7 — `save_still_url` (Edit Fields) — Approve path only
+
+Runs **after** review Approve (and after any adjust loops). This is the only place the still URL is committed.
+
+Include Other Input Fields = **ON**
+
+| Name | Value (fx ON) |
+|---|---|
+| `still_url` | `{{ $('image_gen').item.json.data[0].url }}` |
+| `image_prompt` | `{{ $json.image_prompt || $('adjust_prompt').item.json.image_prompt || $('build_prompt').item.json.image_prompt }}` |
+
+If `adjust_prompt` never ran, the `$('adjust_prompt')` lookup can error in n8n — use this guard:
+
+```text
+{{ (() => { try { return $('adjust_prompt').item.json.image_prompt; } catch (e) { return $('build_prompt').item.json.image_prompt; } })() }}
+```
+
+**Wire:** `if_change` false → `save_still_url` → `video_prompt_form`
+
+**Test:** `still_url` is the **approved** still (post-adjust if you changed). Open it — 9:16.
 
 ---
 
 ### 8 — `video_prompt_form` (Form)
 
-On the Approve path only.
+After `save_still_url` only.
 
 | Setting | Value |
 |---|---|
@@ -242,7 +245,7 @@ Duplicate Imagine / video HTTP node for auth. Rename to `grok_video_start`.
 }) }}
 ```
 
-**Test:** Response includes `request_id`.
+**Test:** Response includes `request_id`. Animates the **saved/approved** still only.
 
 ---
 
@@ -305,12 +308,12 @@ Include Other Input Fields = **ON**
 ## Smoke test (end to end)
 
 1. Open `idea_form` Test URL → submit an idea  
-2. Confirm `image_gen` returns a 9:16 still  
-3. On `review_image`: try **Change** once → confirm regen → then **Approve**  
-4. On `video_prompt_form`: type a short motion prompt (e.g. “slow push-in, soft blue rim light, ambient lab only”)  
-5. Confirm `grok_video_start` returns `request_id`  
-6. Let poll loop until `done`  
-7. Open `video_url`
+2. Confirm `image_gen` returns a 9:16 still (**not** saved yet)  
+3. On `review_image`: try **Change** once → confirm regen → confirm `save_still_url` still has **not** run  
+4. **Approve** → `save_still_url` commits that final still  
+5. On `video_prompt_form`: type a short motion prompt  
+6. Confirm `grok_video_start` uses `$('save_still_url').item.json.still_url` and returns `request_id`  
+7. Let poll loop until `done` → open `video_url`
 
 ---
 
