@@ -23,6 +23,7 @@ Do not only say “updated the CSV” — always paste the link.
 - New node names: `lower_case_with_underscores`
 - One node (or tight group) at a time, with exact node names
 - Keep `vid_gen_landscape_scenes` separate from the original workflow
+- When giving Sal each node to build: **start with node type**, then **all parameters**, then a short **why this node** explanation
 
 ## Social / Imagine
 - Aspect ratio for this landscape/social workflow: always **9:16**
