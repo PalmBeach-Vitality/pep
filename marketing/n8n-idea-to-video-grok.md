@@ -124,10 +124,10 @@ Use that for `still_url` so Approve uses first still, Change uses refined still.
 | `model_video` | `grok-imagine-video-1.5` |
 | `status` | `done` |
 
-### Spreadsheet — `idea_to_video_runs`
+### Spreadsheet — `idea-to-video-pbv-log`
 
-CSV: `marketing/sheets/idea_to_video_runs.csv`  
-Tab name (exact): **`idea_to_video_runs`**
+CSV: `marketing/sheets/idea-to-video-pbv-log.csv`  
+Tab name (exact): **`idea-to-video-pbv-log`**
 
 Columns: `run_id`, `created_at`, `idea`, `adjust`, `still_url`, `video_url`, `video_request_id`, `duration_seconds`, `aspect_ratio`, `resolution`, `model_video`, `status`
 

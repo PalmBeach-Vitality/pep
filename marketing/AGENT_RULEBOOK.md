@@ -17,7 +17,7 @@ For the landscape scenes sheet on the current plan branch:
 
 For idea-to-video run log on this branch:
 
-`https://github.com/PalmBeach-Vitality/pep/blob/cursor/idea-to-video-nodes-0b73/marketing/sheets/idea_to_video_runs.csv`
+`https://github.com/PalmBeach-Vitality/pep/blob/cursor/idea-to-video-nodes-0b73/marketing/sheets/idea-to-video-pbv-log.csv`
 
 Also acceptable: the matching `raw.githubusercontent.com` URL when Sal needs a direct download/import URL.
 
