@@ -1,78 +1,85 @@
-# Idea → Image → Adjust → 15s Video (Grok)
+# Idea → Image → IF adjust → 15s Video (Grok)
 
 **Status:** Ready to build node-by-node  
 **Branch:** `cursor/idea-to-video-nodes-0b73`
 
-Simple flow:
-
-1. Paste a **detailed image description** (`idea`)  
-2. Create the still  
-3. **Review** the still URL  
-4. Paste a **second prompt** with corrections (`adjust`)  
-5. Regenerate the still with corrections applied  
-6. Save still → **15s / 1080p / 9:16** video  
+1. Paste detailed image description  
+2. Create still  
+3. Review still URL  
+4. Set **Approve** or **Change**  
+5. IF Change → second prompt → refine still  
+6. Both paths → save still → 15s video  
 
 ---
 
 ## Chain
 
 ```text
-manual_start        Manual Trigger
-  → idea_input      Edit Fields      ← first prompt (detailed description)
-  → image_gen       HTTP Request     first still
-  → adjust_input    Edit Fields      ← second prompt (corrections)  [REVIEW HERE]
-  → image_refine    HTTP Request     second still (idea + adjust)
-  → save_still_url  Edit Fields      commit refined still_url
-  → grok_video_start HTTP Request    animate still → 15s
-  → wait_video      Wait             60s
-  → grok_video_poll HTTP Request     GET status
-  → if_video_ready  IF
-       false → wait_video
-       true  → save_video_url
+manual_start
+  → idea_input              Edit Fields   ← first prompt (idea)
+  → image_gen               HTTP Request  first still
+  → review_input            Edit Fields   ← decision = Approve | Change  (+ adjust text if Change)
+  → if_change               IF            decision Equal Change
+       true  → adjust_prompt → image_refine ──┐
+       false ─────────────────────────────────┼→ save_still_url
+                                              → grok_video_start
+                                              → wait_video
+                                              → grok_video_poll
+                                              → if_video_ready
+                                                   false → wait_video
+                                                   true  → save_video_url
 ```
 
-After `image_gen`, open `data[0].url`, decide what to fix, put that in `adjust_input`, then continue.
+**True path (Change):** write corrections → regenerate still → save → video  
+**False path (Approve):** skip refine → save first still → video  
+**Both paths end at:** `save_still_url` → video chain
 
 ---
 
 ## House conventions
 
 - Node names: `lower_case_with_underscores`
-- One node at a time
-- When giving Sal each node: **node type first**, then **all parameters**, then **why**
+- One node at a time; handoff = **type → all parameters → why**
 - Still: `grok-imagine-image-quality`, `2k`, `9:16`
 - Video: `grok-imagine-video-1.5`, `15`, `1080p`, `9:16`
 - Auth: same xAI Header Auth as `GROK_Imagine`
-- HTTP bodies: **Raw** + `application/json` + `={{ JSON.stringify(...) }}`
-- `idea_input` / `adjust_input`: Edit Fields **Manual Mapping**, String fields (not JSON Output)
+- HTTP bodies: Raw + `application/json` + `={{ JSON.stringify(...) }}`
+- Edit Fields: **Manual Mapping**, String fields
 
 ---
 
-## Nodes (summary)
+## Key node settings
 
-### `idea_input` — Manual Mapping, field `idea` (String)
+### `review_input` (Edit Fields)
 
-### `image_gen` — POST `/v1/images/generations`
+| Field | Type | Value |
+|---|---|---|
+| `decision` | String | `Approve` or `Change` |
+| `adjust` | String | corrections if Change; leave empty if Approve |
 
-```text
-={{ JSON.stringify({
-  model: 'grok-imagine-image-quality',
-  prompt: String($('idea_input').item.json.idea || ''),
-  aspect_ratio: '9:16',
-  resolution: '2k',
-  n: 1
-}) }}
-```
+### `if_change` (IF)
 
-### `adjust_input` — Manual Mapping, field `adjust` (String)
+| | |
+|---|---|
+| Value 1 | `{{ $json.decision }}` |
+| Operation | Equal |
+| Value 2 | `Change` |
 
-Second prompt. Example for current still:
+- **True** → `adjust_prompt` → `image_refine` → `save_still_url`  
+- **False** → `save_still_url`
 
-```text
-Only ONE vial in the entire frame. Remove the duplicate second vial. Single clear glass 10ml vial only. Keep the robotic claw, 3 claw marks, sparks, and label details.
-```
+### `adjust_prompt` (Edit Fields)
 
-### `image_refine` — POST `/v1/images/generations` (duplicate of `image_gen`)
+Pass-through / normalize adjust text for refine:
+
+| Field | Value |
+|---|---|
+| `adjust` | `{{ $json.adjust }}` |
+| `idea` | `{{ $('idea_input').item.json.idea }}` |
+
+### `image_refine` (HTTP Request)
+
+Same as `image_gen`, body prompt = idea + corrections:
 
 ```text
 ={{ JSON.stringify({
@@ -80,7 +87,7 @@ Only ONE vial in the entire frame. Remove the duplicate second vial. Single clea
   prompt: [
     String($('idea_input').item.json.idea || ''),
     'CRITICAL CORRECTIONS (must follow):',
-    String($('adjust_input').item.json.adjust || '')
+    String($('adjust_prompt').item.json.adjust || $('review_input').item.json.adjust || '')
   ].join(' '),
   aspect_ratio: '9:16',
   resolution: '2k',
@@ -88,6 +95,19 @@ Only ONE vial in the entire frame. Remove the duplicate second vial. Single clea
 }) }}
 ```
 
-### `save_still_url` — `still_url` from `image_refine` (the corrected still)
+### `save_still_url` (Edit Fields) — merge node
 
-### then video poll chain as before
+```text
+still_url = {{ $json.data?.[0]?.url || $('image_refine').item.json.data?.[0]?.url || $('image_gen').item.json.data[0].url }}
+```
+
+Safer explicit version:
+
+```text
+={{ (() => {
+  try { return $('image_refine').item.json.data[0].url; } catch (e) {}
+  return $('image_gen').item.json.data[0].url;
+})() }}
+```
+
+Use that for `still_url` so Approve uses first still, Change uses refined still.
