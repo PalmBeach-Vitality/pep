@@ -99,12 +99,6 @@ Same as `image_gen`, body prompt = idea + corrections:
 ### `save_still_url` (Edit Fields) — merge node
 
 ```text
-still_url = {{ $json.data?.[0]?.url || $('image_refine').item.json.data?.[0]?.url || $('image_gen').item.json.data[0].url }}
-```
-
-Safer explicit version:
-
-```text
 ={{ (() => {
   try { return $('image_refine').item.json.data[0].url; } catch (e) {}
   return $('image_gen').item.json.data[0].url;
@@ -112,3 +106,29 @@ Safer explicit version:
 ```
 
 Use that for `still_url` so Approve uses first still, Change uses refined still.
+
+### `save_video_url` — include `created_at`
+
+| Field | Value (fx ON) |
+|---|---|
+| `created_at` | `{{ $now.toISO() }}` |
+| `run_id` | `{{ $now.toISO() + '-' + String(Math.floor(Math.random() * 1000000)).padStart(6, '0') }}` |
+| `video_url` | `{{ $('grok_video_poll').item.json.video.url }}` |
+| `still_url` | `{{ $('save_still_url').item.json.still_url }}` |
+| `idea` | `{{ $('idea_input').item.json.idea }}` |
+| `adjust` | `{{ $('review_input').item.json.adjust || '' }}` |
+| `video_request_id` | `{{ $('grok_video_start').item.json.request_id }}` |
+| `duration_seconds` | `15` |
+| `aspect_ratio` | `9:16` |
+| `resolution` | `1080p` |
+| `model_video` | `grok-imagine-video-1.5` |
+| `status` | `done` |
+
+### Spreadsheet — `idea_to_video_runs`
+
+CSV: `marketing/sheets/idea_to_video_runs.csv`  
+Tab name (exact): **`idea_to_video_runs`**
+
+Columns: `run_id`, `created_at`, `idea`, `adjust`, `still_url`, `video_url`, `video_request_id`, `duration_seconds`, `aspect_ratio`, `resolution`, `model_video`, `status`
+
+After every successful run: Google Sheets **Append** via `sheets_append_run`.

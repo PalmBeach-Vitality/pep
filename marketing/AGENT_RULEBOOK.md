@@ -15,6 +15,10 @@ For the landscape scenes sheet on the current plan branch:
 
 `https://github.com/PalmBeach-Vitality/pep/blob/cursor/vig-gen-500-scenes-plan-7786/marketing/sheets/500_peptide_wellness_reel_scenes.csv`
 
+For idea-to-video run log on this branch:
+
+`https://github.com/PalmBeach-Vitality/pep/blob/cursor/idea-to-video-nodes-0b73/marketing/sheets/idea_to_video_runs.csv`
+
 Also acceptable: the matching `raw.githubusercontent.com` URL when Sal needs a direct download/import URL.
 
 Do not only say “updated the CSV” — always paste the link.

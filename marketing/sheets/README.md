@@ -7,6 +7,7 @@
 | `1-compounds-vials.csv` | `1-compounds-vials` |
 | `2-product-page-mapping-pens.csv` | `2-product-page-mapping-pens` |
 | `2-product-page-mapping-vials.csv` | `2-product-page-mapping-vials` |
+| `idea_to_video_runs.csv` | `idea_to_video_runs` |
 
 ## What changed (FDA-aligned)
 - Chemical / peptide names only (no KLOW, Wolverine, GLOW nicknames)
