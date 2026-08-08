@@ -18,20 +18,20 @@
 manual_start
   → idea_input              Edit Fields   ← first prompt (idea)
   → image_gen               HTTP Request  first still
-  → review_input            Edit Fields   ← decision = Approve | Change  (+ adjust text if Change)
-  → if_change               IF            decision Equal Change
-       true  → adjust_prompt → image_refine ──┐
-       false ─────────────────────────────────┼→ save_still_url
-                                              → grok_video_start
-                                              → wait_video
-                                              → grok_video_poll
-                                              → if_video_ready
-                                                   false → wait_video
-                                                   true  → save_video_url
+  → review_input            Edit Fields   ← adjust field (empty = approve, filled = fix)
+  → if_adjust_empty         IF            review_input.adjust is empty
+       true  (empty)  → save_still_url ─────────────────┐
+       false (has text) → adjust_prompt → image_refine ─┼→ save_still_url
+                                                        → grok_video_start
+                                                        → wait_video
+                                                        → grok_video_poll
+                                                        → if_video_ready
+                                                             false → wait_video
+                                                             true  → save_video_url
 ```
 
-**True path (Change):** write corrections → regenerate still → save → video  
-**False path (Approve):** skip refine → save first still → video  
+**True (adjust empty):** no changes — save first still → video  
+**False (adjust has text):** run second prompt → regenerate → save refined still → video  
 **Both paths end at:** `save_still_url` → video chain
 
 ---
@@ -54,19 +54,20 @@ manual_start
 
 | Field | Type | Value |
 |---|---|---|
-| `decision` | String | `Approve` or `Change` |
-| `adjust` | String | corrections if Change; leave empty if Approve |
+| `adjust` | String | leave **empty** to approve; paste corrections to refine |
 
-### `if_change` (IF)
+No `decision` field — emptiness of `adjust` is the switch.
 
-| | |
+### `if_adjust_empty` (IF)
+
+| Side | Value |
 |---|---|
-| Value 1 | `{{ $json.decision }}` |
-| Operation | Equal |
-| Value 2 | `Change` |
+| Left (field) | `{{ $json.adjust }}` (fx ON) |
+| Operator | **is empty** |
+| Right | *(none — is empty has no second value)* |
 
-- **True** → `adjust_prompt` → `image_refine` → `save_still_url`  
-- **False** → `save_still_url`
+- **True** (`adjust` empty) → `save_still_url`  
+- **False** (`adjust` has text) → `adjust_prompt` → `image_refine` → `save_still_url`
 
 ### `adjust_prompt` (Edit Fields)
 
