@@ -52,7 +52,8 @@ Starts the workflow when you click Execute / Test workflow.
 
 ### 2 — `idea_input` (Edit Fields / Set)
 
-Paste your detailed image description into field `idea` before each run.
+**Mode: Manual Mapping** (not JSON Output — multiline descriptions break JSON Output).  
+Add one String field `idea` and paste the detailed image description into the value.
 
 ### 3 — `image_gen` (HTTP Request)
 
