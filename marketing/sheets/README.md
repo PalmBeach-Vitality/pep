@@ -7,7 +7,7 @@
 | `1-compounds-vials.csv` | `1-compounds-vials` |
 | `2-product-page-mapping-pens.csv` | `2-product-page-mapping-pens` |
 | `2-product-page-mapping-vials.csv` | `2-product-page-mapping-vials` |
-| `3-image-scenes-150.csv` | `3-image-scenes-150` (**image scene library — captions match scene product**) |
+| `3-image-lab-scenes-150.csv` / `3-image-scenes-150.csv` | `3-image-lab-scenes-150` (**300 lab scenes — staggered compound + scene_brief**) |
 
 ## What changed (FDA-aligned)
 - Chemical / peptide names only (no KLOW, Wolverine, GLOW nicknames)
@@ -33,7 +33,7 @@
 3. Share the spreadsheet with the Google account connected to n8n
 
 ## n8n daily image queue (scene + matching caption)
-Point Sheets read node at tab: **`3-image-scenes-150`**
+Point Sheets read node at tab: **`3-image-lab-scenes-150`** (or `3-image-scenes-150` if not renamed)
 
 Cadence:
 - Schedule = **Days / 1**
