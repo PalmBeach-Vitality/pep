@@ -1,9 +1,10 @@
 # vid_gen_palm_beach_pep — Plan (4 stills · ~60s · VO)
 
-**Status:** Execute pack ready — follow `marketing/n8n-vid-gen-palm-beach-pep-execute.md`  
+**Status:** BUILD STARTED — follow `marketing/n8n-vid-gen-palm-beach-pep-execute.md` (Phase 0 → A first)  
 **Workflow:** `vid_gen_palm_beach_pep`  
 **Sheet / CSV:** `150-pb-pep-scenes` / `marketing/sheets/150-pb-pep-scenes.csv`  
-**Length:** **~60 seconds** (4× ~15s beats + TTS voiceover)
+**Length:** **~60 seconds** (4× ~15s beats + TTS voiceover)  
+**Character lock:** canonical Pep master PNG via `/v1/images/edits` (`n8n-pep-character-lock.md`)
 
 ---
 
@@ -12,6 +13,7 @@
 - **~1 minute** final cut
 - **Duplicate nodes** from current landscape video sequence
 - Build in a **duplicated** workflow renamed `vid_gen_palm_beach_pep` — do not edit live landscape
+- **Identical Pep** every still = one master reference image (`pep_ref_url`), not text-only regen
 
 ---
 

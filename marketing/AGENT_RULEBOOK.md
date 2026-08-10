@@ -31,6 +31,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - Keep `vid_gen_palm_beach_pep` separate from other video workflows
 - Pep plan: `marketing/n8n-vid-gen-palm-beach-pep-weekly-plan.md`
 - Pep execute guide: `marketing/n8n-vid-gen-palm-beach-pep-execute.md`
+- Pep character lock: `marketing/n8n-pep-character-lock.md` (master PNG via image edits)
 
 ## Social / Imagine
 - Aspect ratio for Pep + landscape social workflows: always **9:16**

@@ -22,6 +22,14 @@ const pepScript = row.pep_script || '';
 const disclaimer = row.disclaimer_short ||
   'For laboratory research use only. Not for human use or consumption. Not a drug, dietary supplement, or cosmetic. Not evaluated by the FDA.';
 
+// Canonical Pep master PNG — set once on prep_pep_breakdown as pep_ref_url
+const pepRefUrl = String(row.pep_ref_url || '').trim();
+if (!pepRefUrl) {
+  throw new Error(
+    'Missing pep_ref_url. Set the public URL of the canonical Palm Beach Pep master PNG on prep_pep_breakdown before running stills.'
+  );
+}
+
 const pepLock = [
   'CHARACTER LOCK — Palm Beach Pep: anthropomorphic clear 10mL sterile injectable-style glass vial,',
   'rubber stopper + silver aluminum crimp seal only (NOT screw-cap, NOT black twist cap),',
@@ -95,6 +103,7 @@ return [{
     creation_id: row.creation_id || '',
     compound_id: compoundId,
     compound_name: compound,
+    pep_ref_url: pepRefUrl,
     target_duration_seconds: 60,
     beat_count: 4,
     beat_a_brief: beats.a.brief,
