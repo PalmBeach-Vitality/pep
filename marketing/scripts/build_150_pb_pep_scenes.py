@@ -16,7 +16,7 @@ PEP_LOCK = (
     "CHARACTER LOCK — Palm Beach Pep: anthropomorphic clear 10mL sterile injectable-style glass vial, "
     "rubber stopper + silver aluminum crimp seal (NOT screw-cap, NOT black twist cap), white mid-body label "
     "with cheerful cartoon face (large round eyes, open smile with pink tongue, rosy cheeks) and bold '10ml' text, "
-    "white baseball cap with blue molecular structure pattern on the crimp cap, simple gray tube arms and legs, "
+    "white baseball cap with Palm Beach Vitality sunset and palm-tree logo on the crimp cap, simple gray tube arms and legs, "
     "white cartoon gloves, rounded white sneakers, optimistic thumbs-up energy. Clean sticker/clip-art style with thick outlines. "
     "No humans. No doctor offices. No hospitals."
 )
@@ -516,7 +516,7 @@ CLOSERS = [
 ]
 
 MICROS = [
-    "He tips his molecular hat once.",
+    "He tips his Palm Beach Vitality hat once.",
     "He glances at his 10ml label, then smiles.",
     "He settles his sneakers, then thumbs-up.",
     "A soft breeze moves his hat brim.",

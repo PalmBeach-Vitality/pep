@@ -9,12 +9,12 @@
 
 ## START NOW — Phase 0 + Phase A (today)
 
-### Phase 0 — Lock Pep master (required for identical likeness)
-1. Export the official Pep PNG (full body, clean bg).
-2. Host at a **stable public image URL**.
-3. Keep that URL handy — you will paste it into `pep_ref_url`.
+### Phase 0 — Pep master LOCKED
+**Master URL:** `https://files.catbox.moe/2yfdbi.jpg`  
+**Repo backup:** `marketing/assets/palm-beach-pep-master.jpg`  
+**Docs:** `marketing/n8n-pep-character-lock.md`
 
-> Without this URL, still nodes must not run. Text-only Pep regenerates and **will drift**.
+Paste this exact value into `pep_ref_url` on `prep_pep_breakdown` (also hardcoded as default in `prep_pep_beats`).
 
 ### Phase A — Duplicate workflow + one-row pick
 1. In n8n: open your current landscape video workflow (screenshot sequence).
@@ -28,7 +28,7 @@
 
 | Name | Value |
 |---|---|
-| `pep_ref_url` | `https://YOUR-HOST/palm-beach-pep-master.png` ← paste real URL |
+| `pep_ref_url` | `https://files.catbox.moe/2yfdbi.jpg` |
 | `creation_id` | `{{ $json.creation_id }}` |
 | `compound_id` | `{{ $json.compound_id }}` |
 | `compound_name` | `{{ $json.compound_name }}` |

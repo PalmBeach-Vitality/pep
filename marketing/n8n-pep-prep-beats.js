@@ -22,20 +22,21 @@ const pepScript = row.pep_script || '';
 const disclaimer = row.disclaimer_short ||
   'For laboratory research use only. Not for human use or consumption. Not a drug, dietary supplement, or cosmetic. Not evaluated by the FDA.';
 
-// Canonical Pep master PNG — set once on prep_pep_breakdown as pep_ref_url
-const pepRefUrl = String(row.pep_ref_url || '').trim();
+// Canonical Pep master — default locked URL (override via prep_pep_breakdown.pep_ref_url if needed)
+const PEP_MASTER_DEFAULT = 'https://files.catbox.moe/2yfdbi.jpg';
+const pepRefUrl = String(row.pep_ref_url || PEP_MASTER_DEFAULT).trim();
 if (!pepRefUrl) {
-  throw new Error(
-    'Missing pep_ref_url. Set the public URL of the canonical Palm Beach Pep master PNG on prep_pep_breakdown before running stills.'
-  );
+  throw new Error('Missing pep_ref_url. Canonical Pep master URL is required.');
 }
 
 const pepLock = [
-  'CHARACTER LOCK — Palm Beach Pep: anthropomorphic clear 10mL sterile injectable-style glass vial,',
+  'CHARACTER LOCK — use master Pep reference exactly (https://files.catbox.moe/2yfdbi.jpg).',
+  'Anthropomorphic clear 10mL sterile injectable-style glass vial,',
   'rubber stopper + silver aluminum crimp seal only (NOT screw-cap, NOT black twist cap),',
   'white mid-body label with cheerful cartoon face and bold 10ml text,',
-  'white baseball cap with blue molecular pattern, gray tube limbs, white gloves, white sneakers,',
-  'optimistic thumbs-up energy, clean sticker/clip-art style with thick outlines.',
+  'white baseball cap with Palm Beach Vitality sunset + palm-tree logo,',
+  'gray tube limbs, white cartoon gloves, rounded white sneakers,',
+  'optimistic thumbs-up energy, clean 3D-cartoon / sticker style with bold outlines.',
   'No humans. No doctor offices. No hospitals.',
 ].join(' ');
 

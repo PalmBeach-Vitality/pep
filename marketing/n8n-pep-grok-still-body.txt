@@ -6,10 +6,11 @@
 # Body Content Type: JSON
 # Expression (fx ON)
 #
-# Character consistency: ALWAYS pass Pep master as images[0] (<IMAGE_0>).
-# Beats B–D also pass still A as images[1] (<IMAGE_1>) for scene continuity.
-#
-# === BEAT A body ===
+# MASTER: https://files.catbox.moe/2yfdbi.jpg
+# Always pass Pep master as images[0] (<IMAGE_0>).
+# Beats B–D also pass still A as images[1] (<IMAGE_1>).
+
+# === BEAT A ===
 
 {{ JSON.stringify({
   model: 'grok-imagine-image-quality',
@@ -17,11 +18,11 @@
   resolution: '2k',
   n: 1,
   images: [
-    { url: String($('prep_pep_beats').item.json.pep_ref_url || $('prep_pep_breakdown').item.json.pep_ref_url || '') }
+    { url: String($('prep_pep_beats').item.json.pep_ref_url || 'https://files.catbox.moe/2yfdbi.jpg') }
   ],
   prompt: [
     'Use <IMAGE_0> as the EXACT Palm Beach Pep character reference.',
-    'Do NOT redesign Pep. Preserve identical face, eyes, smile, rosy cheeks, 10ml label typography, white molecular baseball cap, silver aluminum crimp seal, clear glass vial body, liquid level, gray tube limbs, white gloves, white sneakers, line weight, and sticker/clip-art style.',
+    'Do NOT redesign Pep. Preserve identical face, eyes, smile, rosy cheeks, 10ml label typography, white baseball cap with Palm Beach Vitality sunset palm-tree logo, silver aluminum crimp seal, clear glass vial body, liquid level, gray tube limbs, white gloves, white sneakers, line weight, and cartoon style from <IMAGE_0>.',
     'Place this exact character into a new vertical 9:16 full-environment scene.',
     'Scene / beat A: ' + String($('prep_pep_beats').item.json.beat_a_brief || '') + '.',
     'Surface: ' + String($('prep_pep_beats').item.json.surface || '') + '.',
@@ -38,18 +39,7 @@
   ].join(' ')
 }) }}
 
-# === BEAT B / C / D body pattern ===
-# Same as above, but:
-# 1) images includes Pep master + still A:
-#    images: [
-#      { url: pep_ref_url },
-#      { url: $('save_still_a').item.json.reel_still_url_a || $('save_still_a').item.json.data[0].url }
-#    ]
-# 2) prompt adds:
-#    'Keep Pep identity from <IMAGE_0> exactly. Match environment family / lighting from <IMAGE_1>, but use beat B/C/D action.'
-# 3) swap beat_a_brief → beat_b_brief (or c/d) and beat_a_motion → beat_b_motion (or c/d)
-#
-# Full beat B example:
+# === BEAT B (duplicate pattern for C/D; swap beat letters) ===
 
 {{ JSON.stringify({
   model: 'grok-imagine-image-quality',
@@ -57,12 +47,12 @@
   resolution: '2k',
   n: 1,
   images: [
-    { url: String($('prep_pep_beats').item.json.pep_ref_url || $('prep_pep_breakdown').item.json.pep_ref_url || '') },
+    { url: String($('prep_pep_beats').item.json.pep_ref_url || 'https://files.catbox.moe/2yfdbi.jpg') },
     { url: String($('save_still_a').item.json.reel_still_url_a || ($('save_still_a').item.json.data && $('save_still_a').item.json.data[0] && $('save_still_a').item.json.data[0].url) || '') }
   ],
   prompt: [
     'Use <IMAGE_0> as the EXACT Palm Beach Pep character reference. Do NOT redesign Pep.',
-    'Preserve identical face, hat, crimp seal, label, limbs, gloves, sneakers, and sticker style from <IMAGE_0>.',
+    'Preserve identical face, Palm Beach Vitality hat logo, crimp seal, 10ml label, limbs, gloves, sneakers, and style from <IMAGE_0>.',
     'Use <IMAGE_1> only for environment / lighting continuity of the same scene family.',
     'Create beat B product-clarity moment: ' + String($('prep_pep_beats').item.json.beat_b_brief || '') + '.',
     'Only change pose slightly (label glance / smile) and keep Pep mid-ground.',

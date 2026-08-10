@@ -41,7 +41,7 @@ const grade = prep.color_grade || '';
 
 const videoPrompt = [
   'Animate this 9:16 vertical still of Palm Beach Pep into a 15-second vertical film beat.',
-  'Character: Palm Beach Pep must stay consistent (10mL crimp-seal vial mascot, molecular hat, white gloves/sneakers).',
+  'Character: Palm Beach Pep must stay consistent (10mL crimp-seal vial mascot, Palm Beach Vitality hat, white gloves/sneakers).',
   `Product lock: ${compound} (${prep.compound_id || ''}).`,
   `Beat ${BEAT.toUpperCase()} intent: ${brief}`,
   `Motion: ${motion}.`,
