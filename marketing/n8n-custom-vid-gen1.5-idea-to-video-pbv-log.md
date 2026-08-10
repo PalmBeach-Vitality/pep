@@ -245,6 +245,27 @@ Duplicate `image_gen` → rename `image_refine`.
 
 ---
 
+## Node 8b — `video_prompt_input` (optional — swap in/out)
+
+**Node type:** Edit Fields (Set)
+
+| Parameter | Value |
+|---|---|
+| Node name | `video_prompt_input` |
+| Mode | Manual Mapping |
+| Keep Only Set Fields | OFF (keep `still_url` from previous node) |
+| Include Other Input Fields | **ON** |
+| Field Name | `video_prompt` |
+| Type | String |
+| Value | paste your motion / video prompt (Fixed) |
+
+**Why:** Separate node you can wire in when you want a custom video prompt, or leave disconnected and use the default in `grok_video_start`.
+
+**Wire when using it:** `save_still_url` → `video_prompt_input` → `grok_video_start`  
+**Wire when skipping it:** `save_still_url` → `grok_video_start`
+
+---
+
 ## Node 9 — `grok_video_start`
 
 **Node type:** HTTP Request
@@ -260,13 +281,13 @@ Duplicate `image_gen` → rename `image_refine`.
 | Body Content Type | Raw |
 | Timeout | `300000` |
 
-**Body (fx ON):**
+**Body (fx ON)** — uses `video_prompt_input` when present, else default:
 
 ```text
 ={{ JSON.stringify({
   model: 'grok-imagine-video-1.5',
-  prompt: 'Animate this image into a smooth 15-second vertical video. Slow cinematic camera, keep subject identity, label readability, and composition. No new text, no people added, no needles, no injection.',
-  image: { url: String($('save_still_url').item.json.still_url || '') },
+  prompt: String($json.video_prompt || (() => { try { return $('video_prompt_input').item.json.video_prompt; } catch (e) { return ''; } })() || 'Animate this image into a smooth 15-second vertical video. Slow cinematic camera, keep subject identity, label readability, and composition. No new text, no people added, no needles, no injection.'),
+  image: { url: String($json.still_url || $('save_still_url').item.json.still_url || '') },
   duration: 15,
   aspect_ratio: '9:16',
   resolution: '1080p'
@@ -275,7 +296,7 @@ Duplicate `image_gen` → rename `image_refine`.
 
 **Why:** Starts image-to-video; returns `request_id`.
 
-**Wire:** `save_still_url` → `grok_video_start`  
+**Wire:** `save_still_url` → (`video_prompt_input` optional) → `grok_video_start`  
 **Test:** output includes `request_id`.
 
 ---
