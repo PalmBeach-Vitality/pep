@@ -1,16 +1,13 @@
-# Approved Pep still (Sal QC pass — keep as likeness reference)
+# Approved Pep still A (Sal QC pass)
 
-**Still URL:**  
+## Source (xAI temp — may expire)
 https://imgen.x.ai/xai-imgen/xai-tmp-imgen-85b8f792-9b01-9cf8-9f27-b990bda1fd41-4c613761.jpeg
 
-**Locked JSON body (expression only):**  
-`marketing/n8n-pep-grok-still-body-lock.txt`
+## Saved in repo (use this)
+- File: `marketing/assets/palm-beach-pep-approved-still-a.jpeg`
+- Blob: https://github.com/PalmBeach-Vitality/pep/blob/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-approved-still-a.jpeg
+- Raw: https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-approved-still-a.jpeg
 
-**Config that produced this:**
-- POST `https://api.x.ai/v1/images/edits`
-- model `grok-imagine-image`
-- resolution `1k`
-- `image: { url: <master>, type: 'image_url' }`
-- EDIT THIS IMAGE ONLY + PIXEL-IDENTITY LOCK prompt
-
-Note: xAI `imgen.x.ai` temp URLs can expire. For long-term reference, re-download and store under `marketing/assets/` if needed.
+## Produced by
+Locked body: `marketing/n8n-pep-grok-still-body-lock.txt`  
+Master: `marketing/assets/palm-beach-pep-master.jpg`
