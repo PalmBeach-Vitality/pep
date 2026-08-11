@@ -27,6 +27,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 ## n8n
 - New node names: `lower_case_with_underscores`
 - One node (or tight group) at a time, with exact node names
+- **When telling Sal to add a node, always show wire context:** `before_node` → **`new_node`** → `after_node`
 - Keep `vid_gen_landscape_scenes` separate from the original workflow
 - Keep `vid_gen_palm_beach_pep` separate from other video workflows
 - **#1 PRIORITY — Pep character lock:** Pep must match master `https://files.catbox.moe/2yfdbi.jpg` exactly every still. Use `/v1/images/edits` + `<IMAGE_0>` master. Never `/generations` for Pep. QC still vs master before video. See `marketing/n8n-pep-character-lock.md` and `marketing/n8n-pep-grok-still-body-lock.txt`
@@ -35,6 +36,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - Pep character lock: `marketing/n8n-pep-character-lock.md`
 - Pep video stack: `marketing/n8n-pep-elevenlabs-video.md` (ElevenLabs cartoon intent → fal Kling I2V + ElevenLabs TTS; keep exact node names)
 - Pep fal + Kling setup: `marketing/n8n-pep-fal-kling-setup.md`
+- Pep lip-sync now: `marketing/n8n-pep-lipsync-setup.md`
 
 ## Social / Imagine
 - Aspect ratio for Pep + landscape social workflows: always **9:16**
