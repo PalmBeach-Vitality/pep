@@ -27,18 +27,28 @@ We only allow **EDIT the master** (`/v1/images/edits`) with `<IMAGE_0>` = master
 
 ---
 
-## Path A — Strong EDIT (use now)
+## Path A — LOCKED WORKING EDIT (Sal QC pass)
 **Node:** `grok_imagine_reel_still`  
 **URL:** `POST https://api.x.ai/v1/images/edits`  
-**Body:** paste `marketing/n8n-pep-grok-still-body-lock.txt`
+**Timeout:** `300000`  
+**Body:** paste **only** the expression in `marketing/n8n-pep-grok-still-body-lock.txt` (no `#` comments in the field)
+
+Working config (do not change without Sal QC):
+- model: `grok-imagine-image`
+- resolution: `1k`
+- shape: singular `image: { url, type: 'image_url' }`
+- master default: GitHub raw `marketing/assets/palm-beach-pep-master.jpg`
+
+**Approved still example (Pep likeness pass):**  
+https://imgen.x.ai/xai-imgen/xai-tmp-imgen-85b8f792-9b01-9cf8-9f27-b990bda1fd41-4c613761.jpeg
 
 Must be true in request preview:
-1. Endpoint is `/images/edits` (not `/generations`)
-2. `images[0].url` is exactly the master URL
-3. Prompt starts with `EDIT <IMAGE_0> only` + `PIXEL-IDENTITY locked`
-4. Prompt forbids redesign; only background + tiny pose change
+1. Endpoint is `/images/edits`
+2. `image.url` is the master
+3. `image.type` is `image_url`
+4. Prompt starts with `EDIT THIS IMAGE ONLY` + identity lock
 
-**QC gate (manual for now):** open still next to master. Face, hat logo, crimp, 10ml label, gloves, sneakers must match. If not → rerun node.
+**QC gate:** open still next to master. Face / hat logo / crimp / gloves / sneakers must match. If not → rerun.
 
 ---
 
