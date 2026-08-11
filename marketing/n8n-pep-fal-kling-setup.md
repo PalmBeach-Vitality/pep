@@ -1,7 +1,11 @@
 # SETUP — fal.ai + Kling I2V for Pep (n8n)
 
-Get fal billing + API key live, then wire Beat A video nodes.  
-Keep **exact** canvas names: `prep_grok_video_start` → `grok_video_start` → `grok_video_poll` → `save_video_url`.
+Get fal billing + API key live, then wire Beat A video.  
+**Preferred:** official fal community node (`@fal-ai/n8n-nodes-fal`).  
+**Fallback:** HTTP Request queue submit/poll (appendix).
+
+Keep **exact** canvas names: `prep_grok_video_start` → `grok_video_start` → `grok_video_poll` → `save_video_url`.  
+You can convert `grok_video_start` to the fal node type **without renaming** the node.
 
 **Model:** Kling Video v3 Pro · image-to-video  
 **Endpoint id:** `fal-ai/kling-video/v3/pro/image-to-video`
@@ -13,14 +17,130 @@ Keep **exact** canvas names: `prep_grok_video_start` → `grok_video_start` → 
 1. Go to [https://fal.ai](https://fal.ai) → **Sign up** / Log in.
 2. Open the dashboard: [https://fal.ai/dashboard](https://fal.ai/dashboard).
 3. **Add billing / credits**  
-   - Dashboard → **Billing** (or Account → Billing)  
-   - Add a payment method and buy credits (Kling Pro I2V burns credits per ~15s clip — start with a small top-up for smoke tests).
+   - Dashboard → **Billing**  
+   - Add a payment method and buy a small credit pack for smoke tests.
 4. **Create an API key**  
    - [https://fal.ai/dashboard/keys](https://fal.ai/dashboard/keys)  
-   - **Create key** → copy it once (looks like a long secret string).  
-   - Store it somewhere safe. You will paste it into n8n as `Key <paste>`.
+   - **Create key** → copy once.
 
-Smoke-check the key works (optional, from any terminal):
+---
+
+## Part 2 — Install the fal n8n node
+
+1. n8n → **Settings** → **Community Nodes** → **Install**.
+2. Package: `@fal-ai/n8n-nodes-fal`
+3. Install → refresh the editor.
+4. Credentials → add **fal.ai API** (credential type from that package) → paste your API key.
+
+Self-hosted manual install (if needed):
+
+```bash
+cd ~/.n8n/nodes
+npm install @fal-ai/n8n-nodes-fal
+```
+
+---
+
+## Part 3 — Prep code node (Beat A)
+
+Node name (exact): **`prep_grok_video_start`**
+
+1. Paste [`marketing/n8n-pep-prep-video-beat.js`](./n8n-pep-prep-video-beat.js)
+2. Leave `const BEAT = 'a';`
+3. Mode: **Run Once for Each Item**
+4. Wire: `save_still_url` → `prep_grok_video_start`
+
+**Smoke:** output has `video_request_body.start_image_url`, `video_prompt`, `model_video` = `fal-kling-v3-pro-i2v`.
+
+---
+
+## Part 4 — fal node as `grok_video_start` (preferred)
+
+1. Open (or replace the HTTP type of) node **`grok_video_start`** with the **fal.ai** node.  
+   - Keep the **exact name** `grok_video_start`.
+2. Credential: fal.ai API key from Part 2.
+3. Operation: **Generate Media** (or **Image to Video → Generate**, depending on package UI).
+4. Model / endpoint: `fal-ai/kling-video/v3/pro/image-to-video`
+5. Map fields from prep:
+
+| fal field | Expression |
+|---|---|
+| Prompt | `{{ $json.video_request_body.prompt }}` or `{{ $json.video_prompt }}` |
+| Start image URL | `{{ $json.video_request_body.start_image_url }}` |
+| Duration | `15` (or `{{ $json.video_request_body.duration }}`) |
+| Generate audio | `false` |
+| Negative prompt | `{{ $json.video_request_body.negative_prompt }}` |
+
+6. If the node offers queue / wait options: prefer **wait for completion** so you don’t need a manual poll loop.  
+   - If it only submits: keep `grok_video_poll` for status (Part 5).  
+   - If it waits and returns the file: you can no-op or thin out `grok_video_poll` but **keep the node name** in the chain for expressions.
+
+Wire: `prep_grok_video_start` → `grok_video_start` → (`grok_video_poll` if needed) → `save_video_url`.
+
+**Tip:** Use **Get Model Info** once on that endpoint to see the exact parameter names your installed node version expects.
+
+---
+
+## Part 5 — Poll only if the fal node doesn’t wait
+
+If Generate Media already returns `video.url`, skip to Part 6.
+
+Otherwise keep **`grok_video_poll`** (Wait + status/result) using the `request_id` from `grok_video_start`, same as the HTTP appendix below.
+
+---
+
+## Part 6 — Save URL
+
+Node name (exact): **`save_video_url`**
+
+| Field | Value |
+|---|---|
+| `video_url` | `{{ $json.video.url }}` (or whatever path the fal node returns — check one successful run) |
+| `creation_id` | `{{ $('prep_pep_beats').item.json.creation_id \|\| $('Limit').item.json.creation_id }}` |
+| `model_video` | `fal-kling-v3-pro-i2v` |
+
+Then → `sheets_update_creation`.
+
+---
+
+## Part 7 — Beat A smoke checklist
+
+- [ ] fal account has credits
+- [ ] `@fal-ai/n8n-nodes-fal` installed
+- [ ] fal API credential saved
+- [ ] Pep still public URL on `save_still_url`
+- [ ] `prep_grok_video_start` builds the I2V body
+- [ ] `grok_video_start` (fal node) completes with a playable URL
+- [ ] ~15s clip, Pep recognizable, no Kling speech fighting VO
+
+If Pep morphs: fix still lock first, then re-run I2V.
+
+---
+
+## Cost / practical notes
+
+- Use duration `5` for a cheap likeness smoke; production prep uses `15`.
+- Still URL must be publicly fetchable by fal.
+- Do **not** rename canvas nodes. Duplicate `_b` / `_c` / `_d` only after Beat A works.
+
+---
+
+## Appendix — HTTP Request fallback (no fal node)
+
+Credential: Header Auth · Name `Authorization` · Value `Key YOUR_FAL_KEY`
+
+**`grok_video_start`** POST  
+`https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video`  
+Body: `={{ $json.video_request_body }}`
+
+**`grok_video_poll`**  
+1. Wait 20–30s  
+2. GET `…/requests/{{ $('grok_video_start').item.json.request_id }}/status`  
+3. Loop until `COMPLETED`  
+4. GET `…/requests/{{ $('grok_video_start').item.json.request_id }}`  
+5. `{{ $json.video.url }}`
+
+Optional curl key smoke:
 
 ```bash
 curl -s -X POST "https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video" \
@@ -34,159 +154,13 @@ curl -s -X POST "https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video"
   }'
 ```
 
-You should get JSON with a `request_id`. If you get `401` / `403`, the key or billing is wrong.
-
----
-
-## Part 2 — n8n credential
-
-1. In n8n → **Credentials** → **Add credential**.
-2. Choose **Header Auth**.
-3. Set:
-   - **Name** (credential label): `fal.ai Header Auth` (or similar)
-   - **Header Name:** `Authorization`
-   - **Header Value:** `Key YOUR_FAL_KEY`  
-     (literal word `Key`, then a space, then the key — example: `Key fal_…`)
-4. Save.
-
----
-
-## Part 3 — Prep code node (Beat A)
-
-Node name (exact): **`prep_grok_video_start`**
-
-1. Open the Code node (or create it if missing).
-2. Paste the full file from the repo:  
-   [`marketing/n8n-pep-prep-video-beat.js`](./n8n-pep-prep-video-beat.js)
-3. Leave `const BEAT = 'a';` for Beat A.
-4. Mode: **Run Once for Each Item**.
-5. Wire: `save_still_url` → `prep_grok_video_start`.
-
-This node builds `video_request_body` with:
-- `start_image_url` = Pep still from `save_still_url`
-- `duration` = `"15"`
-- `generate_audio` = `false` (VO comes from ElevenLabs later)
-- cartoon-safe prompt + negative prompt
-
-**Smoke:** Manual run through a successful still → prep. Confirm output has:
-- `fal_submit_url`
-- `video_request_body.start_image_url` (https URL)
-- `model_video` = `fal-kling-v3-pro-i2v`
-
----
-
-## Part 4 — Start job node
-
-Node name (exact): **`grok_video_start`** (HTTP Request)
-
-| Setting | Value |
-|---|---|
-| Method | `POST` |
-| URL | `https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video` |
-| Authentication | Generic Credential Type → **Header Auth** → your fal credential |
-| Send Body | ON |
-| Body Content Type | JSON |
-| Specify Body | Using JSON |
-
-**JSON body** (pick one):
-
-```text
-={{ $json.video_request_body }}
-```
-
-or, if your n8n build wants a string:
-
-```text
-={{ $json.video_request_body_string }}
-```
-
-Wire: `prep_grok_video_start` → `grok_video_start`.
-
-**Smoke:** Run once. Output must include `request_id`. Copy it if you need to debug.
-
----
-
-## Part 5 — Poll until done
-
-fal jobs are async. Use a small loop: Wait → status → IF complete → get result.
-
-### 5a. Wait
-Add a **Wait** node after `grok_video_start` (e.g. 20–30 seconds first pass).
-
-### 5b. Status check — can stay on node name `grok_video_poll` for Beat A
-
-HTTP Request:
-
-| Setting | Value |
-|---|---|
-| Method | `GET` |
-| URL | `https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video/requests/{{ $('grok_video_start').item.json.request_id }}/status` |
-| Authentication | Same fal Header Auth |
-
-### 5c. IF node
-- If `{{ $json.status }}` equals `COMPLETED` → go to **result** request (below).
-- Else → back to Wait (loop). Also fail/branch on `FAILED`.
-
-Typical statuses: `IN_QUEUE`, `IN_PROGRESS`, `COMPLETED`, `FAILED`.
-
-### 5d. Result fetch
-HTTP Request (can be a second request inside the poll path, or reuse `grok_video_poll` after status is complete):
-
-| Setting | Value |
-|---|---|
-| Method | `GET` |
-| URL | `https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video/requests/{{ $('grok_video_start').item.json.request_id }}` |
-| Authentication | Same fal Header Auth |
-
-Video URL path:
-
-```text
-{{ $json.video.url }}
-```
-
----
-
-## Part 6 — Save URL
-
-Node name (exact): **`save_video_url`** (Set / Edit Fields)
-
-| Field | Value |
-|---|---|
-| `video_url` | `{{ $json.video.url }}` |
-| `creation_id` | `{{ $('prep_pep_beats').item.json.creation_id \|\| $('Limit').item.json.creation_id }}` |
-| `model_video` | `fal-kling-v3-pro-i2v` |
-
-Then → `sheets_update_creation` as already documented.
-
----
-
-## Part 7 — Beat A smoke checklist
-
-- [ ] fal account has credits
-- [ ] Header Auth credential = `Key …` (word Key + space + secret)
-- [ ] Pep still exists on `save_still_url` (public https URL)
-- [ ] `prep_grok_video_start` outputs `video_request_body`
-- [ ] `grok_video_start` returns `request_id`
-- [ ] Poll reaches `COMPLETED`
-- [ ] `video.url` plays as ~15s 9:16 clip with Pep recognizable
-- [ ] No Kling speech (audio off) — silent/ambient only
-
-If Pep morphs badly: still lock first (master edits), then re-run I2V. Kling can only hold what the still already shows.
-
----
-
-## Cost / practical notes
-
-- Pro I2V at 15s costs more than a 5s smoke — use `"duration": "5"` in a one-off test body if you want a cheap likeness check, then switch back to `"15"` from the prep code for production beats.
-- Still URL must be publicly fetchable by fal (catbox / CDN / signed URL that doesn’t expire mid-job).
-- Do **not** rename canvas nodes. Duplicate `_b` / `_c` / `_d` only after Beat A works.
-
 ---
 
 ## Links
 
 - fal keys: https://fal.ai/dashboard/keys  
-- Kling v3 Pro I2V model page: https://fal.ai/models/fal-ai/kling-video/v3/pro/image-to-video  
+- fal n8n node: https://www.npmjs.com/package/@fal-ai/n8n-nodes-fal  
+- Kling v3 Pro I2V: https://fal.ai/models/fal-ai/kling-video/v3/pro/image-to-video  
 - Pep video stack: `marketing/n8n-pep-elevenlabs-video.md`  
 - Execute guide: `marketing/n8n-vid-gen-palm-beach-pep-execute.md`  
 - Prep code: `marketing/n8n-pep-prep-video-beat.js`
