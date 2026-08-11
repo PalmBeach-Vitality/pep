@@ -1,4 +1,5 @@
-// Node: prep_pep_video_a / prep_pep_video_b / prep_pep_video_c / prep_pep_video_d (Code)
+// Node for Beat A: use EXACT canvas name prep_grok_video_start
+// Duplicates later: prep_grok_video_start_b / _c / _d
 // Mode: Run Once for Each Item
 // IMPORTANT: change BEAT to 'a' | 'b' | 'c' | 'd' in each duplicated node
 
@@ -13,14 +14,15 @@ const prep = (() => {
   try { return $('prep_pep_beats').item.json; } catch (e) { return $json; }
 })();
 
+// Exact canvas still save for A = save_still_url; B/C/D = save_still_url_b/c/d
 function stillUrlFor(beat) {
-  const nodeName = `save_still_${beat}`;
+  const nodeName = beat === 'a' ? 'save_still_url' : `save_still_url_${beat}`;
   try {
     const j = $(nodeName).item.json;
     return (
+      j.reel_still_url ||
       j[`reel_still_url_${beat}`] ||
       j.data?.[0]?.url ||
-      j.reel_still_url ||
       ''
     );
   } catch (e) {
@@ -30,7 +32,8 @@ function stillUrlFor(beat) {
 
 const stillUrl = stillUrlFor(BEAT);
 if (!stillUrl) {
-  throw new Error(`Missing still URL for beat ${BEAT}. Check save_still_${BEAT}.`);
+  const expect = BEAT === 'a' ? 'save_still_url' : `save_still_url_${BEAT}`;
+  throw new Error(`Missing still URL for beat ${BEAT}. Check ${expect}.`);
 }
 
 const compound = prep.compound_name || 'research compound';
