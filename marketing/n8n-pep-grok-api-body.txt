@@ -1,0 +1,44 @@
+# Node: GROK_API (HTTP Request)
+# URL: https://api.x.ai/v1/chat/completions
+# Method: POST
+# Auth: xAI Bearer / Header (same as landscape captions)
+# Send Body: JSON
+#
+# Fix for: messages[0]: missing field content
+# Cause: content expression empty OR message object missing "content" key
+
+## Body (paste as JSON, expressions ON)
+
+{
+  "model": "grok-4",
+  "temperature": 0.4,
+  "messages": [
+    {
+      "role": "system",
+      "content": "You write short social captions for Palm Beach Pep (anthropomorphic 10mL vial mascot) for Palm Beach Vitality. Research-use-only. No disease, treatment, cure, or human-use claims. No nicknames like KLOW/Wolverine/GLOW — chemical names only. Return ONLY valid JSON with keys: compliance_ok (boolean), display_name (string), ig_caption_draft (string), fb_caption_draft (string), compliance_notes (string)."
+    },
+    {
+      "role": "user",
+      "content": "={{ [`Product: ${$json.compound_name || $('Prep_day_variant').item.json.compound_name} (${$json.compound_id || $('Prep_day_variant').item.json.compound_id})`, `URL: ${$json.canonical_url || $('Prep_day_variant').item.json.canonical_url}`, `Caption lock: ${$json.caption_lock || $('Prep_day_variant').item.json.caption_lock}`, `Scene: ${$json.scene_brief || $('Prep_day_variant').item.json.scene_brief}`, `VO hint: ${$json.voice_over || $('Prep_day_variant').item.json.voice_over || ''}`, `Disclaimer: ${$json.disclaimer_short || $('Prep_day_variant').item.json.disclaimer_short}`, '', 'Write IG + FB captions that obey caption_lock. Keep Pep friendly and simple. End with research-use framing.'].join('\\n') }}"
+    }
+  ]
+}
+
+## Simpler user content (if the array expression fights you)
+
+Use Fixed JSON for the shell, and put ONLY the user content field in Expression mode:
+
+User message content:
+={{
+  'Product: ' + ($json.compound_name || $('Prep_day_variant').item.json.compound_name) +
+  '\nURL: ' + ($json.canonical_url || $('Prep_day_variant').item.json.canonical_url) +
+  '\nCaption lock: ' + ($json.caption_lock || $('Prep_day_variant').item.json.caption_lock) +
+  '\nScene: ' + ($json.scene_brief || $('Prep_day_variant').item.json.scene_brief) +
+  '\nWrite IG + FB captions. Research-use only. JSON keys: compliance_ok, display_name, ig_caption_draft, fb_caption_draft, compliance_notes'
+}}
+
+## Checklist
+- Each message MUST be: { "role": "...", "content": "..." }
+- content must resolve to a non-empty string (not null / not undefined)
+- On Prep_day_variant, confirm caption_lock / compound_name are populated before GROK_API
+- Do not use "text" or "message" instead of "content"
