@@ -1,38 +1,35 @@
 # Node: grok_imagine_reel_still — #1 CHARACTER LOCK (Beat A)
-# CRITICAL PRIORITY: Pep must match master 100% — face, hat logo, vial, gloves, sneakers.
-# Method: POST
-# URL: https://api.x.ai/v1/images/edits   ← NEVER /generations
-# Body Content Type: JSON
+# POST https://api.x.ai/v1/images/edits
 # Entire body = Expression (fx ON)
 #
-# Before Execute: confirm request preview shows images[0].url = master
+# IMPORTANT: xAI official shape uses singular `image` + type image_url
+# (not `images: []` — that can hang / fail silently in n8n)
 
 ={{ JSON.stringify({
   model: 'grok-imagine-image-quality',
   aspect_ratio: '9:16',
-  resolution: '2k',
+  resolution: '1k',
   n: 1,
-  images: [
-    {
-      url: String(
-        $('prep_pep_beats').item.json.pep_ref_url ||
-        $('Prep_day_variant').item.json.pep_ref_url ||
-        'https://files.catbox.moe/2yfdbi.jpg'
-      )
-    }
-  ],
+  image: {
+    url: String(
+      $('prep_pep_beats').item.json.pep_ref_url ||
+      $('Prep_day_variant').item.json.pep_ref_url ||
+      'https://files.catbox.moe/2yfdbi.jpg'
+    ),
+    type: 'image_url'
+  },
   prompt: [
-    'EDIT <IMAGE_0> ONLY.',
-    'CRITICAL #1 PRIORITY: The character in the output MUST be the EXACT SAME character as <IMAGE_0> with ZERO redesign.',
-    'PIXEL-IDENTITY LOCK on Palm Beach Pep from <IMAGE_0>: identical face (eyes, eyebrows, open smile, pink tongue, rosy cheeks), identical white 10ml label art and 10ml typography, identical white baseball cap with Palm Beach Vitality sunset-and-palm-tree logo (same art, same PALM BEACH VITALITY wordmark), identical silver aluminum crimp seal, identical clear glass vial body and liquid line, identical gray tube limbs, identical white cartoon gloves, identical white sneakers, identical outline weight, identical 3D sticker cartoon style, identical proportions.',
+    'EDIT THIS IMAGE ONLY.',
+    'CRITICAL #1 PRIORITY: The character in the output MUST be the EXACT SAME character as the input image with ZERO redesign.',
+    'PIXEL-IDENTITY LOCK on Palm Beach Pep from the input: identical face (eyes, eyebrows, open smile, pink tongue, rosy cheeks), identical white 10ml label art and 10ml typography, identical white baseball cap with Palm Beach Vitality sunset-and-palm-tree logo (same art, same PALM BEACH VITALITY wordmark), identical silver aluminum crimp seal, identical clear glass vial body and liquid line, identical gray tube limbs, identical white cartoon gloves, identical white sneakers, identical outline weight, identical 3D sticker cartoon style, identical proportions.',
     'DO NOT: redraw Pep, stylize Pep, cute-ify Pep, change the face, change the hat logo, change the vial shape, add a screw cap, add a black twist cap, add a dropper, add humans, add extra mascots, or invent a new bottle character.',
     'ALLOWED CHANGES ONLY: (1) replace the solid gray background with a new full-environment 9:16 scene, (2) optional tiny pose tweak (keep thumbs-up energy).',
     'Background / beat A only: ' + String($('prep_pep_beats').item.json.beat_a_brief || '') + '.',
     'Surface: ' + String($('prep_pep_beats').item.json.surface || '') + '.',
-    'Lighting on the ENVIRONMENT only (do not relight Pep into a different character): ' + String($('prep_pep_beats').item.json.lighting || '') + '.',
+    'Lighting on the ENVIRONMENT only: ' + String($('prep_pep_beats').item.json.lighting || '') + '.',
     'Color grade on ENVIRONMENT only: ' + String($('prep_pep_beats').item.json.color_grade || '') + '.',
-    'Compose Pep mid-ground, full body visible, same character scale language as <IMAGE_0>. Not extreme macro. Not void packshot.',
+    'Compose Pep mid-ground, full body visible. Not extreme macro. Not void packshot.',
     'No hospitals, no doctor offices, no clinical rooms, no safety placards, no new on-image text.',
-    'If any conflict: keep Pep identical to <IMAGE_0> and change only the background.'
+    'If any conflict: keep Pep identical to the input character and change only the background.'
   ].join(' ')
 }) }}
