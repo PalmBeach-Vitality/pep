@@ -3,7 +3,7 @@
 ## Canonical master (LOCKED)
 **Public URL:** `https://files.catbox.moe/2yfdbi.jpg`  
 **Repo backup:** `marketing/assets/palm-beach-pep-master.jpg`  
-**n8n field:** `pep_ref_url` on exact node `Prep_day_variant` / passed through exact node `prep_pep_beats`
+**n8n field:** `pep_ref_url` on exact node `Prep_day_variant` / passed through exact node `prep_day_variants`
 
 This file is the single source of truth for Pep’s face, hat, body, gloves, and sneakers.
 

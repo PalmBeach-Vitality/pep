@@ -12,7 +12,7 @@ if (!beats.includes(BEAT)) {
 }
 
 const prep = (() => {
-  try { return $('prep_pep_beats').item.json; } catch (e) { return $json; }
+  try { return $('prep_day_variants').item.json; } catch (e) { return $json; }
 })();
 
 // Still A: save_still_url → grok_imagine_reel_still → incoming json

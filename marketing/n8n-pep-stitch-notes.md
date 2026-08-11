@@ -4,7 +4,7 @@
 Concat beat videos **A → B → C → D** (~15s each) and mux `tts_pep_voice_over` into one **~60s** 9:16 MP4.
 
 ## Node: `tts_pep_voice_over` (ElevenLabs — preferred)
-**Input text:** `{{ $('prep_pep_beats').item.json.voice_over }}`  
+**Input text:** `{{ $('prep_day_variants').item.json.voice_over }}`  
 **Fallback:** join `vo_beat_a`…`vo_beat_d`.
 
 ### ElevenLabs TTS (HTTP Request) — locked for Pep
@@ -15,7 +15,7 @@ Concat beat videos **A → B → C → D** (~15s each) and mux `tts_pep_voice_ov
 
 ```json
 {
-  "text": "{{ $('prep_pep_beats').item.json.voice_over }}",
+  "text": "{{ $('prep_day_variants').item.json.voice_over }}",
   "model_id": "eleven_multilingual_v2",
   "voice_settings": { "stability": 0.45, "similarity_boost": 0.8 }
 }
