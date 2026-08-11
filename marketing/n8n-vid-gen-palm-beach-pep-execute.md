@@ -1,30 +1,76 @@
 # EXECUTE — `vid_gen_palm_beach_pep` (4 stills · ~60s · VO · locked Pep)
 
-**Status:** START BUILD HERE  
+**Status:** BUILD IN PROGRESS — use **EXACT** canvas node names below  
 **Length:** ~60s (4× ~15s) + TTS  
 **Sheet:** `150-pb-pep-scenes`  
-**Character lock:** `marketing/n8n-pep-character-lock.md`
+**Character lock:** `marketing/n8n-pep-character-lock.md`  
+**Pep master:** `https://files.catbox.moe/2yfdbi.jpg`
 
 ---
 
-## START NOW — Phase 0 + Phase A (today)
+## EXACT node names (current canvas — do not rename)
 
-### Phase 0 — Pep master LOCKED
+These are the **exact** n8n node names. All `$('…')` expressions and build steps must use them as written (including casing and the `if_complaince` spelling).
+
+```text
+get_rows_in_sheet
+  → filter_active
+  → sort_rotation
+  → Limit
+  → Prep_day_variant
+  → GROK_API
+  → Parse_Grok
+  → if_complaince
+       false → stop
+       true  → prep_pep_beats
+                 → grok_imagine_reel_still
+                 → save_still_url
+                 → prep_grok_video_start
+                 → grok_video_start
+                 → grok_video_poll
+                 → save_video_url
+                 → sheets_update_creation
+```
+
+| # | Exact node name | Role |
+|---|---|---|
+| 1 | `get_rows_in_sheet` | Read Pep sheet |
+| 2 | `filter_active` | Keep Active rows |
+| 3 | `sort_rotation` | Rotation sort |
+| 4 | `Limit` | One row only |
+| 5 | `Prep_day_variant` | Map row fields + `pep_ref_url` |
+| 6 | `GROK_API` | Caption LLM |
+| 7 | `Parse_Grok` | Parse caption JSON |
+| 8 | `if_complaince` | Compliance gate (exact spelling) |
+| 9 | `prep_pep_beats` | Build 4 beat briefs + VO splits |
+| 10 | `grok_imagine_reel_still` | Pep still (Beat A first; DUP for B–D later) |
+| 11 | `save_still_url` | Save still URL |
+| 12 | `prep_grok_video_start` | Prep I2V body |
+| 13 | `grok_video_start` | Start video |
+| 14 | `grok_video_poll` | Poll video |
+| 15 | `save_video_url` | Save video URL |
+| 16 | `sheets_update_creation` | Writeback |
+
+**Hard rule:** Do not rename these nodes. When adding Beat B–D stills/videos, **duplicate** and use suffixed names only for the new copies (e.g. `grok_imagine_reel_still_b`), leaving the originals above intact.
+
+---
+
+## Phase 0 — Pep master LOCKED
 **Master URL:** `https://files.catbox.moe/2yfdbi.jpg`  
-**Repo backup:** `marketing/assets/palm-beach-pep-master.jpg`  
-**Docs:** `marketing/n8n-pep-character-lock.md`
+**Repo backup:** `marketing/assets/palm-beach-pep-master.jpg`
 
-Paste this exact value into `pep_ref_url` on `prep_pep_breakdown` (also hardcoded as default in `prep_pep_beats`).
+On node **`Prep_day_variant`**, set field:
 
-### Phase A — Duplicate workflow + one-row pick
-1. In n8n: open your current landscape video workflow (screenshot sequence).
-2. **⋯ → Duplicate** → rename **`vid_gen_palm_beach_pep`**.
-3. Disable Schedule (use Manual Trigger while building).
-4. On `get_rows_in_sheet`: point to tab **`150-pb-pep-scenes`**.
-5. Keep `filter_active` → `sort_rotation` → `Limit` (=1).
-6. **Delete / disconnect** `get_reel_creations` → `filter_creations_active` → `pick_creation`.
-7. Rename `Prep_day_variant` → **`prep_pep_breakdown`**.
-8. In `prep_pep_breakdown` add fields (Include Other Input Fields = ON):
+| Name | Value |
+|---|---|
+| `pep_ref_url` | `https://files.catbox.moe/2yfdbi.jpg` |
+
+---
+
+## Phase A — Sheet pick (exact names)
+1. `get_rows_in_sheet` → tab **`150-pb-pep-scenes`**
+2. Keep `filter_active` → `sort_rotation` → `Limit` (=1)
+3. On `Prep_day_variant` (Include Other Input Fields = ON), ensure:
 
 | Name | Value |
 |---|---|
@@ -46,83 +92,101 @@ Paste this exact value into `pep_ref_url` on `prep_pep_breakdown` (also hardcode
 | `video_prompt` | `{{ $json.video_prompt }}` |
 | `video_motion_prompt` | `{{ $json.video_motion_prompt }}` |
 
-9. Manual run through `Limit` → `prep_pep_breakdown`.
-10. Paste smoke result here: `creation_id`, `compound_name`, `pep_ref_url` (confirm URL loads in browser).
-
-**Done when:** one Pep row + master URL locked.
+4. Smoke: Manual run through `Limit` → `Prep_day_variant`  
+5. Paste: `creation_id`, `compound_name`, `pep_ref_url`
 
 ---
 
-## Phase B — Captions + compliance (next)
-| Node | Action |
+## Phase B — Captions + compliance (exact names)
+| Exact node | Action |
 |---|---|
-| `edit_fields_pep_caption` | Rename `Edit Fields1`; force `caption_lock` + disclaimer |
-| `GROK_API` | Keep |
-| `Parse_Grok` | Keep / expose `compliance_ok`, captions, `display_name` |
-| `if_compliance` | Rename from `if_complaince`; false → stop |
+| `GROK_API` | Keep — captions from Prep fields / caption_lock |
+| `Parse_Grok` | Expose `compliance_ok`, captions, `display_name` |
+| `if_complaince` | **true** → `prep_pep_beats`; **false** → stop |
 
 ---
 
-## Phase C — 4 locked Pep stills (character consistency)
-1. Add Code node **`prep_pep_beats`** after compliance true  
-   - Paste `marketing/n8n-pep-prep-beats.js`
-2. **DUPLICATE** `grok_imagine_reel_still` → `grok_pep_still_a`
-   - Change URL to **`https://api.x.ai/v1/images/edits`**
-   - Paste Beat A body from `marketing/n8n-pep-grok-still-body.txt`
-3. **DUPLICATE** `save_still_url` → `save_still_a`  
-   - `reel_still_url_a` = `{{ $json.data[0].url }}`
-4. Duplicate still+save for **b / c / d** (use multi-image body with Pep + still A)
+## Phase C — Locked Pep still (exact names first)
+1. `prep_pep_beats` — paste `marketing/n8n-pep-prep-beats.js`  
+   - Reads `$('Prep_day_variant')` then `$('Limit')`
+2. `grok_imagine_reel_still`
+   - URL → **`https://api.x.ai/v1/images/edits`**
+   - Body → Beat A from `marketing/n8n-pep-grok-still-body.txt`
+   - Pep master = `<IMAGE_0>` via `pep_ref_url`
+3. `save_still_url` — save `reel_still_url` / `data[0].url`
 
-**QC:** Pep must match master in all 4. Reroll drifted stills only.
+**Then duplicate for 4 stills** (keep original names for A):
+
+| Beat | Still node (exact / new) | Save node |
+|---|---|---|
+| A | `grok_imagine_reel_still` | `save_still_url` |
+| B | `grok_imagine_reel_still_b` | `save_still_url_b` |
+| C | `grok_imagine_reel_still_c` | `save_still_url_c` |
+| D | `grok_imagine_reel_still_d` | `save_still_url_d` |
+
+QC Pep likeness against master before video.
 
 ---
 
-## Phase D — 4 videos
-For each beat: `prep_pep_video_x` (from `n8n-pep-prep-video-beat.js`, set `BEAT`)  
-→ DUP `grok_video_start` → wait → DUP `grok_video_poll` → IF ready.
+## Phase D — Video (exact names first)
+| Exact node | Action |
+|---|---|
+| `prep_grok_video_start` | Prep I2V from `save_still_url` (Beat A); later DUP for b/c/d |
+| `grok_video_start` | Start video |
+| `grok_video_poll` | Poll until done |
+| `save_video_url` | Save URL |
+
+Duplicate pattern for beats B–D after A works:
+`prep_grok_video_start_b` → `grok_video_start_b` → `grok_video_poll_b` → …  
+(same for c/d)
 
 ---
 
 ## Phase E — TTS + stitch ~60s
-See `marketing/n8n-pep-stitch-notes.md`.
+See `marketing/n8n-pep-stitch-notes.md`.  
+Add after all beat videos are ready (new nodes OK here).
 
 ---
 
-## Phase F — `sheets_update_pep`
-DUP `sheets_update_creation` → tab `150-pb-pep-scenes`  
-(`marketing/n8n-pep-sheets-update.txt`)
+## Phase F — Writeback (exact name)
+| Exact node | Action |
+|---|---|
+| `sheets_update_creation` | Update tab **`150-pb-pep-scenes`** · match `creation_id` · `last_used_at`, `times_used`, `reel_still_url`, `video_url` |
 
-Buffer only after Sal approves a master.
+Mapping helper: `marketing/n8n-pep-sheets-update.txt` (expressions use these exact names).
 
 ---
 
-## Target chain (full)
+## Expression cheat sheet (exact names)
 
 ```text
-Manual/Schedule
-  → get_rows_in_sheet            # 150-pb-pep-scenes
-  → filter_active
-  → sort_rotation
-  → Limit                        # 1
-  → prep_pep_breakdown           # includes pep_ref_url
-  → edit_fields_pep_caption
-  → GROK_API
-  → Parse_Grok
-  → if_compliance
-       true → prep_pep_beats
-              → grok_pep_still_a → save_still_a
-              → grok_pep_still_b → save_still_b
-              → grok_pep_still_c → save_still_c
-              → grok_pep_still_d → save_still_d
-              → [video a→d start/wait/poll]
-              → tts_pep_voice_over
-              → stitch_pep_master
-              → save_pep_outputs
-              → sheets_update_pep
+$('get_rows_in_sheet')
+$('filter_active')
+$('sort_rotation')
+$('Limit')
+$('Prep_day_variant')
+$('GROK_API')
+$('Parse_Grok')
+$('if_complaince')
+$('prep_pep_beats')
+$('grok_imagine_reel_still')
+$('save_still_url')
+$('prep_grok_video_start')
+$('grok_video_start')
+$('grok_video_poll')
+$('save_video_url')
+$('sheets_update_creation')
 ```
 
 ---
 
-## Why Pep stays identical
-Stills use **`/v1/images/edits`** with the same master PNG as `<IMAGE_0>` every time — not text-only generation.  
-Details: `marketing/n8n-pep-character-lock.md`
+## Support files
+| File | Use |
+|---|---|
+| `marketing/n8n-pep-prep-beats.js` | Code for `prep_pep_beats` |
+| `marketing/n8n-pep-grok-still-body.txt` | Body for `grok_imagine_reel_still` (+ _b/_c/_d) |
+| `marketing/n8n-pep-prep-video-beat.js` | Template for video prep (set BEAT) |
+| `marketing/n8n-pep-save-outputs.txt` | Optional expanded save fields |
+| `marketing/n8n-pep-sheets-update.txt` | `sheets_update_creation` mapping |
+| `marketing/n8n-pep-stitch-notes.md` | TTS + stitch |
+| `marketing/n8n-pep-character-lock.md` | Master likeness rules |

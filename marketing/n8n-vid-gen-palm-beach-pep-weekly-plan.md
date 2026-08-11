@@ -1,46 +1,43 @@
 # vid_gen_palm_beach_pep — Plan (4 stills · ~60s · VO)
 
-**Status:** BUILD STARTED — follow `marketing/n8n-vid-gen-palm-beach-pep-execute.md` (Phase 0 → A first)  
+**Status:** BUILD IN PROGRESS — follow `marketing/n8n-vid-gen-palm-beach-pep-execute.md`  
 **Workflow:** `vid_gen_palm_beach_pep`  
 **Sheet / CSV:** `150-pb-pep-scenes` / `marketing/sheets/150-pb-pep-scenes.csv`  
 **Length:** **~60 seconds** (4× ~15s beats + TTS voiceover)  
-**Character lock:** canonical Pep master PNG via `/v1/images/edits` (`n8n-pep-character-lock.md`)
+**Character lock:** canonical Pep master via `/v1/images/edits` (`n8n-pep-character-lock.md`)
 
 ---
 
 ## Decision lock (Sal)
 - **4 Pep stills** (not 8)
 - **~1 minute** final cut
-- **Duplicate nodes** from current landscape video sequence
-- Build in a **duplicated** workflow renamed `vid_gen_palm_beach_pep` — do not edit live landscape
-- **Identical Pep** every still = one master reference image (`pep_ref_url`), not text-only regen
+- Keep **EXACT** canvas node names (do not rename)
+- **Identical Pep** every still = master `https://files.catbox.moe/2yfdbi.jpg` as `pep_ref_url`
 
 ---
 
-## Current landscape sequence → Pep mapping
+## EXACT node names (locked)
 
-| Current node | Pep action |
-|---|---|
-| Schedule Trigger | Keep (disable until smoke passes) |
-| `get_rows_in_sheet` | Retarget to `150-pb-pep-scenes` |
-| `filter_active` | Keep |
-| `sort_rotation` | Keep |
-| `Limit` | Keep (=1) — **single row lock** |
-| `Prep_day_variant` | Rename → `prep_pep_breakdown` |
-| `Edit Fields1` | Rename → `edit_fields_pep_caption` |
-| `GROK_API` | Keep |
-| `Parse_Grok` | Keep / adapt |
-| `if_complaince` | Rename → `if_compliance` |
-| `get_reel_creations` + `filter_creations_active` + `pick_creation` | **Remove** (prevents second-row mismatch) |
-| `grok_imagine_reel_still` | Duplicate ×4 → `grok_pep_still_a`…`d` |
-| `save_still_url` | Duplicate ×4 → `save_still_a`…`d` |
-| `prep_grok_video_start` | Replace with `prep_pep_video_a`…`d` |
-| `grok_video_start` | Duplicate ×4 |
-| `grok_video_poll` | Duplicate ×4 + waits/IFs |
-| `save_video_url` | Become `save_pep_outputs` |
-| `sheets_update_creation` | Duplicate → `sheets_update_pep` |
+```text
+get_rows_in_sheet
+  → filter_active
+  → sort_rotation
+  → Limit
+  → Prep_day_variant
+  → GROK_API
+  → Parse_Grok
+  → if_complaince
+       true → prep_pep_beats
+              → grok_imagine_reel_still
+              → save_still_url
+              → prep_grok_video_start
+              → grok_video_start
+              → grok_video_poll
+              → save_video_url
+              → sheets_update_creation
+```
 
-**New:** `prep_pep_beats`, `tts_pep_voice_over`, `stitch_pep_master`
+Do **not** rename these. Add Beat B–D only as suffixed duplicates (`*_b`, `*_c`, `*_d`).
 
 ---
 

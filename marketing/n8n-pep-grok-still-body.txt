@@ -1,16 +1,17 @@
-# Node: grok_pep_still_a / _b / _c / _d
-# DUPLICATE from: grok_imagine_reel_still
-# CRITICAL: change URL from /v1/images/generations → /v1/images/edits
+# Node: grok_imagine_reel_still  (EXACT canvas name = Beat A)
+# Duplicates later: grok_imagine_reel_still_b / _c / _d
+# CRITICAL: URL must be /v1/images/edits (not /generations)
 # Method: POST
 # URL: https://api.x.ai/v1/images/edits
 # Body Content Type: JSON
 # Expression (fx ON)
 #
+# EXACT upstream names: prep_pep_beats, Parse_Grok, save_still_url
 # MASTER: https://files.catbox.moe/2yfdbi.jpg
 # Always pass Pep master as images[0] (<IMAGE_0>).
 # Beats B–D also pass still A as images[1] (<IMAGE_1>).
 
-# === BEAT A ===
+# === BEAT A → node grok_imagine_reel_still ===
 
 {{ JSON.stringify({
   model: 'grok-imagine-image-quality',
@@ -18,7 +19,7 @@
   resolution: '2k',
   n: 1,
   images: [
-    { url: String($('prep_pep_beats').item.json.pep_ref_url || 'https://files.catbox.moe/2yfdbi.jpg') }
+    { url: String($('prep_pep_beats').item.json.pep_ref_url || $('Prep_day_variant').item.json.pep_ref_url || 'https://files.catbox.moe/2yfdbi.jpg') }
   ],
   prompt: [
     'Use <IMAGE_0> as the EXACT Palm Beach Pep character reference.',
@@ -39,7 +40,8 @@
   ].join(' ')
 }) }}
 
-# === BEAT B (duplicate pattern for C/D; swap beat letters) ===
+# === BEAT B → node grok_imagine_reel_still_b (DUP; same for _c / _d) ===
+# save node for A is EXACT name: save_still_url
 
 {{ JSON.stringify({
   model: 'grok-imagine-image-quality',
@@ -47,8 +49,8 @@
   resolution: '2k',
   n: 1,
   images: [
-    { url: String($('prep_pep_beats').item.json.pep_ref_url || 'https://files.catbox.moe/2yfdbi.jpg') },
-    { url: String($('save_still_a').item.json.reel_still_url_a || ($('save_still_a').item.json.data && $('save_still_a').item.json.data[0] && $('save_still_a').item.json.data[0].url) || '') }
+    { url: String($('prep_pep_beats').item.json.pep_ref_url || $('Prep_day_variant').item.json.pep_ref_url || 'https://files.catbox.moe/2yfdbi.jpg') },
+    { url: String($('save_still_url').item.json.reel_still_url || ($('save_still_url').item.json.data && $('save_still_url').item.json.data[0] && $('save_still_url').item.json.data[0].url) || '') }
   ],
   prompt: [
     'Use <IMAGE_0> as the EXACT Palm Beach Pep character reference. Do NOT redesign Pep.',

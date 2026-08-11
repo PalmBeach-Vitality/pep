@@ -3,29 +3,21 @@
 # Include Other Input Fields: ON
 
 # Core IDs
-creation_id = {{ $('prep_pep_beats').item.json.creation_id || $('Limit').item.json.creation_id }}
-compound_id = {{ $('prep_pep_beats').item.json.compound_id }}
-compound_name = {{ $('prep_pep_beats').item.json.compound_name }}
+# EXACT canvas names for Beat A path:
+# Prep_day_variant, Parse_Grok, prep_pep_beats, save_still_url,
+# grok_video_poll, save_video_url, sheets_update_creation
 
-# Stills
-reel_still_url = {{ $('save_still_a').item.json.reel_still_url_a || $('save_still_a').item.json.data[0].url }}
-reel_still_url_a = {{ $('save_still_a').item.json.reel_still_url_a || $('save_still_a').item.json.data[0].url }}
-reel_still_url_b = {{ $('save_still_b').item.json.reel_still_url_b || $('save_still_b').item.json.data[0].url }}
-reel_still_url_c = {{ $('save_still_c').item.json.reel_still_url_c || $('save_still_c').item.json.data[0].url }}
-reel_still_url_d = {{ $('save_still_d').item.json.reel_still_url_d || $('save_still_d').item.json.data[0].url }}
+creation_id = {{ $('prep_pep_beats').item.json.creation_id || $('Limit').item.json.creation_id || $('Prep_day_variant').item.json.creation_id }}
+compound_id = {{ $('prep_pep_beats').item.json.compound_id || $('Prep_day_variant').item.json.compound_id }}
+compound_name = {{ $('prep_pep_beats').item.json.compound_name || $('Prep_day_variant').item.json.compound_name }}
 
-# Beat videos (adjust node names if your poll nodes differ)
-beat_a_video_url = {{ $('grok_video_poll_a').item.json.video.url }}
-beat_b_video_url = {{ $('grok_video_poll_b').item.json.video.url }}
-beat_c_video_url = {{ $('grok_video_poll_c').item.json.video.url }}
-beat_d_video_url = {{ $('grok_video_poll_d').item.json.video.url }}
+# Still A (exact node save_still_url)
+reel_still_url = {{ $('save_still_url').item.json.reel_still_url || $('save_still_url').item.json.data[0].url }}
 
-# Master (from stitch node — field name depends on stitch implementation)
-final_video_url = {{ $('stitch_pep_master').item.json.final_video_url || $('stitch_pep_master').item.json.video_url || '' }}
-video_url = {{ $('stitch_pep_master').item.json.final_video_url || $('stitch_pep_master').item.json.video_url || $('grok_video_poll_d').item.json.video.url }}
-tts_audio_url = {{ $('tts_pep_voice_over').item.json.tts_audio_url || $('tts_pep_voice_over').item.json.url || '' }}
+# Beat A video (exact nodes) — expand with _b/_c/_d after duplicates exist
+video_url = {{ $('save_video_url').item.json.video_url || $('grok_video_poll').item.json.video.url }}
 
-# Captions / compliance
+# Captions / compliance (exact node Parse_Grok)
 ig_caption_draft = {{ $('Parse_Grok').item.json.ig_caption_draft }}
 fb_caption_draft = {{ $('Parse_Grok').item.json.fb_caption_draft }}
 compliance_ok = {{ $('Parse_Grok').item.json.compliance_ok }}

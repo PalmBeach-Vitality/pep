@@ -1,10 +1,11 @@
 // Node: prep_pep_beats (Code)
-// After: if_compliance (true)  — uses Limit / prep_pep_breakdown row
+// After: if_complaince (true)  — EXACT canvas name
+// Uses: Prep_day_variant → Limit (EXACT names)
 // Mode: Run Once for Each Item
 // Builds 4 beat briefs for ~60s Pep breakdown (A hook, B product, C world, D close)
 
 const row = (() => {
-  try { return $('prep_pep_breakdown').item.json; } catch (e) {}
+  try { return $('Prep_day_variant').item.json; } catch (e) {}
   try { return $('Limit').item.json; } catch (e) {}
   return $json;
 })();
@@ -22,7 +23,7 @@ const pepScript = row.pep_script || '';
 const disclaimer = row.disclaimer_short ||
   'For laboratory research use only. Not for human use or consumption. Not a drug, dietary supplement, or cosmetic. Not evaluated by the FDA.';
 
-// Canonical Pep master — default locked URL (override via prep_pep_breakdown.pep_ref_url if needed)
+// Canonical Pep master — default locked URL (override via Prep_day_variant.pep_ref_url if needed)
 const PEP_MASTER_DEFAULT = 'https://files.catbox.moe/2yfdbi.jpg';
 const pepRefUrl = String(row.pep_ref_url || PEP_MASTER_DEFAULT).trim();
 if (!pepRefUrl) {
