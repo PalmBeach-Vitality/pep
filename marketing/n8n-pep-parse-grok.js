@@ -1,7 +1,7 @@
 // Node: Parse_Grok (Code)
 // After: GROK_API
 // Mode: Run Once for Each Item
-// Pulls caption JSON from Grok chat.completion and normalizes compliance_ok
+// Ensures compliance_ok is a REAL boolean for if_complaince
 
 const upstream = $json;
 const raw =
@@ -22,46 +22,69 @@ try {
   parsed = JSON.parse(stripFences(raw));
 } catch (e) {
   parse_error = String(e.message || e);
-  // last-ditch: find first {...} block
   try {
     const m = String(raw).match(/\{[\s\S]*\}/);
-    if (m) parsed = JSON.parse(m[0]);
-    else throw e;
+    if (!m) throw e;
+    parsed = JSON.parse(m[0]);
+    parse_error = '';
   } catch (e2) {
     parse_error = String(e2.message || e2);
     parsed = {};
   }
 }
 
-// Normalize boolean — Grok sometimes returns "true"/"false" strings
 function asBool(v) {
-  if (typeof v === 'boolean') return v;
+  if (v === true || v === 1) return true;
+  if (v === false || v === 0) return false;
   if (typeof v === 'string') {
     const s = v.trim().toLowerCase();
-    if (s === 'true' || s === 'yes' || s === '1') return true;
-    if (s === 'false' || s === 'no' || s === '0') return false;
+    if (['true', 'yes', '1', 'ok', 'pass'].includes(s)) return true;
+    if (['false', 'no', '0', 'fail'].includes(s)) return false;
   }
-  if (typeof v === 'number') return v === 1;
   return false;
 }
 
-const compliance_ok = asBool(parsed.compliance_ok);
-const compliance_notes = String(
+// Force native boolean (never string / never undefined)
+const compliance_ok = asBool(parsed.compliance_ok) === true;
+
+let display_name = '';
+let compound_name = '';
+try {
+  compound_name = String($('Prep_day_variant').item.json.compound_name || '');
+} catch (e) {
+  compound_name = '';
+}
+display_name = String(parsed.display_name || compound_name || '');
+
+const ig = String(parsed.ig_caption_draft || parsed.instagram_caption || '');
+const fb = String(parsed.fb_caption_draft || parsed.facebook_caption || '');
+const notes = String(
   parsed.compliance_notes ||
   parsed.notes ||
   (parse_error ? `parse_error: ${parse_error}` : '') ||
-  (compliance_ok ? '' : 'Grok set compliance_ok=false — see captions / caption_lock')
+  ''
 );
+
+// Extra flat flags for IF nodes that struggle with booleans
+const compliance_ok_str = compliance_ok ? 'true' : 'false';
+const compliance_ok_num = compliance_ok ? 1 : 0;
 
 return [{
   json: {
-    ...upstream,
+    // keep upstream chat payload if useful
+    grok_id: upstream.id || null,
+    grok_model: upstream.model || null,
     raw_grok_content: String(raw),
     parse_error: parse_error || null,
+
+    // IF node should use this boolean
     compliance_ok,
-    compliance_notes,
-    display_name: parsed.display_name || $('Prep_day_variant').item.json.compound_name || '',
-    ig_caption_draft: parsed.ig_caption_draft || parsed.instagram_caption || '',
-    fb_caption_draft: parsed.fb_caption_draft || parsed.facebook_caption || '',
+    compliance_ok_str,
+    compliance_ok_num,
+
+    compliance_notes: notes,
+    display_name,
+    ig_caption_draft: ig,
+    fb_caption_draft: fb,
   }
 }];
