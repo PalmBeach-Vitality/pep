@@ -33,6 +33,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - Pep execute guide: `marketing/n8n-vid-gen-palm-beach-pep-execute.md`
 - Pep character lock: `marketing/n8n-pep-character-lock.md` (master PNG via image edits)
 - Pep video stack: `marketing/n8n-pep-elevenlabs-video.md` (ElevenLabs cartoon intent → fal Kling I2V + ElevenLabs TTS; keep exact node names)
+- Pep fal + Kling setup: `marketing/n8n-pep-fal-kling-setup.md`
 
 ## Social / Imagine
 - Aspect ratio for Pep + landscape social workflows: always **9:16**

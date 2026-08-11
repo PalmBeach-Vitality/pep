@@ -131,7 +131,10 @@ QC Pep likeness against master before video.
 
 ## Phase D — Cartoon video via fal Kling (exact names first)
 
-**Why fal, not ElevenLabs HTTP:** ElevenLabs Image & Video / Flows is UI-only today (Flows API “coming soon”). We use **Kling v3 Pro I2V on fal** — same cartoon-strong model family — so n8n can run weekly. Full detail: `marketing/n8n-pep-elevenlabs-video.md`.
+**Why fal, not ElevenLabs HTTP:** ElevenLabs Image & Video / Flows is UI-only today (Flows API “coming soon”). We use **Kling v3 Pro I2V on fal** — same cartoon-strong model family — so n8n can run weekly.  
+
+**Setup (account + key + n8n):** `marketing/n8n-pep-fal-kling-setup.md`  
+**Stack note:** `marketing/n8n-pep-elevenlabs-video.md`
 
 | Exact node | Action |
 |---|---|

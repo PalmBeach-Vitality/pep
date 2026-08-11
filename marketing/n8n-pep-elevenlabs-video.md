@@ -18,6 +18,9 @@ Keep **exact canvas node names** (`prep_grok_video_start`, `grok_video_start`, `
 
 Until Flows API ships, Sal can smoke cartoon motion in the ElevenLabs UI (Image & Video / Flows) with the Pep still as start frame + Kling. Automation stays on fal so the weekly job does not block on the waitlist.
 
+## Full setup (account → n8n)
+Step-by-step: **`marketing/n8n-pep-fal-kling-setup.md`**
+
 ## fal Kling — n8n wiring (Beat A)
 
 Credential: Header Auth  
