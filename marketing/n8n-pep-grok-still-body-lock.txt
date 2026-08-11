@@ -1,20 +1,13 @@
-# Node: grok_imagine_reel_still — #1 CHARACTER LOCK (Beat A)
-# POST https://api.x.ai/v1/images/edits
-# Entire body = Expression (fx ON)
-#
-# IMPORTANT: xAI official shape uses singular `image` + type image_url
-# (not `images: []` — that can hang / fail silently in n8n)
-
 ={{ JSON.stringify({
-  model: 'grok-imagine-image-quality',
+  model: 'grok-imagine-image',
+  n: 1,
   aspect_ratio: '9:16',
   resolution: '1k',
-  n: 1,
   image: {
     url: String(
       $('prep_pep_beats').item.json.pep_ref_url ||
       $('Prep_day_variant').item.json.pep_ref_url ||
-      'https://files.catbox.moe/2yfdbi.jpg'
+      'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-master.jpg'
     ),
     type: 'image_url'
   },
