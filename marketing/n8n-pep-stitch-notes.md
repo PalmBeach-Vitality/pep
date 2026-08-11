@@ -16,8 +16,9 @@ Full A→B→C→D stitch can wait until Beat A lipsync looks right.
 **Beat A smoke text:** `{{ $('prep_pep_beats').item.json.vo_beat_a }}`  
 **Full cut text:** `{{ $('prep_pep_beats').item.json.voice_over }}`
 
-### ElevenLabs TTS (HTTP Request)
-- POST `https://api.elevenlabs.io/v1/text-to-speech/{{voice_id}}?output_format=mp3_44100_128`
+### ElevenLabs TTS (HTTP Request) — locked for Pep
+- Voice ID (Sal locked): `yl2ZDV1MzN4HbQJbMihG`
+- POST `https://api.elevenlabs.io/v1/text-to-speech/yl2ZDV1MzN4HbQJbMihG?output_format=mp3_44100_128`
 - Header: `xi-api-key` = Sal’s ElevenLabs key
 - Header: `Accept` = `audio/mpeg`
 - Body JSON example:
