@@ -1,54 +1,55 @@
-# Pep stitch + TTS notes (~60s master)
+# Pep TTS + lip-sync + stitch notes
 
 ## Goal
-Concat beat videos **A → B → C → D** (~15s each) and mux `tts_pep_voice_over` into one **~60s** 9:16 MP4.
+For each beat (or the master cut): **ElevenLabs VO → lip-sync mouth to audio → final MP4**.
+
+Do lip-sync **now** on Beat A smoke (see `marketing/n8n-pep-lipsync-setup.md`).  
+Full A→B→C→D stitch can wait until Beat A lipsync looks right.
+
+## Order (locked)
+1. `tts_pep_voice_over` (ElevenLabs) → public `tts_audio_url`
+2. Kling talking clip → `video_url` (silent)
+3. fal `sync-lipsync/v3` → `lipsync_video_url`
+4. Later: concat lipsynced beats / or stitch then one VO
 
 ## Node: `tts_pep_voice_over` (ElevenLabs — preferred)
-**Input text:** `{{ $('prep_pep_beats').item.json.voice_over }}`  
-**Fallback:** join `vo_beat_a`…`vo_beat_d`.
+**Beat A smoke text:** `{{ $('prep_pep_beats').item.json.vo_beat_a }}`  
+**Full cut text:** `{{ $('prep_pep_beats').item.json.voice_over }}`
 
-### ElevenLabs TTS (HTTP Request) — locked for Pep
-- POST `https://api.elevenlabs.io/v1/text-to-speech/{{voice_id}}`
+### ElevenLabs TTS (HTTP Request)
+- POST `https://api.elevenlabs.io/v1/text-to-speech/{{voice_id}}?output_format=mp3_44100_128`
 - Header: `xi-api-key` = Sal’s ElevenLabs key
 - Header: `Accept` = `audio/mpeg`
 - Body JSON example:
 
 ```json
 {
-  "text": "{{ $('prep_pep_beats').item.json.voice_over }}",
+  "text": "={{ $('prep_pep_beats').item.json.vo_beat_a || $('prep_pep_beats').item.json.voice_over }}",
   "model_id": "eleven_multilingual_v2",
   "voice_settings": { "stability": 0.45, "similarity_boost": 0.8 }
 }
 ```
 
-- Save binary/file URL → `tts_audio_url`
-- Use a warm, clear brand voice ID Sal picks once; store as workflow static data / credential note
+- Binary MP3 → upload to public host → `tts_audio_url`
 
-### Fallback — OpenAI TTS
-Only if ElevenLabs is down:
-- POST `https://api.openai.com/v1/audio/speech`
-- model: `tts-1` or `gpt-4o-mini-tts`
-- voice: Sal’s choice
-- input: Pep `voice_over`
+## Node: lip-sync (fal)
+- POST `https://queue.fal.run/fal-ai/sync-lipsync/v3`
+- Body: `{ "video_url", "audio_url", "sync_mode": "cut_off" }`
+- Prep code: `marketing/n8n-pep-prep-lipsync.js`
+- Full steps: `marketing/n8n-pep-lipsync-setup.md`
 
-## Node: `stitch_pep_master`
+## Node: `stitch_pep_master` (after all beats)
 
 ### Preferred — ffmpeg (self-hosted n8n Execute Command)
-1. Download beat_a/b/c/d mp4 + tts audio  
-2. `ffmpeg -i a.mp4 -i b.mp4 -i c.mp4 -i d.mp4 -filter_complex concat=n=4:v=1:a=0` (or concat demuxer)  
-3. Mux VO: `-i voice.mp3 -shortest -c:v copy -c:a aac`  
-4. Upload result (S3 / Drive / Files API) → `final_video_url`
+1. Download lipsynced beat_a/b/c/d mp4  
+2. `ffmpeg` concat  
+3. Upload → `final_video_url`
 
 ### Fallback — no ffmpeg yet
-1. Ship Phase D only (4 beat URLs saved)  
-2. Manual stitch once in CapCut/Descript to validate taste  
-3. Add ffmpeg/merge API in a follow-up node pass  
+1. Ship Beat A lipsync first  
+2. Manual stitch in CapCut once for taste  
+3. Add ffmpeg later  
 
 ## Timing
-- 4 × 15s visuals = 60s (fal Kling duration `"15"`)  
-- Trim VO to ≤60s or let `-shortest` cut on video length  
-- Disclaimer must remain audible at the end
-
-## Video provider note
-Beat clips come from **fal Kling v3 Pro I2V** (see `n8n-pep-elevenlabs-video.md`).  
-ElevenLabs Image & Video / Flows is the taste target; TTS uses the ElevenLabs API today.
+- Beat A smoke: ~15s video + `vo_beat_a`  
+- Full: 4 × 15s + full `voice_over` ≤60s / disclaimer at end
