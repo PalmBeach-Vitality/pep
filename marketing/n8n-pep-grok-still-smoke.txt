@@ -1,0 +1,17 @@
+# MINIMAL smoke — grok_imagine_reel_still
+# Use this ONLY to prove the endpoint returns (then swap back to lock body)
+# POST https://api.x.ai/v1/images/edits
+# HTTP node Timeout: 300000 (5 minutes)
+# Entire body = Expression fx ON
+
+={{ JSON.stringify({
+  model: 'grok-imagine-image',
+  n: 1,
+  aspect_ratio: '9:16',
+  resolution: '1k',
+  image: {
+    url: 'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-master.jpg',
+    type: 'image_url'
+  },
+  prompt: 'EDIT THIS IMAGE ONLY. Keep the exact same vial character unchanged. Replace only the gray background with a simple turquoise beach. Do not redesign the character.'
+}) }}
