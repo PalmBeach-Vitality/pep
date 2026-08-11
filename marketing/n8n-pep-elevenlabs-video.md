@@ -23,26 +23,19 @@ Step-by-step: **`marketing/n8n-pep-fal-kling-setup.md`**
 
 ## fal Kling — n8n wiring (Beat A)
 
-Credential: Header Auth  
-- Name: `Authorization`  
-- Value: `Key <FAL_KEY>`
+**Preferred:** official fal community node `@fal-ai/n8n-nodes-fal` on node `grok_video_start` (keep the name).  
+**Fallback:** HTTP Header Auth + queue submit/poll (setup doc appendix).
 
-### `grok_video_start` (HTTP Request)
-- Method: **POST**
-- URL: `https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video`
-- Body JSON: `{{ $json.video_request_body }}` from `prep_grok_video_start`  
-  (or paste `video_request_body_string`)
+### `grok_video_start` (fal node)
+- Install: Settings → Community Nodes → `@fal-ai/n8n-nodes-fal`
+- Credential: fal.ai API key
+- Operation: Generate Media / Image to Video
+- Model: `fal-ai/kling-video/v3/pro/image-to-video`
+- Map prompt + `start_image_url` (+ duration `15`, `generate_audio: false`) from `prep_grok_video_start`
 
-Expected response includes `request_id`.
-
-### `grok_video_poll` (HTTP Request + Wait loop)
-1. Status GET:  
-   `https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video/requests/{{ $json.request_id }}/status`
-2. When status is `COMPLETED`, result GET:  
-   `https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video/requests/{{ $('grok_video_start').item.json.request_id }}`
-3. Video URL: `{{ $json.video.url }}` → `save_video_url`
-
-Use Wait + IF until completed (same pattern as landscape fal polls if you already have one).
+### `grok_video_poll`
+- Skip/pass-through if the fal node waits for completion and returns `video.url`
+- Else poll `request_id` until `COMPLETED` (HTTP appendix in setup doc)
 
 ### Request body shape (from prep code)
 

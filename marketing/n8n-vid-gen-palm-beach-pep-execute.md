@@ -139,9 +139,9 @@ QC Pep likeness against master before video.
 | Exact node | Action |
 |---|---|
 | `prep_grok_video_start` | Paste `marketing/n8n-pep-prep-video-beat.js` (BEAT=`a`). Outputs `video_request_body` for fal Kling |
-| `grok_video_start` | HTTP **POST** `https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video` · Auth `Authorization: Key <FAL_KEY>` · Body = `{{ $json.video_request_body }}` |
-| `grok_video_poll` | Wait + GET status/result for `request_id` until `COMPLETED` · video at `{{ $json.video.url }}` |
-| `save_video_url` | Save `video_url` |
+| `grok_video_start` | **Preferred:** fal community node (`@fal-ai/n8n-nodes-fal`) · Generate Media · model `fal-ai/kling-video/v3/pro/image-to-video` · map fields from prep · **keep this exact node name**. Fallback: HTTP queue POST (see setup doc) |
+| `grok_video_poll` | Only needed if fal node doesn’t wait for completion; else thin/pass-through but keep the name |
+| `save_video_url` | Save `video_url` from fal result (`video.url` or check one successful run) |
 
 Duplicate pattern for beats B–D after A works:
 `prep_grok_video_start_b` → `grok_video_start_b` → `grok_video_poll_b` → …  
