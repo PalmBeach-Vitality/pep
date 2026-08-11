@@ -24,7 +24,7 @@ const disclaimer = row.disclaimer_short ||
   'For laboratory research use only. Not for human use or consumption. Not a drug, dietary supplement, or cosmetic. Not evaluated by the FDA.';
 
 // Canonical Pep master — default locked URL (override via Prep_day_variant.pep_ref_url if needed)
-const PEP_MASTER_DEFAULT = 'https://files.catbox.moe/2yfdbi.jpg';
+const PEP_MASTER_DEFAULT = 'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-master.jpg';
 const pepRefUrl = String(row.pep_ref_url || PEP_MASTER_DEFAULT).trim();
 if (!pepRefUrl) {
   throw new Error('Missing pep_ref_url. Canonical Pep master URL is required.');
