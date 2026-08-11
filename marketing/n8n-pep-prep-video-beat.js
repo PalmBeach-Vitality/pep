@@ -57,7 +57,8 @@ const videoPrompt = [
   `Motion: ${motion}.`,
   `Lighting continuity: ${lighting}.`,
   `Color grade continuity: ${grade}.`,
-  'VIAL SPEC: rubber stopper + aluminum crimp only. FORBIDDEN: black twist caps, screw caps, droppers.',
+  'ONLY ONE CHARACTER: Palm Beach Pep alone. Do NOT add any other vials, bottles, pens, insulin pens, syringes, injectors, droppers, ampoules, or medical devices in the scene.',
+  'VIAL SPEC for Pep only: rubber stopper + aluminum crimp only. FORBIDDEN: black twist caps, screw caps, droppers.',
   'SIGNAGE RULE: no safety placards, no alert graphics, no danger banners, no alert words.',
   'LOCATION RULE: no doctor offices, no hospitals, no clinical exam rooms.',
   'No humans. No new on-screen text. Silent clip (no spoken model audio) — voiceover is added later.',
@@ -66,10 +67,12 @@ const videoPrompt = [
 
 const negativePrompt = [
   'blur, distort, low quality, morphing, deformed vial,',
+  'extra vials, extra bottles, pens, insulin pens, syringes, injectors, needles, droppers, ampoules, medical devices,',
   'human people, faces of people, hospital, doctor office, clinic exam room,',
-  'black twist cap, screw cap, dropper, on-screen text, captions, watermarks,',
+  'black twist cap, screw cap, on-screen text, captions, watermarks,',
   'safety placard, danger banner, alert graphics',
 ].join(' ');
+
 
 const MODEL_VIDEO = 'fal-kling-v3-pro-i2v';
 const FAL_ENDPOINT = 'fal-ai/kling-video/v3/pro/image-to-video';
