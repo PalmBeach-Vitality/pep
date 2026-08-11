@@ -4,12 +4,12 @@
 
 # Core IDs
 # EXACT canvas names for Beat A path:
-# Prep_day_variant, Parse_Grok, prep_day_variant, save_still_url,
+# Prep_day_variant, Parse_Grok, prep_pep_beats, save_still_url,
 # grok_video_poll, save_video_url, sheets_update_creation
 
-creation_id = {{ $('prep_day_variant').item.json.creation_id || $('Limit').item.json.creation_id || $('Prep_day_variant').item.json.creation_id }}
-compound_id = {{ $('prep_day_variant').item.json.compound_id || $('Prep_day_variant').item.json.compound_id }}
-compound_name = {{ $('prep_day_variant').item.json.compound_name || $('Prep_day_variant').item.json.compound_name }}
+creation_id = {{ $('prep_pep_beats').item.json.creation_id || $('Limit').item.json.creation_id || $('Prep_day_variant').item.json.creation_id }}
+compound_id = {{ $('prep_pep_beats').item.json.compound_id || $('Prep_day_variant').item.json.compound_id }}
+compound_name = {{ $('prep_pep_beats').item.json.compound_name || $('Prep_day_variant').item.json.compound_name }}
 
 # Still A (exact node save_still_url)
 reel_still_url = {{ $('save_still_url').item.json.reel_still_url || $('save_still_url').item.json.data[0].url }}

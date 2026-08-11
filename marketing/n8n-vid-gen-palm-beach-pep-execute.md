@@ -23,7 +23,7 @@ get_rows_in_sheet
   → Parse_Grok
   → if_complaince
        false → stop
-       true  → prep_day_variant
+       true  → prep_pep_beats
                  → grok_imagine_reel_still
                  → save_still_url
                  → prep_grok_video_start
@@ -43,7 +43,7 @@ get_rows_in_sheet
 | 6 | `GROK_API` | Caption LLM |
 | 7 | `Parse_Grok` | Parse caption JSON |
 | 8 | `if_complaince` | Compliance gate (exact spelling) |
-| 9 | `prep_day_variant` | Build 4 beat briefs + VO splits |
+| 9 | `prep_pep_beats` | Build 4 beat briefs + VO splits |
 | 10 | `grok_imagine_reel_still` | Pep still (Beat A first; DUP for B–D later) |
 | 11 | `save_still_url` | Save still URL |
 | 12 | `prep_grok_video_start` | Prep fal Kling I2V body |
@@ -103,12 +103,12 @@ On node **`Prep_day_variant`**, set field:
 |---|---|
 | `GROK_API` | Keep — captions from Prep fields / caption_lock |
 | `Parse_Grok` | Expose `compliance_ok`, captions, `display_name` |
-| `if_complaince` | **true** → `prep_day_variant`; **false** → stop |
+| `if_complaince` | **true** → `prep_pep_beats`; **false** → stop |
 
 ---
 
 ## Phase C — Locked Pep still (exact names first)
-1. `prep_day_variant` — paste `marketing/n8n-pep-prep-beats.js`  
+1. `prep_pep_beats` — paste `marketing/n8n-pep-prep-beats.js`  
    - Reads `$('Prep_day_variant')` then `$('Limit')`
 2. `grok_imagine_reel_still`
    - URL → **`https://api.x.ai/v1/images/edits`**
@@ -177,7 +177,7 @@ $('Prep_day_variant')
 $('GROK_API')
 $('Parse_Grok')
 $('if_complaince')
-$('prep_day_variant')
+$('prep_pep_beats')
 $('grok_imagine_reel_still')
 $('save_still_url')
 $('prep_grok_video_start')
@@ -193,7 +193,7 @@ $('sheets_update_creation')
 | File | Use |
 |---|---|
 | `marketing/n8n-pep-elevenlabs-video.md` | ElevenLabs intent + fal Kling wiring |
-| `marketing/n8n-pep-prep-beats.js` | Code for `prep_day_variant` |
+| `marketing/n8n-pep-prep-beats.js` | Code for `prep_pep_beats` |
 | `marketing/n8n-pep-grok-still-body.txt` | Body for `grok_imagine_reel_still` (+ _b/_c/_d) |
 | `marketing/n8n-pep-prep-video-beat.js` | Template for fal Kling video prep (set BEAT) |
 | `marketing/n8n-pep-save-outputs.txt` | Optional expanded save fields |

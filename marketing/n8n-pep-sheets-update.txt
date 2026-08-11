@@ -5,7 +5,7 @@
 # Operation: Update
 # Column to Match On: creation_id
 # Value to Match:
-# {{ $('save_video_url').item.json.creation_id || $('prep_day_variant').item.json.creation_id || $('Limit').item.json.creation_id }}
+# {{ $('save_video_url').item.json.creation_id || $('prep_pep_beats').item.json.creation_id || $('Limit').item.json.creation_id }}
 
 # Columns to update:
 
