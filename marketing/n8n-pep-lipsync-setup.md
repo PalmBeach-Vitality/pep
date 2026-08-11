@@ -32,7 +32,7 @@ For **Beat A only** smoke (match ~15s video):
 | Setting | Value |
 |---|---|
 | Method | `POST` |
-| URL | `https://api.elevenlabs.io/v1/text-to-speech/YOUR_VOICE_ID?output_format=mp3_44100_128` |
+| URL | `https://api.elevenlabs.io/v1/text-to-speech/yl2ZDV1MzN4HbQJbMihG?output_format=mp3_44100_128` |
 | Header | `xi-api-key` = ElevenLabs key |
 | Header | `Accept` = `audio/mpeg` |
 | Body JSON | see below |
