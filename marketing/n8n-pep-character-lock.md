@@ -22,15 +22,27 @@ Every still uses Grok **image edits** with this master as `<IMAGE_0>`:
 POST https://api.x.ai/v1/images/edits
 model: grok-imagine-image-quality
 images[0] = https://files.catbox.moe/2yfdbi.jpg
-prompt    = place THIS exact character into the scene…
+prompt    = EDIT <IMAGE_0> only. Keep character PIXEL-IDENTITY locked…
 aspect_ratio: 9:16
 resolution: 2k
 ```
+
+**Prompt framing matters:** say **EDIT `<IMAGE_0>`** / keep identity locked — not “create a cartoon vial mascot.” Text-only generation will invent a new Pep.
+
+Locked paste body: `marketing/n8n-pep-grok-still-body-lock.txt`
 
 | Beat | `images` |
 |---|---|
 | A | `[pep_master]` |
 | B–D | `[pep_master, still_a]` |
+
+## QC checklist (before video)
+1. URL is `/v1/images/edits` (not `/generations`)
+2. Request body includes `images[0].url` = master (open the HTTP request preview and confirm)
+3. Prompt starts with `EDIT <IMAGE_0> only`
+4. Side-by-side Pep vs master: face, hat logo, crimp, gloves, sneakers match
+5. Reroll drifted stills — do not animate a bad still
+6. If catbox flakes, re-host master and update `pep_ref_url`
 
 ## Rules
 - Do **not** redesign Pep from text alone
