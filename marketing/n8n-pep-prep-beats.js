@@ -126,6 +126,8 @@ return [{
     aspect_ratio: '9:16',
     resolution: '1080p',
     model_still: 'grok-imagine-image-quality',
-    model_video: 'grok-imagine-video-1.5',
+    // Cartoon I2V via fal Kling (ElevenLabs-style models; Flows API not public yet)
+    model_video: 'fal-kling-v3-pro-i2v',
   }
 }];
+

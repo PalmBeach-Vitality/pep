@@ -14,7 +14,7 @@ compound_name = {{ $('prep_pep_beats').item.json.compound_name || $('Prep_day_va
 # Still A (exact node save_still_url)
 reel_still_url = {{ $('save_still_url').item.json.reel_still_url || $('save_still_url').item.json.data[0].url }}
 
-# Beat A video (exact nodes) — expand with _b/_c/_d after duplicates exist
+# Beat A video (exact nodes) — fal Kling result path; expand with _b/_c/_d after duplicates exist
 video_url = {{ $('save_video_url').item.json.video_url || $('grok_video_poll').item.json.video.url }}
 
 # Captions / compliance (exact node Parse_Grok)
@@ -23,4 +23,5 @@ fb_caption_draft = {{ $('Parse_Grok').item.json.fb_caption_draft }}
 compliance_ok = {{ $('Parse_Grok').item.json.compliance_ok }}
 aspect_ratio = 9:16
 target_duration_seconds = 60
-model_video = grok-imagine-video-1.5
+model_video = fal-kling-v3-pro-i2v
+

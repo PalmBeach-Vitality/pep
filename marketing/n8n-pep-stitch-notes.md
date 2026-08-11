@@ -3,21 +3,33 @@
 ## Goal
 Concat beat videos **A → B → C → D** (~15s each) and mux `tts_pep_voice_over` into one **~60s** 9:16 MP4.
 
-## Node: `tts_pep_voice_over`
+## Node: `tts_pep_voice_over` (ElevenLabs — preferred)
 **Input text:** `{{ $('prep_pep_beats').item.json.voice_over }}`  
 **Fallback:** join `vo_beat_a`…`vo_beat_d`.
 
-### Option A — OpenAI TTS (HTTP Request)
+### ElevenLabs TTS (HTTP Request) — locked for Pep
+- POST `https://api.elevenlabs.io/v1/text-to-speech/{{voice_id}}`
+- Header: `xi-api-key` = Sal’s ElevenLabs key
+- Header: `Accept` = `audio/mpeg`
+- Body JSON example:
+
+```json
+{
+  "text": "{{ $('prep_pep_beats').item.json.voice_over }}",
+  "model_id": "eleven_multilingual_v2",
+  "voice_settings": { "stability": 0.45, "similarity_boost": 0.8 }
+}
+```
+
+- Save binary/file URL → `tts_audio_url`
+- Use a warm, clear brand voice ID Sal picks once; store as workflow static data / credential note
+
+### Fallback — OpenAI TTS
+Only if ElevenLabs is down:
 - POST `https://api.openai.com/v1/audio/speech`
 - model: `tts-1` or `gpt-4o-mini-tts`
-- voice: Sal’s choice (e.g. `alloy` / custom)
+- voice: Sal’s choice
 - input: Pep `voice_over`
-- Save file/URL → `tts_audio_url`
-
-### Option B — ElevenLabs (HTTP Request)
-- Use Sal’s ElevenLabs credential / voice ID
-- text: Pep `voice_over`
-- Save file/URL → `tts_audio_url`
 
 ## Node: `stitch_pep_master`
 
@@ -32,10 +44,11 @@ Concat beat videos **A → B → C → D** (~15s each) and mux `tts_pep_voice_ov
 2. Manual stitch once in CapCut/Descript to validate taste  
 3. Add ffmpeg/merge API in a follow-up node pass  
 
-### Fallback B — Grok Extend chain
-If stitch tooling is blocked: start from beat A video, call `/v1/videos/extensions` for B/C/D motion prompts, then mux TTS onto the extended file. Prefer still→video beats first for Pep likeness control.
-
 ## Timing
-- 4 × 15s visuals = 60s  
+- 4 × 15s visuals = 60s (fal Kling duration `"15"`)  
 - Trim VO to ≤60s or let `-shortest` cut on video length  
 - Disclaimer must remain audible at the end
+
+## Video provider note
+Beat clips come from **fal Kling v3 Pro I2V** (see `n8n-pep-elevenlabs-video.md`).  
+ElevenLabs Image & Video / Flows is the taste target; TTS uses the ElevenLabs API today.

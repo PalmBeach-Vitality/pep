@@ -1,9 +1,10 @@
 # EXECUTE — `vid_gen_palm_beach_pep` (4 stills · ~60s · VO · locked Pep)
 
 **Status:** BUILD IN PROGRESS — use **EXACT** canvas node names below  
-**Length:** ~60s (4× ~15s) + TTS  
+**Length:** ~60s (4× ~15s) + ElevenLabs TTS  
 **Sheet:** `150-pb-pep-scenes`  
 **Character lock:** `marketing/n8n-pep-character-lock.md`  
+**Video stack:** `marketing/n8n-pep-elevenlabs-video.md` (fal Kling I2V + ElevenLabs TTS)  
 **Pep master:** `https://files.catbox.moe/2yfdbi.jpg`
 
 ---
@@ -45,9 +46,9 @@ get_rows_in_sheet
 | 9 | `prep_pep_beats` | Build 4 beat briefs + VO splits |
 | 10 | `grok_imagine_reel_still` | Pep still (Beat A first; DUP for B–D later) |
 | 11 | `save_still_url` | Save still URL |
-| 12 | `prep_grok_video_start` | Prep I2V body |
-| 13 | `grok_video_start` | Start video |
-| 14 | `grok_video_poll` | Poll video |
+| 12 | `prep_grok_video_start` | Prep fal Kling I2V body |
+| 13 | `grok_video_start` | Start video (fal Kling queue; keep name) |
+| 14 | `grok_video_poll` | Poll fal until done (keep name) |
 | 15 | `save_video_url` | Save video URL |
 | 16 | `sheets_update_creation` | Writeback |
 
@@ -128,22 +129,27 @@ QC Pep likeness against master before video.
 
 ---
 
-## Phase D — Video (exact names first)
+## Phase D — Cartoon video via fal Kling (exact names first)
+
+**Why fal, not ElevenLabs HTTP:** ElevenLabs Image & Video / Flows is UI-only today (Flows API “coming soon”). We use **Kling v3 Pro I2V on fal** — same cartoon-strong model family — so n8n can run weekly. Full detail: `marketing/n8n-pep-elevenlabs-video.md`.
+
 | Exact node | Action |
 |---|---|
-| `prep_grok_video_start` | Prep I2V from `save_still_url` (Beat A); later DUP for b/c/d |
-| `grok_video_start` | Start video |
-| `grok_video_poll` | Poll until done |
-| `save_video_url` | Save URL |
+| `prep_grok_video_start` | Paste `marketing/n8n-pep-prep-video-beat.js` (BEAT=`a`). Outputs `video_request_body` for fal Kling |
+| `grok_video_start` | HTTP **POST** `https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video` · Auth `Authorization: Key <FAL_KEY>` · Body = `{{ $json.video_request_body }}` |
+| `grok_video_poll` | Wait + GET status/result for `request_id` until `COMPLETED` · video at `{{ $json.video.url }}` |
+| `save_video_url` | Save `video_url` |
 
 Duplicate pattern for beats B–D after A works:
 `prep_grok_video_start_b` → `grok_video_start_b` → `grok_video_poll_b` → …  
 (same for c/d)
 
+**Sheet field:** `model_video` = `fal-kling-v3-pro-i2v`
+
 ---
 
-## Phase E — TTS + stitch ~60s
-See `marketing/n8n-pep-stitch-notes.md`.  
+## Phase E — ElevenLabs TTS + stitch ~60s
+See `marketing/n8n-pep-stitch-notes.md` (ElevenLabs TTS preferred).  
 Add after all beat videos are ready (new nodes OK here).
 
 ---
@@ -183,10 +189,11 @@ $('sheets_update_creation')
 ## Support files
 | File | Use |
 |---|---|
+| `marketing/n8n-pep-elevenlabs-video.md` | ElevenLabs intent + fal Kling wiring |
 | `marketing/n8n-pep-prep-beats.js` | Code for `prep_pep_beats` |
 | `marketing/n8n-pep-grok-still-body.txt` | Body for `grok_imagine_reel_still` (+ _b/_c/_d) |
-| `marketing/n8n-pep-prep-video-beat.js` | Template for video prep (set BEAT) |
+| `marketing/n8n-pep-prep-video-beat.js` | Template for fal Kling video prep (set BEAT) |
 | `marketing/n8n-pep-save-outputs.txt` | Optional expanded save fields |
 | `marketing/n8n-pep-sheets-update.txt` | `sheets_update_creation` mapping |
-| `marketing/n8n-pep-stitch-notes.md` | TTS + stitch |
+| `marketing/n8n-pep-stitch-notes.md` | ElevenLabs TTS + stitch |
 | `marketing/n8n-pep-character-lock.md` | Master likeness rules |

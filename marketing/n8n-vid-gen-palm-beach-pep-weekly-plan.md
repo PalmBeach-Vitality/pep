@@ -3,8 +3,9 @@
 **Status:** BUILD IN PROGRESS — follow `marketing/n8n-vid-gen-palm-beach-pep-execute.md`  
 **Workflow:** `vid_gen_palm_beach_pep`  
 **Sheet / CSV:** `150-pb-pep-scenes` / `marketing/sheets/150-pb-pep-scenes.csv`  
-**Length:** **~60 seconds** (4× ~15s beats + TTS voiceover)  
-**Character lock:** canonical Pep master via `/v1/images/edits` (`n8n-pep-character-lock.md`)
+**Length:** **~60 seconds** (4× ~15s beats + ElevenLabs TTS)  
+**Character lock:** canonical Pep master via `/v1/images/edits` (`n8n-pep-character-lock.md`)  
+**Video stack:** ElevenLabs cartoon intent → **fal Kling v3 Pro I2V** + **ElevenLabs TTS** (`n8n-pep-elevenlabs-video.md`)
 
 ---
 
@@ -13,6 +14,7 @@
 - **~1 minute** final cut
 - Keep **EXACT** canvas node names (do not rename)
 - **Identical Pep** every still = master `https://files.catbox.moe/2yfdbi.jpg` as `pep_ref_url`
+- **Cartoon-friendly motion** (ElevenLabs Image & Video taste) — automate via fal Kling until ElevenLabs Flows API ships
 
 ---
 
@@ -31,8 +33,8 @@ get_rows_in_sheet
               → grok_imagine_reel_still
               → save_still_url
               → prep_grok_video_start
-              → grok_video_start
-              → grok_video_poll
+              → grok_video_start          ← HTTP → fal Kling queue (keep name)
+              → grok_video_poll           ← poll fal result (keep name)
               → save_video_url
               → sheets_update_creation
 ```
@@ -50,7 +52,7 @@ Do **not** rename these. Add Beat B–D only as suffixed duplicates (`*_b`, `*_c
 | C | World | 30–45s |
 | D | Close + disclaimer energy | 45–60s |
 
-Each still is a starting image of Pep for that beat → animated with `grok-imagine-video-1.5` → stitched + VO.
+Each still is a starting image of Pep for that beat → animated with **fal Kling v3 Pro I2V** → stitched + ElevenLabs VO.
 
 ---
 
@@ -58,6 +60,7 @@ Each still is a starting image of Pep for that beat → animated with `grok-imag
 See **`marketing/n8n-vid-gen-palm-beach-pep-execute.md`** for step-by-step build order and smoke checks.
 
 Support files:
+- `marketing/n8n-pep-elevenlabs-video.md` — video provider lock + fal wiring
 - `marketing/n8n-pep-prep-beats.js`
 - `marketing/n8n-pep-prep-video-beat.js`
 - `marketing/n8n-pep-grok-still-body.txt`
