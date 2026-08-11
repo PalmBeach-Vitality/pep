@@ -6,7 +6,8 @@
 # Body Content Type: JSON
 # Expression (fx ON)
 #
-# EXACT upstream names: prep_pep_beats, Parse_Grok, save_still_url
+# EXACT upstream names: prep_pep_beats, Prep_day_variant, save_still_url
+# (Do not reference Parse_Grok in still body — name casing breaks easily; use compound_name from prep)
 # MASTER: https://files.catbox.moe/2yfdbi.jpg
 # Always pass Pep master as images[0] (<IMAGE_0>).
 # Beats B–D also pass still A as images[1] (<IMAGE_1>).
@@ -29,7 +30,7 @@
     'Surface: ' + String($('prep_pep_beats').item.json.surface || '') + '.',
     'Lighting: ' + String($('prep_pep_beats').item.json.lighting || '') + '.',
     'Color grade: ' + String($('prep_pep_beats').item.json.color_grade || '') + '.',
-    'Product lock (catalog only, not on-image text): ' + String($('Parse_Grok').item.json.display_name || $('prep_pep_beats').item.json.compound_name || '') + '.',
+    'Product lock (catalog only, not on-image text): ' + String($('prep_pep_beats').item.json.compound_name || $('Prep_day_variant').item.json.compound_name || '') + '.',
     'Only allowed changes: slight pose (thumbs-up / settle) and the background environment.',
     'FULL ENVIRONMENT — not a void packshot, not extreme macro.',
     'VIAL SPEC: rubber stopper + aluminum crimp only. FORBIDDEN: black twist caps, screw caps, droppers.',
