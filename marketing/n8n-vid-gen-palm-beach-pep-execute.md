@@ -107,14 +107,17 @@ On node **`Prep_day_variant`**, set field:
 
 ---
 
-## Phase C — Locked Pep still (exact names first)
+## Phase C — Locked Pep still (exact names first) — #1 PRIORITY
+**Pep must match master exactly.** Master: `https://files.catbox.moe/2yfdbi.jpg`
+
 1. `prep_pep_beats` — paste `marketing/n8n-pep-prep-beats.js`  
    - Reads `$('Prep_day_variant')` then `$('Limit')`
 2. `grok_imagine_reel_still`
-   - URL → **`https://api.x.ai/v1/images/edits`**
-   - Body → Beat A from `marketing/n8n-pep-grok-still-body.txt`
-   - Pep master = `<IMAGE_0>` via `pep_ref_url`
+   - URL → **`https://api.x.ai/v1/images/edits`** (never `/generations`)
+   - Body → **`marketing/n8n-pep-grok-still-body-lock.txt`** (EDIT `<IMAGE_0>` only)
+   - Confirm request preview: `images[0].url` = master
 3. `save_still_url` — save `reel_still_url` / `data[0].url`
+4. **QC gate:** still vs master side-by-side. Face / hat logo / crimp / gloves / sneakers must match. Drift → reroll. Do not continue to video on a bad still.
 
 **Then duplicate for 4 stills** (keep original names for A):
 
@@ -124,8 +127,6 @@ On node **`Prep_day_variant`**, set field:
 | B | `grok_imagine_reel_still_b` | `save_still_url_b` |
 | C | `grok_imagine_reel_still_c` | `save_still_url_c` |
 | D | `grok_imagine_reel_still_d` | `save_still_url_d` |
-
-QC Pep likeness against master before video.
 
 ---
 

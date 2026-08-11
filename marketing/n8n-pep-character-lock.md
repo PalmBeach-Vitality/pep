@@ -1,52 +1,68 @@
-# Palm Beach Pep — Character Lock (exact likeness)
+# Palm Beach Pep — Character Lock (#1 PRIORITY)
+
+## #1 RULE (NON-NEGOTIABLE)
+**Pep must look EXACTLY like the master every single still, every single time.**  
+Zero redesign. Zero “close enough.” Zero new face / hat / vial / gloves / sneakers.
+
+If a still drifts → **discard and reroll**. Never send a drifted still into `ai_vid_generator`.
 
 ## Canonical master (LOCKED)
 **Public URL:** `https://files.catbox.moe/2yfdbi.jpg`  
 **Repo backup:** `marketing/assets/palm-beach-pep-master.jpg`  
-**n8n field:** `pep_ref_url` on exact node `Prep_day_variant` / passed through exact node `prep_pep_beats`
+**n8n field:** `pep_ref_url` on `Prep_day_variant` (passed through `prep_pep_beats`)
 
-This file is the single source of truth for Pep’s face, hat, body, gloves, and sneakers.
-
-## What the master looks like (for prompts)
-- Clear glass **10ml** vial body with silver aluminum crimp seal
-- White wrap label: big cartoon eyes, open smile + pink tongue, rosy cheeks, bold **10ml**
+Master identity (must match 1:1):
+- Clear glass **10ml** vial + silver aluminum crimp seal
+- White label: big cartoon eyes, open smile + pink tongue, rosy cheeks, bold **10ml**
 - White baseball cap with **Palm Beach Vitality** sunset + palm-tree logo (not molecular)
 - Gray tube limbs, white cartoon gloves, rounded white sneakers
-- Thumbs-up pose on neutral gray background
+- Thumbs-up pose language allowed only as slight pose — face/hat/body art unchanged
 - Clean sticker / 3D-cartoon illustration style with bold outlines
 
-## Method (required)
-Every still uses Grok **image edits** with this master as `<IMAGE_0>`:
+---
 
-```text
-POST https://api.x.ai/v1/images/edits
-model: grok-imagine-image-quality
-images[0] = https://files.catbox.moe/2yfdbi.jpg
-prompt    = EDIT <IMAGE_0> only. Keep character PIXEL-IDENTITY locked…
-aspect_ratio: 9:16
-resolution: 2k
-```
+## Why Pep was drifting
+Text-heavy “create a scene with Pep…” lets Grok **invent a new character**.  
+We only allow **EDIT the master** (`/v1/images/edits`) with `<IMAGE_0>` = master.
 
-**Prompt framing matters:** say **EDIT `<IMAGE_0>`** / keep identity locked — not “create a cartoon vial mascot.” Text-only generation will invent a new Pep.
+---
 
-Locked paste body: `marketing/n8n-pep-grok-still-body-lock.txt`
+## Path A — Strong EDIT (use now)
+**Node:** `grok_imagine_reel_still`  
+**URL:** `POST https://api.x.ai/v1/images/edits`  
+**Body:** paste `marketing/n8n-pep-grok-still-body-lock.txt`
 
+Must be true in request preview:
+1. Endpoint is `/images/edits` (not `/generations`)
+2. `images[0].url` is exactly the master URL
+3. Prompt starts with `EDIT <IMAGE_0> only` + `PIXEL-IDENTITY locked`
+4. Prompt forbids redesign; only background + tiny pose change
+
+**QC gate (manual for now):** open still next to master. Face, hat logo, crimp, 10ml label, gloves, sneakers must match. If not → rerun node.
+
+---
+
+## Path B — 100% lock (true identical pixels)
+Grok edits can still morph. For **literally 100%** the same Pep:
+
+1. Keep master Pep as the character layer (same file every time)
+2. Generate **background only** (no mascot in the plate)
+3. Composite Pep on top (same scale/placement rules)
+4. That composite = `reel_still_url` → then fal Kling I2V
+
+Until composite is wired, Path A + hard QC/reroll is required. Do not ship drifted Pep.
+
+---
+
+## Beat images
 | Beat | `images` |
 |---|---|
-| A | `[pep_master]` |
-| B–D | `[pep_master, still_a]` |
+| A | `[pep_master]` only |
+| B–D | `[pep_master, still_a]` — master always `<IMAGE_0>` |
 
-## QC checklist (before video)
-1. URL is `/v1/images/edits` (not `/generations`)
-2. Request body includes `images[0].url` = master (open the HTTP request preview and confirm)
-3. Prompt starts with `EDIT <IMAGE_0> only`
-4. Side-by-side Pep vs master: face, hat logo, crimp, gloves, sneakers match
-5. Reroll drifted stills — do not animate a bad still
-6. If catbox flakes, re-host master and update `pep_ref_url`
+## Video
+I2V (`ai_vid_generator`) must start from a QC-passed still. Bad still → bad video. Character lock is won or lost at the still step.
 
-## Rules
-- Do **not** redesign Pep from text alone
-- Preserve hat logo, face, 10ml label, crimp seal, gloves, sneakers exactly
-- Only change: slight pose + background/environment
-- No humans, hospitals, doctor offices
-- QC stills A–D before video; reroll drifted stills only
+## Paste files
+- Lock still body: `marketing/n8n-pep-grok-still-body-lock.txt`
+- Execute: `marketing/n8n-vid-gen-palm-beach-pep-execute.md`
