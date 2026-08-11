@@ -29,7 +29,7 @@ get_rows_in_sheet
   → GROK_API
   → Parse_Grok
   → if_complaince
-       true → prep_day_variants
+       true → prep_day_variant
               → grok_imagine_reel_still
               → save_still_url
               → prep_grok_video_start

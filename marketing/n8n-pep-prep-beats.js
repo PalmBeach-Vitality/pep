@@ -1,4 +1,4 @@
-// Node: prep_day_variants (Code)
+// Node: prep_day_variant (Code)
 // After: if_complaince (true)  — EXACT canvas name
 // Uses: Prep_day_variant → Limit (EXACT names)
 // Mode: Run Once for Each Item

@@ -96,7 +96,7 @@ Node name (exact): **`save_video_url`**
 | Field | Value |
 |---|---|
 | `video_url` | `{{ $json.video.url }}` (or whatever path the fal node returns — check one successful run) |
-| `creation_id` | `{{ $('prep_day_variants').item.json.creation_id \|\| $('Limit').item.json.creation_id }}` |
+| `creation_id` | `{{ $('prep_day_variant').item.json.creation_id \|\| $('Limit').item.json.creation_id }}` |
 | `model_video` | `fal-kling-v3-pro-i2v` |
 
 Then → `sheets_update_creation`.

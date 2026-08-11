@@ -6,7 +6,7 @@
 # Body Content Type: JSON
 # Expression (fx ON)
 #
-# EXACT upstream names: prep_day_variants, Parse_Grok, save_still_url
+# EXACT upstream names: prep_day_variant, Parse_Grok, save_still_url
 # MASTER: https://files.catbox.moe/2yfdbi.jpg
 # Always pass Pep master as images[0] (<IMAGE_0>).
 # Beats B–D also pass still A as images[1] (<IMAGE_1>).
@@ -19,24 +19,24 @@
   resolution: '2k',
   n: 1,
   images: [
-    { url: String($('prep_day_variants').item.json.pep_ref_url || $('Prep_day_variant').item.json.pep_ref_url || 'https://files.catbox.moe/2yfdbi.jpg') }
+    { url: String($('prep_day_variant').item.json.pep_ref_url || $('Prep_day_variant').item.json.pep_ref_url || 'https://files.catbox.moe/2yfdbi.jpg') }
   ],
   prompt: [
     'Use <IMAGE_0> as the EXACT Palm Beach Pep character reference.',
     'Do NOT redesign Pep. Preserve identical face, eyes, smile, rosy cheeks, 10ml label typography, white baseball cap with Palm Beach Vitality sunset palm-tree logo, silver aluminum crimp seal, clear glass vial body, liquid level, gray tube limbs, white gloves, white sneakers, line weight, and cartoon style from <IMAGE_0>.',
     'Place this exact character into a new vertical 9:16 full-environment scene.',
-    'Scene / beat A: ' + String($('prep_day_variants').item.json.beat_a_brief || '') + '.',
-    'Surface: ' + String($('prep_day_variants').item.json.surface || '') + '.',
-    'Lighting: ' + String($('prep_day_variants').item.json.lighting || '') + '.',
-    'Color grade: ' + String($('prep_day_variants').item.json.color_grade || '') + '.',
-    'Product lock (catalog only, not on-image text): ' + String($('Parse_Grok').item.json.display_name || $('prep_day_variants').item.json.compound_name || '') + '.',
+    'Scene / beat A: ' + String($('prep_day_variant').item.json.beat_a_brief || '') + '.',
+    'Surface: ' + String($('prep_day_variant').item.json.surface || '') + '.',
+    'Lighting: ' + String($('prep_day_variant').item.json.lighting || '') + '.',
+    'Color grade: ' + String($('prep_day_variant').item.json.color_grade || '') + '.',
+    'Product lock (catalog only, not on-image text): ' + String($('Parse_Grok').item.json.display_name || $('prep_day_variant').item.json.compound_name || '') + '.',
     'Only allowed changes: slight pose (thumbs-up / settle) and the background environment.',
     'FULL ENVIRONMENT — not a void packshot, not extreme macro.',
     'VIAL SPEC: rubber stopper + aluminum crimp only. FORBIDDEN: black twist caps, screw caps, droppers.',
     'LOCATION RULE: no doctor offices, no hospitals, no clinical exam rooms, no humans.',
     'SIGNAGE RULE: no safety placards, no alert graphics, no danger banners, no alert words.',
     'No nicknames on any text (no KLOW, Wolverine, GLOW). Prefer no new on-image text beyond Pep label.',
-    'Compose for later motion: ' + String($('prep_day_variants').item.json.beat_a_motion || '') + '.'
+    'Compose for later motion: ' + String($('prep_day_variant').item.json.beat_a_motion || '') + '.'
   ].join(' ')
 }) }}
 
@@ -49,17 +49,17 @@
   resolution: '2k',
   n: 1,
   images: [
-    { url: String($('prep_day_variants').item.json.pep_ref_url || $('Prep_day_variant').item.json.pep_ref_url || 'https://files.catbox.moe/2yfdbi.jpg') },
+    { url: String($('prep_day_variant').item.json.pep_ref_url || $('Prep_day_variant').item.json.pep_ref_url || 'https://files.catbox.moe/2yfdbi.jpg') },
     { url: String($('save_still_url').item.json.reel_still_url || ($('save_still_url').item.json.data && $('save_still_url').item.json.data[0] && $('save_still_url').item.json.data[0].url) || '') }
   ],
   prompt: [
     'Use <IMAGE_0> as the EXACT Palm Beach Pep character reference. Do NOT redesign Pep.',
     'Preserve identical face, Palm Beach Vitality hat logo, crimp seal, 10ml label, limbs, gloves, sneakers, and style from <IMAGE_0>.',
     'Use <IMAGE_1> only for environment / lighting continuity of the same scene family.',
-    'Create beat B product-clarity moment: ' + String($('prep_day_variants').item.json.beat_b_brief || '') + '.',
+    'Create beat B product-clarity moment: ' + String($('prep_day_variant').item.json.beat_b_brief || '') + '.',
     'Only change pose slightly (label glance / smile) and keep Pep mid-ground.',
     '9:16 vertical, full environment, no humans, no hospitals, no doctor offices.',
     'No new on-image text. No nicknames.',
-    'Motion intent: ' + String($('prep_day_variants').item.json.beat_b_motion || '') + '.'
+    'Motion intent: ' + String($('prep_day_variant').item.json.beat_b_motion || '') + '.'
   ].join(' ')
 }) }}
