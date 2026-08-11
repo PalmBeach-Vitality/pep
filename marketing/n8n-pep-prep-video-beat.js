@@ -68,7 +68,7 @@ const videoPrompt = [
 ].join(' ');
 
 const negativePrompt = [
-  'blur, distort, low quality, morphing, deformed vial, static idle freeze, no movement,',
+  'blur, distort, low quality, morphing, deformed vial, static idle freeze, no movement, closed frozen mouth, no talking,',
   'extra vials, extra bottles, pens, insulin pens, syringes, injectors, needles, droppers, ampoules, medical devices,',
   'human people, faces of people, hospital, doctor office, clinic exam room,',
   'black twist cap, screw cap, on-screen text, captions, watermarks,',

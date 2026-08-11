@@ -45,7 +45,7 @@ const beats = {
   a: {
     name: 'hook',
     brief: `Beat A HOOK: Palm Beach Pep mid-ground in this unique set: ${surface}. Friendly entrance energy, then thumbs-up. ${pepLock} Product lock: ${compound} (${compoundId}). Lighting: ${lighting}. Grade: ${grade}. Full environment, not void packshot.`,
-    motion: `clear thumbs-up + hat tip + weight shift; slow push-in with parallax; ${motion}; preserve Pep identity; no idle freeze`,
+    motion: `talking mouth performance + clear thumbs-up + hat tip + weight shift; slow push-in with parallax; ${motion}; preserve Pep identity; no idle freeze`,
   },
   b: {
     name: 'product',
