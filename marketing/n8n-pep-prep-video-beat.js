@@ -1,11 +1,8 @@
-// Node for Beat A: use EXACT canvas name prep_grok_video_start
+// Node name (exact): prep_grok_video_start
+// Next node on canvas: ai_vid_generator (fal.ai · Kling v3 Pro I2V)
 // Duplicates later: prep_grok_video_start_b / _c / _d
 // Mode: Run Once for Each Item
 // IMPORTANT: change BEAT to 'a' | 'b' | 'c' | 'd' in each duplicated node
-//
-// Video provider (locked): fal Kling v3 Pro I2V — cartoon-friendly path
-// matching ElevenLabs Image & Video model family (Flows API not public yet).
-// See marketing/n8n-pep-elevenlabs-video.md
 
 const BEAT = 'a'; // ← change per node: a, b, c, or d
 
@@ -18,26 +15,31 @@ const prep = (() => {
   try { return $('prep_pep_beats').item.json; } catch (e) { return $json; }
 })();
 
-// Exact canvas still save for A = save_still_url; B/C/D = save_still_url_b/c/d
+// Still A: save_still_url → grok_imagine_reel_still → incoming json
 function stillUrlFor(beat) {
-  const nodeName = beat === 'a' ? 'save_still_url' : `save_still_url_${beat}`;
+  const saveName = beat === 'a' ? 'save_still_url' : `save_still_url_${beat}`;
+  const stillName = beat === 'a' ? 'grok_imagine_reel_still' : `grok_imagine_reel_still_${beat}`;
+
   try {
-    const j = $(nodeName).item.json;
-    return (
-      j.reel_still_url ||
-      j[`reel_still_url_${beat}`] ||
-      j.data?.[0]?.url ||
-      ''
-    );
-  } catch (e) {
-    return '';
-  }
+    const j = $(saveName).item.json;
+    const u = j.reel_still_url || j[`reel_still_url_${beat}`] || j.data?.[0]?.url || '';
+    if (u) return String(u);
+  } catch (e) {}
+
+  try {
+    const j = $(stillName).item.json;
+    const u = j.data?.[0]?.url || j.reel_still_url || '';
+    if (u) return String(u);
+  } catch (e) {}
+
+  return String($json.reel_still_url || $json.data?.[0]?.url || '');
 }
 
 const stillUrl = stillUrlFor(BEAT);
 if (!stillUrl) {
-  const expect = BEAT === 'a' ? 'save_still_url' : `save_still_url_${BEAT}`;
-  throw new Error(`Missing still URL for beat ${BEAT}. Check ${expect}.`);
+  throw new Error(
+    `Missing Pep still URL for beat ${BEAT}. Check save_still_url / grok_imagine_reel_still.`
+  );
 }
 
 const compound = prep.compound_name || 'research compound';
@@ -69,28 +71,38 @@ const negativePrompt = [
   'safety placard, danger banner, alert graphics',
 ].join(' ');
 
-// fal Kling v3 Pro I2V — duration is a string enum "3"…"15"
+const MODEL_VIDEO = 'fal-kling-v3-pro-i2v';
+const FAL_ENDPOINT = 'fal-ai/kling-video/v3/pro/image-to-video';
+const FAL_NODE = 'ai_vid_generator';
+
+// Body for fal Kling (+ aliases the fal n8n UI may ask for)
 const videoRequestBody = {
   prompt: videoPrompt,
-  start_image_url: String(stillUrl),
+  start_image_url: stillUrl,
+  frontal_image_url: stillUrl,
   duration: '15',
   generate_audio: false,
   negative_prompt: negativePrompt,
   cfg_scale: 0.5,
 };
 
-const MODEL_VIDEO = 'fal-kling-v3-pro-i2v';
-const FAL_ENDPOINT = 'fal-ai/kling-video/v3/pro/image-to-video';
-
 return [{
   json: {
     ...prep,
     beat: BEAT,
+    fal_node: FAL_NODE,
     reel_still_url: stillUrl,
     [`reel_still_url_${BEAT}`]: stillUrl,
+    // flat aliases for ai_vid_generator parameter mapping
+    prompt: videoPrompt,
     video_prompt: videoPrompt,
+    start_image_url: stillUrl,
+    frontal_image_url: stillUrl,
+    negative_prompt: negativePrompt,
     video_motion_prompt: motion,
+    duration: '15',
     duration_seconds: 15,
+    generate_audio: false,
     aspect_ratio: '9:16',
     resolution: '1080p',
     model_video: MODEL_VIDEO,
