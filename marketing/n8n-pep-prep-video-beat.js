@@ -49,12 +49,14 @@ const lighting = prep.lighting || '';
 const grade = prep.color_grade || '';
 
 const videoPrompt = [
-  'Animate this 9:16 vertical still into a polished cartoon-style 15-second film beat.',
+  'Animate this 9:16 vertical still into a lively cartoon-style 15-second film beat.',
   'Character lock: Palm Beach Pep stays identical — anthropomorphic 10mL crimp-seal glass vial mascot, Palm Beach Vitality sunset palm-tree logo on white baseball cap, face on white 10ml label, gray limbs, white gloves and sneakers.',
   'Style: friendly cartoon motion, clean stylized animation, stable character proportions, no morphing Pep into a different bottle or human.',
   `Product lock: ${compound} (${prep.compound_id || ''}).`,
   `Beat ${BEAT.toUpperCase()} intent: ${brief}`,
   `Motion: ${motion}.`,
+  'ACTION (must be visible, not idle): Pep gives a clear thumbs-up, tip/adjusts his Palm Beach Vitality hat once, shifts weight, and does a small cheerful body bounce. Eyes blink naturally. Keep continuous micro-performance the whole 15s — not frozen standing.',
+  'CAMERA: slow push-in then slight parallax drift; environment has soft live motion (waves/breeze/light) matching the set.',
   `Lighting continuity: ${lighting}.`,
   `Color grade continuity: ${grade}.`,
   'ONLY ONE CHARACTER: Palm Beach Pep alone. Do NOT add any other vials, bottles, pens, insulin pens, syringes, injectors, droppers, ampoules, or medical devices in the scene.',
@@ -66,12 +68,13 @@ const videoPrompt = [
 ].join(' ');
 
 const negativePrompt = [
-  'blur, distort, low quality, morphing, deformed vial,',
+  'blur, distort, low quality, morphing, deformed vial, static idle freeze, no movement,',
   'extra vials, extra bottles, pens, insulin pens, syringes, injectors, needles, droppers, ampoules, medical devices,',
   'human people, faces of people, hospital, doctor office, clinic exam room,',
   'black twist cap, screw cap, on-screen text, captions, watermarks,',
   'safety placard, danger banner, alert graphics',
 ].join(' ');
+
 
 
 const MODEL_VIDEO = 'fal-kling-v3-pro-i2v';
