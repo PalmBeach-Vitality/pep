@@ -118,8 +118,8 @@ On node **`Prep_day_variant`**, set field:
 ## Phase B — Captions + compliance (exact names)
 | Exact node | Action |
 |---|---|
-| `GROK_API` | Keep — captions from Prep fields / caption_lock |
-| `Parse_Grok` | Expose `compliance_ok`, captions, `display_name` |
+| `grok_api` | Keep — captions from Prep fields / caption_lock |
+| `parse_grok` | Expose `compliance_ok`, captions, `display_name` |
 | `if_complaince` | **true** → `prep_pep_beats`; **false** → stop |
 
 ---

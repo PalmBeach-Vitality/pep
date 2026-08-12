@@ -4,8 +4,8 @@ Get fal billing + API key live, then wire Beat A video.
 **Preferred:** official fal community node (`@fal-ai/n8n-nodes-fal`).  
 **Fallback:** HTTP Request queue submit/poll (appendix).
 
-Keep **exact** canvas names: `prep_grok_video_start` → `grok_video_start` → `grok_video_poll` → `save_video_url`.  
-You can convert `grok_video_start` to the fal node type **without renaming** the node.
+Keep **exact** canvas names: `prep_grok_video_start` → `ai_vid_generator` → `Wait` → `grok_video_poll` → `HTTP Request` → `save_video_url`.  
+(Older docs may say `grok_video_start` — canvas now uses **`ai_vid_generator`** for the Kling queue POST.)
 
 **Model:** Kling Video v3 Pro · image-to-video  
 **Endpoint id:** `fal-ai/kling-video/v3/pro/image-to-video`
