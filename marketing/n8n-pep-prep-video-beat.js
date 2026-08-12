@@ -78,7 +78,7 @@ const negativePrompt = clip([
 
 const MODEL_VIDEO = 'fal-kling-v3-pro-i2v';
 const FAL_ENDPOINT = 'fal-ai/kling-video/v3/pro/image-to-video';
-const FAL_NODE = 'ai_vid_generator';
+const FAL_NODE = 'kling_video_request';
 
 // Kling I2V accepts ONLY these top-level fields (no frontal_image_url at root —
 // that belongs inside elements[] only and causes 400 Bad Request if sent at root).
@@ -102,7 +102,6 @@ return [
     video_prompt: videoPrompt,
     prompt_char_count: videoPrompt.length,
     start_image_url: stillUrl,
-    frontal_image_url: stillUrl,
     negative_prompt: negativePrompt,
     video_motion_prompt: motion,
     duration: '15',

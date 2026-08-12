@@ -1,0 +1,450 @@
+# Pep n8n — FULL paste codes (no excerpts)
+
+Wire:
+```text
+tts_pep_voice_over
+  → fal_upload_tts_initiate
+  → merge_tts_binary
+  → fal_upload_tts_put
+  → save_tts_audio_url
+  → grok_imagine_reel_still
+  → save_still_url
+  → prep_grok_video_start
+  → kling_video_request
+  → Wait
+  → grok_video_poll
+  → kling_video_result
+  → save_video_url
+  → prep_pep_lipsync
+  → pep_lipsync_start
+  → Wait
+  → pep_lipsync_poll
+  → pep_lipsync_result
+  → save_lipsync_video_url
+  → sheets_update_creation
+```
+
+---
+
+## CODE NODE: `merge_tts_binary`
+
+| Parameter | Value |
+|---|---|
+| Node type | Code |
+| Exact name | `merge_tts_binary` |
+| Mode | Run Once for All Items |
+| Language | JavaScript |
+
+```javascript
+const initiate = $input.first();
+const tts = $('tts_pep_voice_over').first();
+
+if (!tts.binary || !tts.binary.data) {
+  throw new Error('No binary data on tts_pep_voice_over — re-run TTS first');
+}
+
+return [
+  {
+    json: initiate.json,
+    binary: tts.binary,
+  },
+];
+```
+
+---
+
+## CODE NODE: `prep_grok_video_start`
+
+| Parameter | Value |
+|---|---|
+| Node type | Code |
+| Exact name | `prep_grok_video_start` |
+| Mode | Run Once for All Items |
+| Language | JavaScript |
+
+```javascript
+// Node name (exact): prep_grok_video_start
+// Next: kling_video_request
+// Mode: Run Once for All Items
+// Kling hard limit: prompt max 2500 characters
+
+const BEAT = 'a';
+const PROMPT_MAX = 2500;
+
+const beats = ['a', 'b', 'c', 'd'];
+if (!beats.includes(BEAT)) {
+  throw new Error(`BEAT must be one of ${beats.join(', ')}`);
+}
+
+function clip(str, max) {
+  const s = String(str || '').replace(/\s+/g, ' ').trim();
+  if (s.length <= max) return s;
+  return s.slice(0, max - 1).trim() + '…';
+}
+
+const prep = (() => {
+  try { return $('prep_pep_beats').item.json; } catch (e) { return $json; }
+})();
+
+function stillUrlFor(beat) {
+  const saveName = beat === 'a' ? 'save_still_url' : `save_still_url_${beat}`;
+  const stillName = beat === 'a' ? 'grok_imagine_reel_still' : `grok_imagine_reel_still_${beat}`;
+
+  try {
+    const j = $(saveName).item.json;
+    const u = j.reel_still_url || j[`reel_still_url_${beat}`] || j.data?.[0]?.url || '';
+    if (u) return String(u);
+  } catch (e) {}
+
+  try {
+    const j = $(stillName).item.json;
+    const u = j.data?.[0]?.url || j.reel_still_url || '';
+    if (u) return String(u);
+  } catch (e) {}
+
+  return String($json.reel_still_url || $json.data?.[0]?.url || '');
+}
+
+const stillUrl = stillUrlFor(BEAT);
+if (!stillUrl) {
+  throw new Error(
+    `Missing Pep still URL for beat ${BEAT}. Check save_still_url / grok_imagine_reel_still.`
+  );
+}
+
+const compound = clip(prep.compound_name || 'research compound', 80);
+const compoundId = clip(prep.compound_id || '', 40);
+const brief = clip(prep[`beat_${BEAT}_brief`] || prep.scene_brief || '', 280);
+const motion = clip(prep[`beat_${BEAT}_motion`] || prep.video_motion_prompt || 'slow push-in', 180);
+const lighting = clip(prep.lighting || '', 80);
+const grade = clip(prep.color_grade || '', 80);
+const surface = clip(prep.surface || prep.material_detail || '', 120);
+
+const videoPrompt = clip([
+  'Animate this 9:16 still into a lively 15s cartoon clip.',
+  'CHARACTER LOCK: Palm Beach Pep identical — 10mL crimp-seal glass vial mascot, Palm Beach Vitality sunset palm logo on white baseball cap, face on white 10ml label, gray limbs, white gloves and sneakers. No morphing.',
+  `Product: ${compound} (${compoundId}).`,
+  `Beat ${BEAT.toUpperCase()}: ${brief}`,
+  `Set: ${surface}.`,
+  `Motion: ${motion}.`,
+  'ACTION: Pep talks to camera — mouth on 10ml label opens/closes in speech rhythm all 15s; clear thumbs-up; tip hat once; weight shift; cheerful bounce; natural blinks. Not idle/frozen.',
+  'CAMERA: slow push-in + soft parallax; environment moves (waves/breeze/light).',
+  `Lighting: ${lighting}. Grade: ${grade}.`,
+  'ONLY Pep — no extra vials/bottles/pens/syringes/devices. Crimp seal only (no twist/screw/dropper caps). No humans, hospitals, clinics, on-screen text, or safety placards. Silent (VO added later). Keep full scene depth.',
+].filter(Boolean).join(' '), PROMPT_MAX);
+
+const negativePrompt = clip([
+  'blur, distort, low quality, morphing, deformed vial, static idle freeze, closed frozen mouth, no talking,',
+  'extra vials, extra bottles, pens, insulin pens, syringes, injectors, needles, droppers, ampoules,',
+  'humans, hospital, doctor office, clinic, black twist cap, screw cap, on-screen text, watermarks, safety placard',
+].join(' '), 800);
+
+const MODEL_VIDEO = 'fal-kling-v3-pro-i2v';
+const FAL_ENDPOINT = 'fal-ai/kling-video/v3/pro/image-to-video';
+const FAL_NODE = 'kling_video_request';
+
+const videoRequestBody = {
+  prompt: videoPrompt,
+  start_image_url: stillUrl,
+  duration: '15',
+  generate_audio: false,
+  negative_prompt: negativePrompt,
+  cfg_scale: 0.5,
+};
+
+return [
+  {
+    ...prep,
+    beat: BEAT,
+    fal_node: FAL_NODE,
+    reel_still_url: stillUrl,
+    [`reel_still_url_${BEAT}`]: stillUrl,
+    prompt: videoPrompt,
+    video_prompt: videoPrompt,
+    prompt_char_count: videoPrompt.length,
+    start_image_url: stillUrl,
+    negative_prompt: negativePrompt,
+    video_motion_prompt: motion,
+    duration: '15',
+    duration_seconds: 15,
+    generate_audio: false,
+    aspect_ratio: '9:16',
+    resolution: '1080p',
+    model_video: MODEL_VIDEO,
+    fal_endpoint: FAL_ENDPOINT,
+    fal_submit_url: `https://queue.fal.run/${FAL_ENDPOINT}`,
+    video_request_body: videoRequestBody,
+    video_request_body_string: JSON.stringify(videoRequestBody),
+  },
+];
+```
+
+---
+
+## CODE NODE: `prep_pep_lipsync`
+
+| Parameter | Value |
+|---|---|
+| Node type | Code |
+| Exact name | `prep_pep_lipsync` |
+| Mode | Run Once for All Items |
+| Language | JavaScript |
+
+```javascript
+const videoUrl = String($('save_video_url').item.json.video_url || '');
+const audioUrl = String($('save_tts_audio_url').item.json.tts_audio_url || '');
+
+if (!videoUrl) throw new Error('Missing video_url from save_video_url');
+if (!audioUrl) throw new Error('Missing tts_audio_url from save_tts_audio_url');
+
+const lipsync_request_body = {
+  video_url: videoUrl,
+  audio_url: audioUrl,
+  sync_mode: 'cut_off',
+};
+
+let creation_id = '';
+try {
+  creation_id = String($('prep_pep_beats').item.json.creation_id || '');
+} catch (e) {
+  creation_id = '';
+}
+
+return [
+  {
+    creation_id: creation_id,
+    beat: 'a',
+    video_url: videoUrl,
+    tts_audio_url: audioUrl,
+    fal_lipsync_endpoint: 'fal-ai/sync-lipsync/v3',
+    fal_lipsync_submit_url: 'https://queue.fal.run/fal-ai/sync-lipsync/v3',
+    lipsync_request_body: lipsync_request_body,
+    lipsync_request_body_string: JSON.stringify(lipsync_request_body),
+  },
+];
+```
+
+---
+
+## HTTP: `tts_pep_voice_over`
+
+| Parameter | Value |
+|---|---|
+| Method | POST |
+| URL | `https://api.elevenlabs.io/v1/text-to-speech/yl2ZDV1MzN4HbQJbMihG?output_format=mp3_44100_128` |
+| Authentication | None |
+| Send Headers | ON |
+| Header `xi-api-key` | YOUR_ELEVENLABS_KEY |
+| Header `Accept` | `audio/mpeg` |
+| Header `Content-Type` | `application/json` |
+| Send Body | ON |
+| Body Content Type | JSON |
+| Specify Body | Using JSON |
+| Options → Response → Response Format | File |
+| Options → Response → Put Output in Field | `data` |
+| Options → Timeout | `120000` |
+
+JSON Body:
+```json
+{
+  "text": "={{ $('prep_pep_beats').item.json.vo_beat_a || $('prep_pep_beats').item.json.voice_over }}",
+  "model_id": "eleven_multilingual_v2",
+  "voice_settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8
+  }
+}
+```
+
+---
+
+## HTTP: `fal_upload_tts_initiate`
+
+| Parameter | Value |
+|---|---|
+| Method | POST |
+| URL | `https://rest.alpha.fal.ai/storage/upload/initiate?storage_type=fal-cdn-v3` |
+| Authentication | fal Key YOUR_FAL_KEY |
+| Send Headers | ON |
+| Header `Content-Type` | `application/json` |
+| Send Body | ON |
+| Body Content Type | JSON |
+| Specify Body | Using JSON |
+| Options → Timeout | `60000` |
+
+JSON Body:
+```json
+{
+  "content_type": "audio/mpeg",
+  "file_name": "pep-beat-a.mp3"
+}
+```
+
+---
+
+## HTTP: `fal_upload_tts_put`
+
+| Parameter | Value |
+|---|---|
+| Method | PUT |
+| URL | `={{ $('fal_upload_tts_initiate').item.json.upload_url }}` |
+| Authentication | None |
+| Send Headers | ON |
+| Header `Content-Type` | `audio/mpeg` |
+| Send Body | ON |
+| Body Content Type | n8n Binary File |
+| Input Data Field Name | `data` |
+| Options → Timeout | `120000` |
+
+---
+
+## SET: `save_tts_audio_url`
+
+| Parameter | Value |
+|---|---|
+| Include Other Input Fields | ON |
+
+| Field | Type | Value |
+|---|---|---|
+| `tts_audio_url` | String | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
+| `beat` | String | `a` |
+
+---
+
+## HTTP: `kling_video_request`
+
+| Parameter | Value |
+|---|---|
+| Method | POST |
+| URL | `https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video` |
+| Authentication | fal Key YOUR_FAL_KEY |
+| Send Headers | ON |
+| Header `Content-Type` | `application/json` |
+| Send Body | ON |
+| Body Content Type | JSON |
+| Specify Body | Using JSON |
+| JSON Body | `={{ JSON.parse($json.video_request_body_string) }}` |
+| Options → Timeout | `300000` |
+
+---
+
+## HTTP: `grok_video_poll`
+
+| Parameter | Value |
+|---|---|
+| Method | GET |
+| URL | `={{ $('kling_video_request').item.json.status_url }}` |
+| Authentication | fal Key YOUR_FAL_KEY |
+| Send Body | OFF |
+| Options → Timeout | `60000` |
+
+---
+
+## HTTP: `kling_video_result`
+
+| Parameter | Value |
+|---|---|
+| Method | GET |
+| URL | `={{ $('kling_video_request').item.json.response_url }}` |
+| Authentication | fal Key YOUR_FAL_KEY |
+| Send Body | OFF |
+| Options → Response → Response Format | JSON |
+| Options → Timeout | `120000` |
+
+Only when poll status = `COMPLETED`.
+
+---
+
+## SET: `save_video_url`
+
+| Parameter | Value |
+|---|---|
+| Include Other Input Fields | ON |
+
+| Field | Type | Value |
+|---|---|---|
+| `video_url` | String | `={{ $json.video.url }}` |
+| `creation_id` | String | `={{ $('prep_pep_beats').item.json.creation_id }}` |
+| `beat` | String | `a` |
+| `model_video` | String | `fal-kling-v3-pro-i2v` |
+
+---
+
+## HTTP: `pep_lipsync_start`
+
+| Parameter | Value |
+|---|---|
+| Method | POST |
+| URL | `https://queue.fal.run/fal-ai/sync-lipsync/v3` |
+| Authentication | fal Key YOUR_FAL_KEY |
+| Send Headers | ON |
+| Header `Content-Type` | `application/json` |
+| Send Body | ON |
+| Body Content Type | JSON |
+| Specify Body | Using JSON |
+| JSON Body | `={{ JSON.parse($json.lipsync_request_body_string) }}` |
+| Options → Timeout | `300000` |
+
+---
+
+## HTTP: `pep_lipsync_poll`
+
+| Parameter | Value |
+|---|---|
+| Method | GET |
+| URL | `={{ $('pep_lipsync_start').item.json.status_url }}` |
+| Authentication | fal Key YOUR_FAL_KEY |
+| Send Body | OFF |
+| Options → Timeout | `60000` |
+
+---
+
+## HTTP: `pep_lipsync_result`
+
+| Parameter | Value |
+|---|---|
+| Method | GET |
+| URL | `={{ $('pep_lipsync_start').item.json.response_url }}` |
+| Authentication | fal Key YOUR_FAL_KEY |
+| Send Body | OFF |
+| Options → Response → Response Format | JSON |
+| Options → Timeout | `120000` |
+
+Only when poll status = `COMPLETED`.
+
+---
+
+## SET: `save_lipsync_video_url`
+
+| Parameter | Value |
+|---|---|
+| Include Other Input Fields | ON |
+
+| Field | Type | Value |
+|---|---|---|
+| `lipsync_video_url` | String | `={{ $json.video.url }}` |
+| `video_url` | String | `={{ $json.video.url }}` |
+| `tts_audio_url` | String | `={{ $('save_tts_audio_url').item.json.tts_audio_url }}` |
+| `creation_id` | String | `={{ $('prep_pep_beats').item.json.creation_id }}` |
+| `beat` | String | `a` |
+| `model_video` | String | `fal-sync-lipsync-v3` |
+
+---
+
+## SHEETS: `sheets_update_creation` (LAST NODE)
+
+| Parameter | Value |
+|---|---|
+| Resource | Sheet Within Document |
+| Operation | Update |
+| Sheet | `150-pb-pep-scenes` |
+| Column to Match On | `creation_id` |
+| Value to Match On | `={{ $('prep_pep_beats').item.json.creation_id \|\| $('Limit').item.json.creation_id }}` |
+
+| Column | Value |
+|---|---|
+| `last_used_at` | `={{ $now.toISO() }}` |
+| `times_used` | `={{ Number($('Limit').item.json.times_used \|\| $('Prep_day_variant').item.json.times_used \|\| 0) + 1 }}` |
+| `reel_still_url` | `={{ $('save_still_url').item.json.reel_still_url \|\| $('save_still_url').item.json.data[0].url }}` |
+| `video_url` | `={{ $('save_lipsync_video_url').item.json.lipsync_video_url \|\| $('save_lipsync_video_url').item.json.video_url \|\| $('save_video_url').item.json.video_url }}` |
+| `model_video` | `={{ $('save_lipsync_video_url').item.json.model_video \|\| 'fal-sync-lipsync-v3' }}` |
