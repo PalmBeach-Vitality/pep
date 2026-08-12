@@ -14,23 +14,34 @@
 These are the **exact** n8n node names. All `$('…')` expressions and build steps must use them as written (including casing and the `if_complaince` spelling).
 
 ```text
-get_rows_in_sheet
+Schedule Trigger
+  → get_rows_in_sheet
   → filter_active
   → sort_rotation
   → Limit
   → Prep_day_variant
-  → GROK_API
-  → Parse_Grok
+  → grok_api
+  → parse_grok
   → if_complaince
        false → stop
        true  → prep_pep_beats
+                 → tts_pep_voice_over
+                 → fal_upload_tts_initiate
+                 → fal_upload_tts_put
+                 → save_tts_audio_url
                  → grok_imagine_reel_still
                  → save_still_url
                  → prep_grok_video_start
-                 → grok_video_start
+                 → ai_vid_generator
+                 → Wait
                  → grok_video_poll
+                 → HTTP Request          (fetch fal result / response_url)
                  → save_video_url
                  → sheets_update_creation
+
+  # NEXT (not on canvas yet — Beat A lipsync):
+  # save_video_url → prep_pep_lipsync → pep_lipsync_start
+  #   → pep_lipsync_poll → save_lipsync_video_url
 ```
 
 | # | Exact node name | Role |
@@ -40,17 +51,23 @@ get_rows_in_sheet
 | 3 | `sort_rotation` | Rotation sort |
 | 4 | `Limit` | One row only |
 | 5 | `Prep_day_variant` | Map row fields + `pep_ref_url` |
-| 6 | `GROK_API` | Caption LLM |
-| 7 | `Parse_Grok` | Parse caption JSON |
+| 6 | `grok_api` | Caption LLM |
+| 7 | `parse_grok` | Parse caption JSON |
 | 8 | `if_complaince` | Compliance gate (exact spelling) |
 | 9 | `prep_pep_beats` | Build 4 beat briefs + VO splits |
-| 10 | `grok_imagine_reel_still` | Pep still (Beat A first; DUP for B–D later) |
-| 11 | `save_still_url` | Save still URL |
-| 12 | `prep_grok_video_start` | Prep fal Kling I2V body |
-| 13 | `grok_video_start` | Start video (fal Kling queue; keep name) |
-| 14 | `grok_video_poll` | Poll fal until done (keep name) |
-| 15 | `save_video_url` | Save video URL |
-| 16 | `sheets_update_creation` | Writeback |
+| 10 | `tts_pep_voice_over` | ElevenLabs TTS (binary MP3) |
+| 11 | `fal_upload_tts_initiate` | fal storage initiate → `file_url` |
+| 12 | `fal_upload_tts_put` | PUT binary (`data`) to `upload_url` |
+| 13 | `save_tts_audio_url` | Store public `tts_audio_url` |
+| 14 | `grok_imagine_reel_still` | Pep still (Beat A first; DUP for B–D later) |
+| 15 | `save_still_url` | Save still URL |
+| 16 | `prep_grok_video_start` | Prep fal Kling I2V body |
+| 17 | `ai_vid_generator` | Start video (fal Kling queue) |
+| 18 | `Wait` | Brief wait before poll |
+| 19 | `grok_video_poll` | Poll fal until done |
+| 20 | `HTTP Request` | Fetch fal result payload |
+| 21 | `save_video_url` | Save video URL |
+| 22 | `sheets_update_creation` | Writeback |
 
 **Hard rule:** Do not rename these nodes. When adding Beat B–D stills/videos, **duplicate** and use suffixed names only for the new copies (e.g. `grok_imagine_reel_still_b`), leaving the originals above intact.
 

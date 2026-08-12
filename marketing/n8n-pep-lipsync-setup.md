@@ -4,14 +4,31 @@ Order: **TTS → (public audio URL) → Kling talking clip → fal Sync Lipsync 
 
 Do not mux blind VO over a frozen mouth. Lip-sync locks mouth to audio.
 
-## Nodes (suggested names)
+## Nodes (exact canvas + tomorrow)
+
+On canvas today (Sal screenshot 2026-08-12):
 
 ```text
 prep_pep_beats
-  → tts_pep_voice_over          (ElevenLabs — Beat A text only for 15s smoke)
-  → save_tts_audio_url          (must be a public https audio URL)
-  → … still + ai_vid_generator … (talking performance clip, silent)
+  → tts_pep_voice_over
+  → fal_upload_tts_initiate
+  → fal_upload_tts_put
+  → save_tts_audio_url
+  → grok_imagine_reel_still
+  → save_still_url
+  → prep_grok_video_start
+  → ai_vid_generator
+  → Wait
+  → grok_video_poll
+  → HTTP Request
   → save_video_url
+  → sheets_update_creation
+```
+
+**Tomorrow — add after `save_video_url` (before or instead of sheets writeback for lipsync smoke):**
+
+```text
+save_video_url
   → prep_pep_lipsync
   → pep_lipsync_start           (fal sync-lipsync/v3)
   → pep_lipsync_poll
