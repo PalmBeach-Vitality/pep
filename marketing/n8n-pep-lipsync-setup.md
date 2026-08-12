@@ -1,12 +1,10 @@
-# Pep lip-sync NOW (Beat A smoke)
+# Pep lip-sync (locked wire)
 
-Order: **TTS → (public audio URL) → Kling talking clip → fal Sync Lipsync v3**
+Order: **ElevenLabs TTS → fal storage upload → Kling talking clip → fal Sync Lipsync v3**
 
-Do not mux blind VO over a frozen mouth. Lip-sync locks mouth to audio.
+Do not use Catbox for fal audio inputs. Use fal `file_url` only.
 
-## Nodes (exact canvas + tomorrow)
-
-On canvas today (Sal screenshot 2026-08-12):
+## Exact sequence (from canvas)
 
 ```text
 prep_pep_beats
@@ -22,147 +20,122 @@ prep_pep_beats
   → grok_video_poll
   → HTTP Request
   → save_video_url
-  → sheets_update_creation
-```
-
-**Tomorrow — add after `save_video_url` (before or instead of sheets writeback for lipsync smoke):**
-
-```text
-save_video_url
   → prep_pep_lipsync
-  → pep_lipsync_start           (fal sync-lipsync/v3)
+  → pep_lipsync_start
+  → Wait
   → pep_lipsync_poll
+  → pep_lipsync_result
   → save_lipsync_video_url
+  → sheets_update_creation
 ```
 
 ---
 
-## 1) `tts_pep_voice_over` (ElevenLabs)
+## From `fal_upload_tts_initiate` (restore these)
 
-For **Beat A only** smoke (match ~15s video):
+Requires `tts_pep_voice_over` output binary field **`data`** on the same path.
 
-**Text:**
-```text
-={{ $('prep_pep_beats').item.json.vo_beat_a || $('prep_pep_beats').item.json.voice_over }}
-```
+### 1) `fal_upload_tts_initiate` (HTTP)
 
 | Setting | Value |
 |---|---|
 | Method | `POST` |
-| URL | `https://api.elevenlabs.io/v1/text-to-speech/yl2ZDV1MzN4HbQJbMihG?output_format=mp3_44100_128` |
-| Header | `xi-api-key` = ElevenLabs key |
-| Header | `Accept` = `audio/mpeg` |
-| Body JSON | see below |
+| URL | `https://rest.alpha.fal.ai/storage/upload/initiate?storage_type=fal-cdn-v3` |
+| Auth | fal.ai API credential |
+| Send Body | ON · JSON |
+| Body | see below |
 
 ```json
 {
-  "text": "={{ $('prep_pep_beats').item.json.vo_beat_a || $('prep_pep_beats').item.json.voice_over }}",
-  "model_id": "eleven_multilingual_v2",
-  "voice_settings": { "stability": 0.45, "similarity_boost": 0.8 }
+  "content_type": "audio/mpeg",
+  "file_name": "pep-beat-a.mp3"
 }
 ```
 
-Response = **binary MP3**. fal lipsync needs a **public URL**, so next:
+Expect: `upload_url`, `file_url`
 
-### Make `tts_audio_url` public
-Pick one:
-- Upload binary to Drive/S3/catbox/fal storage → save URL as `tts_audio_url`
-- Or temporary host Sal already uses
+### 2) `fal_upload_tts_put` (HTTP)
 
-`save_tts_audio_url`:
+| Setting | Value |
+|---|---|
+| Method | `PUT` |
+| URL | `={{ $('fal_upload_tts_initiate').item.json.upload_url }}` |
+| Auth | none (signed URL) |
+| Send Body | ON · **n8n Binary File** |
+| Input Data Field Name | `data` |
+| Header | `Content-Type` = `audio/mpeg` |
+
+**Important:** binary `data` must still be on the item. If PUT loses binary, set **fal_upload_tts_initiate** options to include input binary, or put a Merge — simplest: on initiate, Options → Response → put response in a field and keep binary from previous node (Include Binary Data / don’t drop binary).
+
+If binary is empty: re-execute from `tts_pep_voice_over` so `data` exists, then run initiate → put.
+
+### 3) `save_tts_audio_url` (Edit Fields)
+
 | Name | Value |
 |---|---|
-| `tts_audio_url` | public `https://…mp3` |
+| `tts_audio_url` | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
 | `beat` | `a` |
 
----
+Include Other Input Fields: **ON**
 
-## 2) Kling clip (you already have this)
-Keep talking-mouth prompt on `prep_grok_video_start` → `ai_vid_generator` → `save_video_url`  
-`video_url` = silent talking performance.
+### 4) … still + Kling … → `save_video_url`
 
----
+Keep your existing still/video chain. `video_url` must be set.
 
-## 3) `prep_pep_lipsync` (Code — optional but clean)
+### 5) `prep_pep_lipsync` (Code)
 
-```javascript
-const videoUrl =
-  $('save_video_url').item.json.video_url ||
-  '';
-const audioUrl =
-  $('save_tts_audio_url').item.json.tts_audio_url ||
-  '';
+Paste: `marketing/n8n-pep-prep-lipsync.js`  
+Mode: **Run Once for All Items**  
+Language: **JavaScript**
 
-if (!videoUrl) throw new Error('Missing video_url');
-if (!audioUrl) throw new Error('Missing tts_audio_url (public https)');
-
-const lipsync_request_body = {
-  video_url: String(videoUrl),
-  audio_url: String(audioUrl),
-  sync_mode: 'cut_off',
-};
-
-return [{
-  json: {
-    video_url: videoUrl,
-    tts_audio_url: audioUrl,
-    lipsync_request_body,
-    lipsync_request_body_string: JSON.stringify(lipsync_request_body),
-    fal_lipsync_endpoint: 'fal-ai/sync-lipsync/v3',
-  }
-}];
-```
-
----
-
-## 4) `pep_lipsync_start` (HTTP — same fal credential)
+### 6) `pep_lipsync_start` (HTTP)
 
 | Setting | Value |
 |---|---|
 | Method | `POST` |
 | URL | `https://queue.fal.run/fal-ai/sync-lipsync/v3` |
 | Auth | fal.ai API credential |
-| Send Body | ON · JSON |
 | Body | `={{ $json.lipsync_request_body }}` |
 | Timeout | `300000` |
 
-Expect `request_id` / `status_url` / `response_url`.
+Fallback body: `={{ JSON.parse($json.lipsync_request_body_string) }}`
 
----
+### 7) `Wait` — 60s
 
-## 5) `pep_lipsync_poll` (GET — same as Kling poll)
+### 8) `pep_lipsync_poll` (HTTP)
 
-Status:
-```text
-{{ $json.status_url }}
-```
-or
-```text
-https://queue.fal.run/fal-ai/sync-lipsync/v3/requests/{{ $('pep_lipsync_start').item.json.request_id }}/status
-```
+| Setting | Value |
+|---|---|
+| Method | `GET` |
+| URL | `={{ $json.status_url }}` |
+| Auth | fal credential |
 
-When `COMPLETED`, GET `response_url` → `{{ $json.video.url }}`
+### 9) `pep_lipsync_result` (HTTP)
 
----
+Only when poll `status` = `COMPLETED`
 
-## 6) `save_lipsync_video_url`
+| Setting | Value |
+|---|---|
+| Method | `GET` |
+| URL | `={{ $('pep_lipsync_start').item.json.response_url }}` |
+| Auth | fal credential |
+
+### 10) `save_lipsync_video_url` (Edit Fields)
 
 | Name | Value |
 |---|---|
-| `lipsync_video_url` | `{{ $json.video.url }}` |
-| `video_url` | `{{ $json.video.url }}` |
-| `tts_audio_url` | `{{ $('save_tts_audio_url').item.json.tts_audio_url }}` |
-| `creation_id` | `{{ $('prep_pep_beats').item.json.creation_id }}` |
+| `lipsync_video_url` | `={{ $json.video.url }}` |
+| `video_url` | `={{ $json.video.url }}` |
+| `tts_audio_url` | `={{ $('save_tts_audio_url').item.json.tts_audio_url }}` |
+| `creation_id` | `={{ $('prep_pep_beats').item.json.creation_id }}` |
 | `beat` | `a` |
+| `model_video` | `fal-sync-lipsync-v3` |
+
+Then → `sheets_update_creation`
 
 ---
 
-## Beat A smoke checklist
-- [ ] ElevenLabs VO for `vo_beat_a` (~15s)
-- [ ] Public `tts_audio_url`
-- [ ] Kling talking clip on approved still
-- [ ] fal `sync-lipsync/v3` completes
-- [ ] Mouth tracks VO; Pep still looks like master
+## Run rule
 
-## Full 60s later
-TTS full `voice_over` → 4 talking beats → lipsync each beat (or one stitched silent master + one VO) → final mux.
+Execute from **`tts_pep_voice_over`** (or earlier) so binary `data` + path to `$('…')` refs exist.  
+Do **not** execute mid-chain nodes alone unless their upstream already ran in the same execution.
