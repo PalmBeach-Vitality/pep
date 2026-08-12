@@ -80,10 +80,11 @@ const MODEL_VIDEO = 'fal-kling-v3-pro-i2v';
 const FAL_ENDPOINT = 'fal-ai/kling-video/v3/pro/image-to-video';
 const FAL_NODE = 'ai_vid_generator';
 
+// Kling I2V accepts ONLY these top-level fields (no frontal_image_url at root —
+// that belongs inside elements[] only and causes 400 Bad Request if sent at root).
 const videoRequestBody = {
   prompt: videoPrompt,
   start_image_url: stillUrl,
-  frontal_image_url: stillUrl,
   duration: '15',
   generate_audio: false,
   negative_prompt: negativePrompt,
