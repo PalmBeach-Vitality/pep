@@ -115,7 +115,7 @@ Edits only (not new nodes): `Prep_day_variant`, `Save_render_URL`, `Sheets_write
 
 ```text
 {{ JSON.stringify({
-  model: 'grok-imagine-image-quality',
+  model: 'grok-imagine-image-2.0',
   aspect_ratio: '9:16',
   n: 1,
   prompt: [

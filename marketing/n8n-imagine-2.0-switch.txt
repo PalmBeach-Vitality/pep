@@ -1,0 +1,15 @@
+# Switch GROK_Imagine to Imagine 2.0
+
+Model id: grok-imagine-image-2.0
+Endpoint: POST https://api.x.ai/v1/images/generations
+
+In GROK_Imagine body, change:
+  model: 'grok-imagine-image-quality'
+to:
+  model: 'grok-imagine-image-2.0'
+
+Keep aspect_ratio / resolution / prompt as-is.
+Posts-only feed example uses aspect_ratio: '1:1' (or '9:16' if you post vertical).
+Optional for 2.0 only: quality: 'medium'  (allowed: low | medium)
+
+Feed body file: marketing/n8n-grok-imagine-body-feed.txt

@@ -5,7 +5,7 @@ Captions can differ while images still look alike if Imagine keeps the same layo
 ## GROK_Imagine (1:1 feed) — Body fx ON
 
 ```text
-{{ JSON.stringify({ model: 'grok-imagine-image-quality', aspect_ratio: '1:1', n: 1, prompt: [
+{{ JSON.stringify({ model: 'grok-imagine-image-2.0', aspect_ratio: '1:1', n: 1, prompt: [
   'Premium Palm Beach Vitality Instagram square 1080x1080 scientific brand poster.',
   'Brand system only: deep navy, teal #2CB29D, white type, faint blueprint grid, translucent hex molecular pattern, soft champagne glow.',
   'NOT a photo of a real lab. NOT a sparse empty text slide. NOT the same layout every day.',

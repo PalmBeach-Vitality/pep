@@ -32,7 +32,7 @@ Each weekday is a **different poster system**: color + pattern + layout + motif.
 ## GROK_Imagine (1:1) — full Body fx ON
 
 ```text
-{{ JSON.stringify({ model: 'grok-imagine-image-quality', aspect_ratio: '1:1', n: 1, prompt: [
+{{ JSON.stringify({ model: 'grok-imagine-image-2.0', aspect_ratio: '1:1', n: 1, prompt: [
   'Generate a COMPLETELY DIFFERENT Palm Beach Vitality scientific social poster for today only. Do not reuse prior-day look.',
   'Square 1080x1080. Premium print design. High contrast. Distinctive.',
   'COLOR SYSTEM TODAY (must dominate): ' + String($('Prep_day_variant').item.json.daily_color_scheme) + '.',
