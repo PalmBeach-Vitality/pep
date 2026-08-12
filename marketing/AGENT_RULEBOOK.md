@@ -40,3 +40,9 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 
 ## Social / Imagine
 - Aspect ratio for Pep + landscape social workflows: always **9:16**
+- **WATCH — tell Sal immediately when new Imagine models hit the API**
+  - **Imagine Image 2.0 API: LIVE (as of 2026-08-07)** — model id `grok-imagine-image-2.0` · $0.04/image · docs: https://docs.x.ai/docs/models · announce: https://x.ai/news/grok-imagine-image-2
+  - Still watch: edits multi-ref / Quality Mode parity in n8n HTTP, and any **Imagine Video 2.0** API id
+  - When checking: xAI models page + `/v1/images/generations` + `/v1/images/edits` model list
+  - Candidate swap for vial / lab / landscape stills: try `grok-imagine-image-2.0` vs current `grok-imagine-image` / `grok-imagine-image-quality`
+  - Pep stills stay on EDIT + master lock until 2.0 edit path is QC’d against Pep master
