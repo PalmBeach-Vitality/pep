@@ -138,11 +138,12 @@ const surface = clip(prep.surface || prep.material_detail || '', 120);
 
 const videoPrompt = clip([
   'PRIMARY ACTION: walking AND talking at the same time for the entire 15 seconds. Both never stop.',
+  'TALK FROM FRAME 1: the cartoon mouth on the white 10ml label opens and closes every few frames from 0.00s. At least two mouth-shape changes in the first 1 second. Do not hold the still grin. A frozen smile until 12 seconds is a fail.',
+  'Keep talking through 15.00s. Mouth never rests. Mouth never holds one smile. No grin-and-hold. No talk-stop-smile-talk. No delayed start.',
   'STITCH LOCK: This clip must dissolve into the next 15s shot. Same walk the whole time.',
-  'Start already mid-stride at 0.00 seconds — first frame is a walking pose, not a planted still. Talking immediately. Do not wait. Do not start at 3 seconds.',
-  'End still mid-stride at 15.00 seconds — last frame is a walking pose, mouth open mid-speech. Do not plant feet. Do not freeze. Do not pose for a cut.',
-  'WALK DIRECTION (every beat): walk toward camera on a slight 3/4, screen-right bias, mid-ground. Same direction every clip so A→B→C→D can cross-dissolve. Gray tube legs and white sneakers in a continuous cartoon walk. Does not walk out of frame. Arms swing with the walk.',
-  'TALK: the cartoon mouth printed on the white 10ml label opens and closes continuously from 0.00s through 15.00s WHILE he walks. Mouth never rests closed. Mouth never holds a smile. No grin-and-hold. No talk-stop-smile-talk.',
+  'Start already mid-stride at 0.00 seconds — first frame is a walking pose, not a planted still. Talking immediately. Do not wait.',
+  'End still mid-stride at 15.00 seconds — last frame is a walking pose, mouth open mid-speech, arms in a walk swing. Do not plant feet. Do not freeze. Do not pose for a cut. Do not thumbs-up in the last 3 seconds.',
+  'WALK DIRECTION (every beat): walk toward camera on a slight 3/4, screen-right bias, mid-ground. Same direction every clip so A→B→C→D can cross-dissolve. Gray tube legs and white sneakers in a continuous cartoon walk. Does not walk out of frame. Arms swing with the walk through the last frame.',
   'NO pose beats. NO thumbs-up. NO hat tip. NO pause-to-smile. NO stop-to-talk. NO freeze on first or last frame.',
   'Eyes blink. Hands stay in a walk swing, not posing.',
   'CHARACTER LOCK: Palm Beach Pep identical — 10mL crimp-seal glass vial mascot, Palm Beach Vitality sunset palm logo on white baseball cap, face on white 10ml label, gray limbs, white gloves and sneakers. No morphing.',
@@ -154,12 +155,13 @@ const videoPrompt = clip([
 ].filter(Boolean).join(' '), PROMPT_MAX);
 
 const negativePrompt = clip([
-  'delayed start, waits 3 seconds, starts talking late, standing still, planted feet, idle stance,',
+  'delayed start, waits 3 seconds, waits 12 seconds, starts talking late, mouth frozen until the end,',
+  'standing still, planted feet, idle stance,',
   'freeze on first frame, freeze on last frame, pose for cut, stop at the end,',
   'stops walking, walks out of frame, moonwalk, sliding without steps, frozen legs,',
   'walks the opposite direction, sudden turn, jump cut pose,',
-  'pause, stop talking, smile hold, frozen grin, closed mouth, closed-mouth smile,',
-  'thumbs up, hat tip, pose and hold, talk then stop, idle, silent gap,',
+  'pause, stop talking, smile hold, frozen grin, wide held smile, closed mouth, closed-mouth smile,',
+  'thumbs up, thumbs-up at the end, hat tip, pose and hold, talk then stop, idle, silent gap,',
   'static face, mouth not moving, mouth closed, rest face,',
   'blur, distort, morphing, deformed vial, idle freeze,',
   'extra vials, extra bottles, pens, syringes, humans, hospital, on-screen text, watermarks',
@@ -175,7 +177,7 @@ const videoRequestBody = {
   duration: '15',
   generate_audio: false,
   negative_prompt: negativePrompt,
-  cfg_scale: 0.7,
+  cfg_scale: 0.8,
 };
 if (endImageUrl) {
   videoRequestBody.end_image_url = endImageUrl;
@@ -406,7 +408,7 @@ If later **`grok_video_poll`** or **`pep_lip_sync_result`** GET fails with 405/4
 | `duration` | string | `"15"` |
 | `generate_audio` | boolean | `false` |
 | `negative_prompt` | string | `$json.video_request_body.negative_prompt` |
-| `cfg_scale` | number | `0.7` |
+| `cfg_scale` | number | `0.8` |
 | `end_image_url` | string | only present when next-beat still exists |
 
 **Expect output JSON:**
