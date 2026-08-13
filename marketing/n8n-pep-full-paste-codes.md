@@ -210,25 +210,39 @@ return [
 
 ## CODE NODE: `prep_pep_lipsync`
 
-| Parameter | Value |
-|---|---|
-| Node type | Code |
-| Exact name | `prep_pep_lipsync` |
-| Mode | Run Once for All Items |
-| Language | JavaScript |
+| Parameter | fx | Value |
+|---|---|---|
+| Node type | — | Code |
+| Exact name | — | `prep_pep_lipsync` |
+| Mode | — | **Run Once for Each Item** |
+| Language | — | JavaScript |
+
+Do **not** use Run Once for All Items. Do **not** `return [{ json: ... }]`.
 
 ```javascript
-const videoUrl = String($('save_video_url').item.json.video_url || '');
-const audioUrl = String($('save_tts_audio_url').item.json.tts_audio_url || '');
+function fromNode(name, keys) {
+  try {
+    const j = $(name).item.json;
+    for (const k of keys) {
+      const v = j?.[k];
+      if (v) return String(v);
+    }
+  } catch (e) {}
+  return '';
+}
+
+const videoUrl = fromNode('save_video_url', ['video_url']) || String($json.video_url || '');
+const audioUrl =
+  fromNode('fal_upload_tts_initiate', ['file_url', 'tts_audio_url']) ||
+  String($json.tts_audio_url || $json.file_url || '');
 
 if (!videoUrl) throw new Error('Missing video_url from save_video_url');
-if (!audioUrl) throw new Error('Missing tts_audio_url from save_tts_audio_url');
-
-const lipsync_request_body = {
-  video_url: videoUrl,
-  audio_url: audioUrl,
-  sync_mode: 'cut_off',
-};
+if (!audioUrl) {
+  throw new Error('Missing TTS audio URL. Expected fal_upload_tts_initiate.file_url');
+}
+if (/catbox\.moe/i.test(audioUrl)) {
+  throw new Error('TTS audio is Catbox — fal cannot fetch files.catbox.moe.');
+}
 
 let creation_id = '';
 try {
@@ -237,18 +251,24 @@ try {
   creation_id = '';
 }
 
-return [
-  {
-    creation_id: creation_id,
-    beat: 'a',
-    video_url: videoUrl,
-    tts_audio_url: audioUrl,
-    fal_lipsync_endpoint: 'fal-ai/sync-lipsync/v3',
-    fal_lipsync_submit_url: 'https://queue.fal.run/fal-ai/sync-lipsync/v3',
-    lipsync_request_body: lipsync_request_body,
-    lipsync_request_body_string: JSON.stringify(lipsync_request_body),
-  },
-];
+const bodyString = JSON.stringify({
+  video_url: videoUrl,
+  audio_url: audioUrl,
+  sync_mode: 'cut_off',
+});
+
+return {
+  creation_id: creation_id,
+  beat: 'a',
+  video_url: videoUrl,
+  tts_audio_url: audioUrl,
+  fal_lipsync_endpoint: 'fal-ai/sync-lipsync/v3',
+  fal_lipsync_submit_url: 'https://queue.fal.run/fal-ai/sync-lipsync/v3',
+  lipsync_video_in: videoUrl,
+  lipsync_audio_in: audioUrl,
+  lipsync_sync_mode: 'cut_off',
+  lipsync_request_body_string: bodyString,
+};
 ```
 
 ---
@@ -401,43 +421,58 @@ Then: **`kling_video_request`** → `Wait` → `grok_video_poll` (GET `$('kling_
 
 ## HTTP: `grok_video_poll`
 
-| Parameter | Value |
-|---|---|
-| Method | GET |
-| URL | `={{ $('kling_video_request').item.json.status_url }}` |
-| Authentication | fal Key YOUR_FAL_KEY |
-| Send Body | OFF |
-| Options → Timeout | `60000` |
+| Parameter | fx | Value |
+|---|---|---|
+| Method | OFF | GET |
+| URL | ON | `={{ $('ai_vid_generator').item.json.status_url }}` |
+| Authentication | — | Predefined Credential Type · fal.ai API · fal.ai account |
+| Send Query Parameters | — | OFF |
+| Send Body | — | OFF |
+| Options → Timeout | OFF | `60000` |
 
 ---
 
-## HTTP: `kling_video_result`
+## HTTP: `kling_video_result` (ADD)
 
-| Parameter | Value |
-|---|---|
-| Method | GET |
-| URL | `={{ $('kling_video_request').item.json.response_url }}` |
-| Authentication | fal Key YOUR_FAL_KEY |
-| Send Body | OFF |
-| Options → Response → Response Format | JSON |
-| Options → Timeout | `120000` |
+`grok_video_poll` only returns status. It does **not** include `video.url`. Without this GET, **`save_video_url`** keeps the old mp4 via Include Other Input Fields.
 
-Only when poll status = `COMPLETED`.
+Wire: `grok_video_poll` → **`kling_video_result`** → `save_video_url`
+
+Only execute after `grok_video_poll` `status` = `COMPLETED`.
+
+| Parameter | fx | Value |
+|---|---|---|
+| Node type | — | HTTP Request |
+| Exact name | — | `kling_video_result` |
+| Method | OFF | GET |
+| URL | ON | `={{ $('ai_vid_generator').item.json.response_url }}` |
+| Authentication | — | Predefined Credential Type · fal.ai API · fal.ai account |
+| Send Query Parameters | — | OFF |
+| Send Headers | — | OFF (credential sets Auth) |
+| Send Body | — | OFF |
+| Options → Timeout | OFF | `120000` |
+| Options → Response → Response Format | — | JSON |
+
+**Expect:** `{ "video": { "url": "https://v3b.fal.media/..." } }` — a **new** filename, not `zTmptnI9uTeWInNxHCqvo_output.mp4`.
 
 ---
 
 ## SET: `save_video_url`
 
-| Parameter | Value |
-|---|---|
-| Include Other Input Fields | ON |
-
-| Field | Type | Value |
+| Parameter | fx | Value |
 |---|---|---|
-| `video_url` | String | `={{ $json.video.url }}` |
-| `creation_id` | String | `={{ $('prep_pep_beats').item.json.creation_id }}` |
-| `beat` | String | `a` |
-| `model_video` | String | `fal-kling-v3-pro-i2v` |
+| Node type | — | Edit Fields (Set) |
+| Exact name | — | `save_video_url` |
+| Include Other Input Fields | — | **OFF** |
+
+| Field Name | Field Type | fx | Value |
+|---|---|---|---|
+| `video_url` | String | ON | `={{ $json.video.url }}` |
+| `creation_id` | String | ON | `={{ $('prep_pep_beats').item.json.creation_id }}` |
+| `beat` | String | OFF | `a` |
+| `model_video` | String | OFF | `fal-kling-v3-pro-i2v` |
+
+**Delete** any field named `video_url_a` or `save_video_url`. Include Other Input Fields **OFF** so the old clip cannot ride through. Previous node must be **`kling_video_result`**.
 
 ---
 

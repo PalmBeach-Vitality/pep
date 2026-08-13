@@ -36,6 +36,7 @@ Schedule Trigger
                  → Wait2
                  → Wait
                  → grok_video_poll
+                 → kling_video_result
                  → save_video_url
                  → prep_pep_lipsync
                  → fal_lipsync_call
@@ -72,15 +73,16 @@ TTS public URL = `fal_upload_tts_initiate.file_url`.
 | 17 | `ai_vid_generator` | Video HTTP after prep (fal Kling queue — confirm URL is `queue.fal.run/.../kling-video/...`) |
 | 18 | `Wait2` | Wait after `ai_vid_generator` |
 | 19 | `Wait` | Wait before `grok_video_poll` |
-| 20 | `grok_video_poll` | Poll video job |
-| 21 | `save_video_url` | Save silent `video_url` |
-| 22 | `prep_pep_lipsync` | Lipsync body from `save_video_url` + `fal_upload_tts_initiate.file_url` |
-| 23 | `fal_lipsync_call` | POST fal `sync-lipsync/v3` |
-| 24 | `Wait3` | Wait before lipsync poll |
-| 25 | `pep_lipsync_poll` | GET lipsync `/status` |
-| 26 | `pep_lip_sync_result` | GET lipsync result |
-| 27 | `save_lipsync_video_url` | Save `lipsync_video_url` |
-| 28 | `sheets_update_creation` | Sheet writeback |
+| 20 | `grok_video_poll` | Poll video job (`status_url`) |
+| 21 | `kling_video_result` | GET `response_url` after COMPLETED — this is where `video.url` lives |
+| 22 | `save_video_url` | Save silent `video_url` from `$json.video.url` · Include Other Input Fields **OFF** · no `video_url_a` |
+| 23 | `prep_pep_lipsync` | Lipsync body from `save_video_url` + `fal_upload_tts_initiate.file_url` |
+| 24 | `fal_lipsync_call` | POST fal `sync-lipsync/v3` |
+| 25 | `Wait3` | Wait before lipsync poll |
+| 26 | `pep_lipsync_poll` | GET lipsync `/status` |
+| 27 | `pep_lip_sync_result` | GET lipsync result |
+| 28 | `save_lipsync_video_url` | Save `lipsync_video_url` |
+| 29 | `sheets_update_creation` | Sheet writeback |
 
 **Hard rule:** Do not rename these nodes.
 
