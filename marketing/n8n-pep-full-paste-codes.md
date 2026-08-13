@@ -13,6 +13,7 @@ tts_pep_voice_over
   → Wait2
   → Wait
   → grok_video_poll
+  → (kling_video_result)
   → save_video_url
   → prep_pep_lipsync
   → fal_lipsync_call
@@ -432,11 +433,11 @@ Then: **`kling_video_request`** → `Wait` → `grok_video_poll` (GET `$('kling_
 
 ---
 
-## HTTP: `kling_video_result` (ADD)
+## HTTP: `(kling_video_result)` (ADD)
 
 `grok_video_poll` only returns status. It does **not** include `video.url`. Without this GET, **`save_video_url`** keeps the old mp4 via Include Other Input Fields.
 
-Wire: `grok_video_poll` → **`kling_video_result`** → `save_video_url`
+Wire: `grok_video_poll` → **`(kling_video_result)`** → `save_video_url`
 
 Only execute after `grok_video_poll` `status` = `COMPLETED`.
 
