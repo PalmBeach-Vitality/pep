@@ -11,7 +11,9 @@ OmniHuman is **image + audio → talking video**. It does **not** take a Kling `
 
 TTS public URL = `$('fal_upload_tts_initiate').item.json.file_url` (fal CDN). **Catbox is blocked by fal** for audio/video inputs. Master Catbox URL is OK only as Pep still *reference* for Grok EDIT.
 
-Audio must be under **60s at 720p** (under 30s at 1080p). Pep VO is ~15s, so `720p` is the lock (fal: faster and higher quality).
+Audio must be under **30s at 1080p**. Use `vo_beat_a` (the 15s slice of that row’s unique `voice_over`), not the full 60s script.
+
+Keeper QC: `marketing/n8n-pep-omnihuman-keeper.txt`
 
 ---
 
@@ -118,7 +120,7 @@ Execute with **Test workflow** (not Execute node) so `$('other_node')` has a pat
 ```json
 {
   "content_type": "audio/mpeg",
-  "file_name": "pep-beat-a.mp3"
+  "file_name": "={{ 'pep-' + String($('prep_pep_beats').item.json.creation_id || $('Limit').item.json.creation_id || 'run') + '-' + String($now.toMillis()) + '.mp3' }}"
 }
 ```
 
@@ -191,7 +193,7 @@ Wire: `save_still_url` → `prep_pep_lipsync` → `pep_lipsync_fal`
 
 Paste the full file `marketing/n8n-pep-prep-lipsync.js`.
 
-**Expect OUTPUT fields:** `lipsync_image_in` (xAI still URL), `lipsync_audio_in` (fal CDN), `omnihuman_prompt`, `omnihuman_resolution` = `720p`.
+**Expect OUTPUT fields:** `lipsync_image_in` (xAI still URL), `lipsync_audio_in` (fal CDN), `omnihuman_prompt`, `omnihuman_resolution` = `1080p`.
 
 ---
 
@@ -208,20 +210,20 @@ This is the official fal.ai community node (`@fal-ai/n8n-nodes-fal`), not HTTP R
 | Operation | — | Generate Media |
 | Model | — | From list · **OmniHuman** / **Omnihuman v1.5** (`fal-ai/bytedance/omnihuman/v1.5`) |
 | Parameter 1 Name | OFF | `image_url` |
-| Parameter 1 Value | ON | `={{ $json.lipsync_image_in }}` |
+| Parameter 1 Value | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
 | Parameter 2 Name | OFF | `audio_url` |
-| Parameter 2 Value | ON | `={{ $json.lipsync_audio_in }}` |
+| Parameter 2 Value | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
 | Parameter 3 Name | OFF | `resolution` |
-| Parameter 3 Value | OFF | `720p` |
+| Parameter 3 Value | OFF | `1080p` |
 | Parameter 4 Name | OFF | `prompt` |
 | Parameter 4 Value | ON | `={{ $json.omnihuman_prompt }}` |
 | Wait for Completion | — | **ON** |
 | Poll Interval (Seconds) | — | `5` |
-| Max Wait Time (Seconds) | — | `600` |
+| Max Wait Time (Seconds) | — | `900` |
 
-Do **not** send `video_url`. That is sync-3. OmniHuman needs the Pep **still**.
+Do **not** send `video_url`. That is sync-3 / VEED / Kling lipsync / LatentSync. Do **not** hardcode Audio Url.
 
-Use `$json` from `prep_pep_lipsync` (avoids n8n error `[ERROR: No path back to node]`).
+If n8n errors `[ERROR: No path back to node]` on `$('save_still_url')`, fall back to `$json.lipsync_image_in` / `$json.lipsync_audio_in` from `prep_pep_lipsync` (same URLs).
 
 **Expect OUTPUT:** `{ "video": { "url": "https://..." } }`
 
@@ -249,31 +251,41 @@ Use `$json` from `prep_pep_lipsync` (avoids n8n error `[ERROR: No path back to n
 
 ---
 
-## Pin / unpin for one OmniHuman talking Test
+## Pin / unpin for a unique-scene production Test
 
 **Pin** = n8n “Pin data” (thumbtack on OUTPUT). Saving params is free. **Test workflow** is what bills APIs.
 
-**PIN:** `Schedule Trigger`, `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `prep_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_grok_video_start`, `ai_vid_generator`, `Wait2`, `Wait`, `grok_video_poll`, `kling_video_result`, `save_video_url`
+Each execution must pick a **new unused sheet row** and generate a **new still + new VO + new OmniHuman clip**.
 
-**UNPIN:** `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url` (and `sheets_update_creation` if you want the sheet updated)
+**NEVER PIN:** `grok_imagine_reel_still`, `tts_pep_voice_over`, `pep_lipsync_fal`
+
+**UNPIN (unique scene + unique VO):** `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `prep_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url`, `sheets_update_creation`
+
+**PIN (skip Kling bill):** `prep_grok_video_start`, `ai_vid_generator`, `Wait2`, `Wait`, `grok_video_poll`, `kling_video_result`, `save_video_url`
 
 Leave disconnected: `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result`, `kling_video_request`.
 
-Confirm `save_still_url.reel_still_url` is the no-thumbs xAI still (not Catbox). Confirm `fal_upload_tts_initiate.file_url` is a fal CDN URL.
+Confirm `fal_upload_tts_initiate.file_url` is a fal CDN URL (not Catbox). Confirm `save_still_url.reel_still_url` is an xAI still (not Catbox). Mouth on the still is open mid-word.
 
-Then **Test workflow** once. QC: mouth moves with VO, no thumbs-up.
+Then **Test workflow** once. Wait up to ~900s. QC: unique scene, unique VO, mouth moves with speech, no thumbs-up.
 
 ---
 
 ## Checklist before Test workflow
 
-- [ ] `pep_lipsync_fal` Model = **OmniHuman / Omnihuman v1.5** (not sync-3 Lipsync)
-- [ ] Parameters are `image_url` + `audio_url` + `resolution` `720p` + `prompt` (no `video_url`)
-- [ ] Wait for Completion **ON**
+- [ ] `sort_rotation` sorts `times_used` ASC then `last_used_at` ASC
+- [ ] `Limit` Max Items = `1`
+- [ ] `tts_pep_voice_over` text = `={{ $('prep_pep_beats').item.json.vo_beat_a || $('prep_pep_beats').item.json.voice_over }}` (not a pasted URL)
+- [ ] `fal_upload_tts_initiate` `file_name` is unique (`pep-{{creation_id}}-{{timestamp}}.mp3`), not `pep-beat-a.mp3`
+- [ ] `pep_lipsync_fal` Model = **OmniHuman / Omnihuman v1.5** (not sync-3 / VEED / Kling lipsync / LatentSync)
+- [ ] `image_url` = `={{ $('save_still_url').item.json.reel_still_url }}`
+- [ ] `audio_url` = `={{ $('fal_upload_tts_initiate').item.json.file_url }}` — **not hardcoded**
+- [ ] `resolution` = `1080p`
+- [ ] Wait for Completion **ON**, Max Wait Time = `900`
 - [ ] `prep_pep_lipsync` Mode = Run Once for Each Item, returns a plain object
-- [ ] `lipsync_image_in` is an xAI still URL (not Catbox)
-- [ ] `lipsync_audio_in` is `fal_upload_tts_initiate.file_url` (not Catbox)
 - [ ] `save_lipsync_video_url` Include Other Input Fields **OFF**
 - [ ] `creation_id` fx **ON**
+- [ ] `sheets_update_creation` writes `last_used_at` + `times_used`
 - [ ] Kling chain is pinned / disconnected so it does not bill
 - [ ] Disconnected: `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result`
+- [ ] Do **not** pin `grok_imagine_reel_still`, `tts_pep_voice_over`, or `pep_lipsync_fal`

@@ -21,8 +21,9 @@ Keep **exact canvas node names** (`prep_pep_lipsync`, `pep_lipsync_fal`, `save_l
 - Model: `fal-ai/bytedance/omnihuman/v1.5`
 - `image_url` = `save_still_url.reel_still_url`
 - `audio_url` = `fal_upload_tts_initiate.file_url`
-- `resolution` = `720p`
+- `resolution` = `1080p`
 - Wait for Completion ON
+- Max Wait Time = `900`
 - Full params: `marketing/n8n-pep-lipsync-setup.md`
 
 ## Optional Kling walk B-roll

@@ -37,7 +37,7 @@ Full A→B→C→D stitch can wait until Beat A OmniHuman looks right. See `mark
 ## Node: talking clip (`pep_lipsync_fal` — OmniHuman v1.5)
 - Model: `fal-ai/bytedance/omnihuman/v1.5`
 - Required: `image_url` (Pep still from `save_still_url`) + `audio_url` (`fal_upload_tts_initiate.file_url`)
-- Optional: `resolution` `720p`, `prompt`
+- Optional: `resolution` `1080p`, `prompt`
 - Do **not** send `video_url` (that is sync-3)
 - Prep code: `marketing/n8n-pep-prep-lipsync.js`
 - Full steps: `marketing/n8n-pep-lipsync-setup.md`

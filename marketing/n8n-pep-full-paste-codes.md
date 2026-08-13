@@ -1,10 +1,20 @@
 # Pep n8n — FULL paste codes (no excerpts)
 
-Talking model is **OmniHuman v1.5** on `pep_lipsync_fal` (image + audio). Not sync-3. Not Kling.
+Talking model is **OmniHuman v1.5** on `pep_lipsync_fal` (image + audio). Not sync-3. Not Kling. Resolution **1080p**. Unique scene + unique VO every execution.
 
 Wire:
 ```text
-tts_pep_voice_over
+Schedule Trigger
+  → get_rows_in_sheet
+  → filter_active
+  → sort_rotation
+  → Limit
+  → Prep_day_variant
+  → grok_api
+  → parse_grok
+  → if_complaince
+  → prep_pep_beats
+  → tts_pep_voice_over
   → fal_upload_tts_initiate
   → merge_tts_binary
   → fal_upload_tts_put
@@ -15,6 +25,36 @@ tts_pep_voice_over
   → save_lipsync_video_url
   → sheets_update_creation
 ```
+
+---
+
+## SORT: `sort_rotation`
+
+Picks the least-used Active row so every execution gets a **unique scene**.
+
+| Parameter | Value |
+|---|---|
+| Node type | Sort |
+| Exact name | `sort_rotation` |
+| Type | Simple |
+
+| Sort Field | Order |
+|---|---|
+| `times_used` | **Ascending** |
+| `last_used_at` | **Ascending** |
+
+Wire: `filter_active` → `sort_rotation` → `Limit`
+
+---
+
+## LIMIT: `Limit`
+
+| Parameter | Value |
+|---|---|
+| Node type | Limit |
+| Exact name | `Limit` |
+| Max Items | `1` |
+| Keep | First Items |
 
 ---
 
@@ -259,7 +299,7 @@ return {
   reel_still_url: imageUrl,
   tts_audio_url: audioUrl,
   omnihuman_prompt: omniPrompt,
-  omnihuman_resolution: '720p',
+  omnihuman_resolution: '1080p',
   fal_lipsync_endpoint: 'fal-ai/bytedance/omnihuman/v1.5',
 };
 ```
@@ -296,6 +336,8 @@ JSON Body:
 }
 ```
 
+This is that sheet row’s unique VO (`vo_beat_a` from `prep_pep_beats`, which splits that row’s `voice_over`). Do **not** paste a URL into `text`. Do **not** hardcode a line of VO.
+
 ---
 
 ## HTTP: `fal_upload_tts_initiate`
@@ -316,9 +358,11 @@ JSON Body:
 ```json
 {
   "content_type": "audio/mpeg",
-  "file_name": "pep-beat-a.mp3"
+  "file_name": "={{ 'pep-' + String($('prep_pep_beats').item.json.creation_id || $('Limit').item.json.creation_id || 'run') + '-' + String($now.toMillis()) + '.mp3' }}"
 }
 ```
+
+`file_name` must be unique per run. Do **not** use `pep-beat-a.mp3` — that reused the same VO every run.
 
 ---
 
@@ -470,7 +514,9 @@ OmniHuman is **image + audio → talking video**. It does **not** take a Kling `
 
 Wire: `save_still_url` → `prep_pep_lipsync` → **`pep_lipsync_fal`** → `save_lipsync_video_url`
 
-Disconnect `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result`. Leave Kling nodes pinned / off this talking path.
+Disconnect `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result`. Leave Kling disconnected from this talking path.
+
+Do **not** hardcode Audio Url. Do **not** send `video_url` (sync-3 / VEED / Kling lipsync / LatentSync).
 
 | Parameter | fx | Value |
 |---|---|---|
@@ -481,18 +527,20 @@ Disconnect `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result
 | Operation | — | Generate Media |
 | Model | — | From list · **OmniHuman** / **Omnihuman v1.5** (`fal-ai/bytedance/omnihuman/v1.5`) |
 | Parameter 1 Name | OFF | `image_url` |
-| Parameter 1 Value | ON | `={{ $json.lipsync_image_in }}` |
+| Parameter 1 Value | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
 | Parameter 2 Name | OFF | `audio_url` |
-| Parameter 2 Value | ON | `={{ $json.lipsync_audio_in }}` |
+| Parameter 2 Value | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
 | Parameter 3 Name | OFF | `resolution` |
-| Parameter 3 Value | OFF | `720p` |
+| Parameter 3 Value | OFF | `1080p` |
 | Parameter 4 Name | OFF | `prompt` |
 | Parameter 4 Value | ON | `={{ $json.omnihuman_prompt }}` |
 | Wait for Completion | — | **ON** |
 | Poll Interval (Seconds) | — | `5` |
-| Max Wait Time (Seconds) | — | `600` |
+| Max Wait Time (Seconds) | — | `900` |
 
-Do **not** send `video_url`. That is sync-3. OmniHuman needs the Pep **still**.
+1080p took ~10 min. Audio must be under 30s at 1080p (`vo_beat_a` is the 15s slice).
+
+If n8n errors `[ERROR: No path back to node]` on `$('save_still_url')`, use `$json.lipsync_image_in` / `$json.lipsync_audio_in` from `prep_pep_lipsync` instead (same URLs).
 
 **Expect OUTPUT:** `{ "video": { "url": "https://..." } }`
 

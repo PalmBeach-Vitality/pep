@@ -56,7 +56,7 @@ TTS public URL = `fal_upload_tts_initiate.file_url`.
 | — | `Schedule Trigger` | Starts the run |
 | 1 | `get_rows_in_sheet` | Read tab `150-pb-pep-scenes` |
 | 2 | `filter_active` | Keep Active rows |
-| 3 | `sort_rotation` | Rotation sort |
+| 3 | `sort_rotation` | Sort `times_used` ASC, then `last_used_at` ASC |
 | 4 | `Limit` | One row only |
 | 5 | `Prep_day_variant` | Map row fields + `pep_ref_url` |
 | 6 | `grok_api` | Caption LLM (`POST /v1/chat/completions`) |
@@ -70,7 +70,7 @@ TTS public URL = `fal_upload_tts_initiate.file_url`.
 | 14 | `grok_imagine_reel_still` | Pep still — URL must be `/v1/images/edits` + master, not `/generations` |
 | 15 | `save_still_url` | Save `reel_still_url` |
 | 16 | `prep_pep_lipsync` | OmniHuman inputs from `save_still_url.reel_still_url` + `fal_upload_tts_initiate.file_url` |
-| 17 | `pep_lipsync_fal` | fal OmniHuman v1.5 — `image_url` + `audio_url` + `resolution` `720p`. Wait for Completion ON |
+| 17 | `pep_lipsync_fal` | fal OmniHuman v1.5 — `image_url` + `audio_url` + `resolution` `1080p`. Wait for Completion ON. Max wait `900` |
 | 18 | `save_lipsync_video_url` | Save `lipsync_video_url` from `$json.video.url` · Include Other Input Fields **OFF** |
 | 19 | `sheets_update_creation` | Sheet writeback |
 | — | `prep_grok_video_start` | Optional Kling walk B-roll — keep disconnected from talking path |
@@ -99,7 +99,7 @@ On node **`Prep_day_variant`**, set field:
 
 ## Phase A — Sheet pick (exact names)
 1. `get_rows_in_sheet` → tab **`150-pb-pep-scenes`**
-2. Keep `filter_active` → `sort_rotation` → `Limit` (=1)
+2. Keep `filter_active` → `sort_rotation` (`times_used` ASC, then `last_used_at` ASC) → `Limit` (=1 unused row)
 3. On `Prep_day_variant` (Include Other Input Fields = ON), ensure:
 
 | Name | Value |
@@ -119,6 +119,8 @@ On node **`Prep_day_variant`**, set field:
 | `voice_over` | `{{ $json.voice_over }}` |
 | `pep_script` | `{{ $json.pep_script }}` |
 | `disclaimer_short` | `{{ $json.disclaimer_short }}` |
+| `times_used` | `{{ $json.times_used }}` |
+| `last_used_at` | `{{ $json.last_used_at }}` |
 | `video_prompt` | `{{ $json.video_prompt }}` |
 | `video_motion_prompt` | `{{ $json.video_motion_prompt }}` |
 
@@ -146,7 +148,7 @@ On node **`Prep_day_variant`**, set field:
    - Body → **`marketing/n8n-pep-grok-still-body-lock.txt`** (EDIT `<IMAGE_0>` only)
    - Confirm request preview: `images[0].url` = master
 3. `save_still_url` — save `reel_still_url` / `data[0].url`
-4. **QC gate:** still vs master side-by-side. Face / hat logo / crimp / gloves / sneakers must match. Pose must be mid-stride walking (not master thumbs-up). Drift or planted thumbs-up → reroll. Do not send a thumbs-up still into `ai_vid_generator`.
+4. **QC gate:** still vs master side-by-side. Face / hat logo / crimp / gloves / sneakers must match. Pose must be mid-stride walking (not master thumbs-up). **Mouth OPEN mid-word** (OmniHuman start frame). Drift or planted thumbs-up → reroll. Do not send a thumbs-up still into OmniHuman.
 
 **Then duplicate for 4 stills** (keep original names for A):
 
@@ -169,7 +171,7 @@ On node **`Prep_day_variant`**, set field:
 | Exact node | Action |
 |---|---|
 | `prep_pep_lipsync` | Paste `marketing/n8n-pep-prep-lipsync.js`. Each Item. Outputs `lipsync_image_in` + `lipsync_audio_in` |
-| `pep_lipsync_fal` | fal community node · Model **OmniHuman / Omnihuman v1.5** · `image_url` + `audio_url` + `resolution` `720p` · Wait for Completion ON |
+| `pep_lipsync_fal` | fal community node · Model **OmniHuman / Omnihuman v1.5** · `image_url` `={{ $('save_still_url').item.json.reel_still_url }}` · `audio_url` `={{ $('fal_upload_tts_initiate').item.json.file_url }}` · `resolution` `1080p` · Wait for Completion ON · Max Wait `900` |
 | `save_lipsync_video_url` | `lipsync_video_url` `={{ $json.video.url }}` · Include Other Input Fields **OFF** · `model_video` = `fal-omnihuman-v1.5` |
 
 Kling I2V stays on canvas as **optional walk B-roll only**. Do **not** wire it into the talking path. Do **not** wire `kling_video_request`.
@@ -230,13 +232,33 @@ If the canvas has no OUTPUT on the nodes and you cannot debug-in-editor: **do no
 
 ---
 
+## Unique scene + unique VO (locked production run)
+
+Each Test workflow must pick a new unused sheet row (`sort_rotation` + `Limit` = 1) and generate a new still, new TTS, and new OmniHuman clip.
+
+**NEVER PIN:** `grok_imagine_reel_still`, `tts_pep_voice_over`, `pep_lipsync_fal`
+
+**UNPIN:** `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `prep_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url`, `sheets_update_creation`
+
+**PIN (skip Kling bill):** `prep_grok_video_start`, `ai_vid_generator`, `Wait2`, `Wait`, `grok_video_poll`, `kling_video_result`, `save_video_url`
+
+Leave disconnected: `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result`, `kling_video_request`.
+
+Do **not** hardcode Audio Url. `pep_lipsync_fal` `audio_url` stays `={{ $('fal_upload_tts_initiate').item.json.file_url }}`.
+
+Then **Test workflow** once. Wait up to ~900s.
+
+---
+
 ## Reuse existing still + TTS ($0 generate except OmniHuman)
 
-n8n cannot execute a mid-chain node alone. To run **one OmniHuman talking clip** without a new still or new TTS, **pin every generate node** from a previous good execution, then Test workflow.
+This path **reuses** a scene. Do **not** use it when Sal wants a unique scene.
 
-**PIN (do not regenerate — $0):** `Schedule Trigger`, `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `prep_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_grok_video_start`, `ai_vid_generator`, `Wait2`, `Wait`, `grok_video_poll`, `kling_video_result`, `save_video_url`
+**NEVER PIN:** `pep_lipsync_fal`
 
-**UNPIN (this is the paid OmniHuman run):** `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url` (and `sheets_update_creation` if you want the sheet updated)
+**PIN:** `Schedule Trigger`, `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `prep_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_grok_video_start`, `ai_vid_generator`, `Wait2`, `Wait`, `grok_video_poll`, `kling_video_result`, `save_video_url`
+
+**UNPIN:** `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url` (and `sheets_update_creation` if you want the sheet updated)
 
 Leave disconnected: `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result`, `kling_video_request`.
 
@@ -259,6 +281,10 @@ Do **not** click Test workflow after pinning unless you intend a paid run.
 ---
 
 ## When you *choose* to buy one new OmniHuman clip (no new still)
+
+This still **reuses** TTS + still. Do **not** use it for a unique-scene run.
+
+**NEVER PIN:** `pep_lipsync_fal`
 
 **PIN:** `Schedule Trigger`, `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `prep_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_grok_video_start`, `ai_vid_generator`, `Wait2`, `Wait`, `grok_video_poll`, `kling_video_result`, `save_video_url`
 
@@ -327,5 +353,6 @@ $('save_video_url')
 | `marketing/n8n-pep-save-outputs.txt` | Optional expanded save fields |
 | `marketing/n8n-pep-sheets-update.txt` | `sheets_update_creation` mapping |
 | `marketing/n8n-pep-lipsync-setup.md` | OmniHuman talking clip — full `pep_lipsync_fal` params |
+| `marketing/n8n-pep-omnihuman-keeper.txt` | Locked keeper clip / open-mouth still / wav local copies |
 | `marketing/n8n-pep-stitch-notes.md` | ElevenLabs TTS + stitch |
 | `marketing/n8n-pep-character-lock.md` | Master likeness rules |
