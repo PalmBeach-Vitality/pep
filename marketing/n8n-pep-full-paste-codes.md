@@ -338,23 +338,22 @@ JSON Body:
 
 ---
 
-## HTTP: `kling_video_request`
+## HTTP: `ai_vid_generator`
 
-Wire: `prep_grok_video_start` → **`kling_video_request`** → `Wait` → `grok_video_poll`
+Wire: `prep_grok_video_start` → **`ai_vid_generator`** → `Wait2` → `Wait` → `grok_video_poll`
 
-Do **not** use the fal community node here. HTTP Request + Header Auth only.
+Exact name on canvas is **`ai_vid_generator`**. Do not rename. This is fal Kling I2V (not Luma).
 
 | Parameter | fx | Value |
 |---|---|---|
 | Node type | — | HTTP Request |
-| Exact name | — | `kling_video_request` |
+| Exact name | — | `ai_vid_generator` |
 | Method | OFF | `POST` |
 | URL | OFF | `https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video` |
-| Authentication | — | Generic Credential Type |
-| Generic Auth Type | — | Header Auth |
-| Header Auth → Name | OFF | `Authorization` |
-| Header Auth → Value | OFF | `Key YOUR_FAL_KEY` |
-| Send Query Parameters | — | OFF |
+| Authentication | — | Predefined Credential Type |
+| Credential Type | — | fal.ai API |
+| Credential | — | fal.ai account |
+| Send Query Parameters | — | **OFF** |
 | Send Headers | — | ON |
 | Header 1 Name | OFF | `Content-Type` |
 | Header 1 Value | OFF | `application/json` |
@@ -366,17 +365,13 @@ Do **not** use the fal community node here. HTTP Request + Header Auth only.
 | JSON | ON | `={{ $json.video_request_body }}` |
 | Options → Timeout | OFF | `300000` |
 | Options → Response → Response Format | — | JSON |
-| Options → Response → Include Response Headers and Status | — | OFF |
-| Options → Ignore SSL Issues | — | OFF |
-| Options → Redirects → Follow Redirects | — | ON (default) |
 | Options → Never Error | — | OFF |
-| Options → Batching | — | OFF |
 
-If `={{ $json.video_request_body }}` errors, use this JSON instead (fx ON):
+If `={{ $json.video_request_body }}` errors, JSON fx ON: `={{ JSON.parse($json.video_request_body_string) }}`
 
-`={{ JSON.parse($json.video_request_body_string) }}`
+Do **not** send `frontal_image_url` at root.
 
-**Do not send** `frontal_image_url` at the root. That field is 400 on this endpoint. `end_image_url` is already inside `video_request_body` when the next beat still exists — do not add it as a separate n8n field.
+If later **`grok_video_poll`** or **`pep_lip_sync_result`** GET fails with 405/422, that fal.ai credential injects `User-Agent: n8n-nodes-fal/1.0.1`. Switch **those GET nodes** to Generic Header Auth `Authorization` = `Key YOUR_FAL_KEY`. Leave **`ai_vid_generator`** as fal.ai API if this POST already works.
 
 **Body fields coming from `prep_grok_video_start` (do not retype these in the HTTP node):**
 
