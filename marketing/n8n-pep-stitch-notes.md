@@ -53,4 +53,5 @@ Full A→B→C→D stitch can wait until Beat A lipsync looks right.
 
 ## Timing
 - Beat A smoke: ~15s video + `vo_beat_a`  
-- Full: 4 × 15s + full `voice_over` ≤60s / disclaimer at end
+- Full: 4 × 15s concat = **~60s** + full `voice_over` / disclaimer at end
+- Each beat is a walking+talking shot. Hard cuts between A→B→C→D are the stitch. Stride will not match across stills — that is fine for a reel. Same still + same walk direction stitches smoother if Sal wants one continuous walk.

@@ -44,8 +44,8 @@ const pepLock = [
 const beats = {
   a: {
     name: 'hook',
-    brief: `Beat A HOOK: Palm Beach Pep mid-ground in this unique set: ${surface}. Talking to camera the whole beat — no smile holds. ${pepLock} Product lock: ${compound} (${compoundId}). Lighting: ${lighting}. Grade: ${grade}. Full environment, not void packshot.`,
-    motion: `continuous talking mouth 0–15s with zero pauses; small bounce + weight shift only; no thumbs-up; no hat tip; no smile hold; slow push-in with parallax; ${motion}; preserve Pep identity`,
+    brief: `Beat A HOOK: Palm Beach Pep mid-ground in this unique set: ${surface}. Walking and talking the whole beat — no smile holds, no planted feet. ${pepLock} Product lock: ${compound} (${compoundId}). Lighting: ${lighting}. Grade: ${grade}. Full environment, not void packshot.`,
+    motion: `continuous walking + talking mouth 0–15s with zero pauses; walk cycle on gray legs and white sneakers; stay mid-ground; no thumbs-up; no hat tip; no smile hold; camera tracks; ${motion}; preserve Pep identity`,
   },
   b: {
     name: 'product',
