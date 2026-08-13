@@ -27,21 +27,24 @@ Schedule Trigger
        true  → prep_pep_beats
                  → tts_pep_voice_over
                  → fal_upload_tts_initiate
+                 → merge_tts_binary
                  → fal_upload_tts_put
                  → save_tts_audio_url
                  → grok_imagine_reel_still
                  → save_still_url
                  → prep_grok_video_start
-                 → ai_vid_generator
+                 → kling_video_request
                  → Wait
                  → grok_video_poll
-                 → HTTP Request          (fetch fal result / response_url)
+                 → kling_video_result
                  → save_video_url
+                 → prep_pep_lipsync
+                 → pep_lipsync_start
+                 → Wait
+                 → pep_lipsync_poll
+                 → pep_lipsync_result
+                 → save_lipsync_video_url
                  → sheets_update_creation
-
-  # NEXT (not on canvas yet — Beat A lipsync):
-  # save_video_url → prep_pep_lipsync → pep_lipsync_start
-  #   → pep_lipsync_poll → save_lipsync_video_url
 ```
 
 | # | Exact node name | Role |
@@ -57,17 +60,23 @@ Schedule Trigger
 | 9 | `prep_pep_beats` | Build 4 beat briefs + VO splits |
 | 10 | `tts_pep_voice_over` | ElevenLabs TTS (binary MP3) |
 | 11 | `fal_upload_tts_initiate` | fal storage initiate → `file_url` |
-| 12 | `fal_upload_tts_put` | PUT binary (`data`) to `upload_url` |
-| 13 | `save_tts_audio_url` | Store public `tts_audio_url` |
-| 14 | `grok_imagine_reel_still` | Pep still (Beat A first; DUP for B–D later) |
-| 15 | `save_still_url` | Save still URL |
-| 16 | `prep_grok_video_start` | Prep fal Kling I2V body |
-| 17 | `ai_vid_generator` | Start video (fal Kling queue) |
-| 18 | `Wait` | Brief wait before poll |
-| 19 | `grok_video_poll` | Poll fal until done |
-| 20 | `HTTP Request` | Fetch fal result payload |
-| 21 | `save_video_url` | Save video URL |
-| 22 | `sheets_update_creation` | Writeback |
+| 12 | `merge_tts_binary` | Attach TTS binary onto fal upload |
+| 13 | `fal_upload_tts_put` | PUT binary (`data`) to `upload_url` |
+| 14 | `save_tts_audio_url` | Store public `tts_audio_url` |
+| 15 | `grok_imagine_reel_still` | Pep still (Beat A first; DUP for B–D later) |
+| 16 | `save_still_url` | Save still URL |
+| 17 | `prep_grok_video_start` | Prep fal Kling I2V body (walk+talk lock) |
+| 18 | `kling_video_request` | Start video (fal Kling queue) |
+| 19 | `Wait` | Brief wait before poll |
+| 20 | `grok_video_poll` | Poll fal until done |
+| 21 | `kling_video_result` | Fetch fal result payload |
+| 22 | `save_video_url` | Save silent Kling `video_url` |
+| 23 | `prep_pep_lipsync` | Build lipsync body (unchanged) |
+| 24 | `pep_lipsync_start` | fal sync-lipsync/v3 submit (unchanged) |
+| 25 | `pep_lipsync_poll` | Poll lipsync until COMPLETED (unchanged) |
+| 26 | `pep_lipsync_result` | Fetch lipsync result (unchanged) |
+| 27 | `save_lipsync_video_url` | Save final `lipsync_video_url` |
+| 28 | `sheets_update_creation` | Writeback |
 
 **Hard rule:** Do not rename these nodes. When adding Beat B–D stills/videos, **duplicate** and use suffixed names only for the new copies (e.g. `grok_imagine_reel_still_b`), leaving the originals above intact.
 
@@ -156,22 +165,26 @@ On node **`Prep_day_variant`**, set field:
 
 | Exact node | Action |
 |---|---|
-| `prep_grok_video_start` | Paste `marketing/n8n-pep-prep-video-beat.js` (BEAT=`a`). Outputs `video_request_body` for fal Kling |
-| `grok_video_start` | **Preferred:** fal community node (`@fal-ai/n8n-nodes-fal`) · Generate Media · model `fal-ai/kling-video/v3/pro/image-to-video` · map fields from prep · **keep this exact node name**. Fallback: HTTP queue POST (see setup doc) |
-| `grok_video_poll` | Only needed if fal node doesn’t wait for completion; else thin/pass-through but keep the name |
-| `save_video_url` | Save `video_url` from fal result (`video.url` or check one successful run) |
+| `prep_grok_video_start` | Paste `marketing/n8n-pep-prep-video-beat.js` (BEAT=`a`). Walk+talk lock. Outputs `video_request_body` for fal Kling |
+| `kling_video_request` | HTTP POST fal Kling queue (`fal-ai/kling-video/v3/pro/image-to-video`) · body from prep |
+| `Wait` | Brief wait before poll |
+| `grok_video_poll` | Poll fal status until COMPLETED |
+| `kling_video_result` | GET `response_url` only after COMPLETED |
+| `save_video_url` | Save silent Kling `video_url` from `video.url` |
+| `prep_pep_lipsync` → `pep_lipsync_start` → Wait → `pep_lipsync_poll` → `pep_lipsync_result` → `save_lipsync_video_url` | **Unchanged.** Keep this chain. Mouth motion comes from the Kling clip. |
 
 Duplicate pattern for beats B–D after A works:
-`prep_grok_video_start_b` → `grok_video_start_b` → `grok_video_poll_b` → …  
+`prep_grok_video_start_b` → `kling_video_request_b` → `grok_video_poll_b` → …  
 (same for c/d)
 
 **Sheet field:** `model_video` = `fal-kling-v3-pro-i2v`
 
 ---
 
-## Phase E — ElevenLabs TTS + stitch ~60s
-See `marketing/n8n-pep-stitch-notes.md` (ElevenLabs TTS preferred).  
-Add after all beat videos are ready (new nodes OK here).
+## Phase E — ElevenLabs TTS + lipsync (same workflow)
+TTS and lipsync already sit on this canvas. Do not split them out.  
+See `marketing/n8n-pep-stitch-notes.md` and `marketing/n8n-pep-lipsync-setup.md`.  
+A→B→C→D concat (~60s) waits until Beat A lipsync looks right.
 
 ---
 
@@ -196,12 +209,23 @@ $('GROK_API')
 $('Parse_Grok')
 $('if_complaince')
 $('prep_pep_beats')
+$('tts_pep_voice_over')
+$('fal_upload_tts_initiate')
+$('merge_tts_binary')
+$('fal_upload_tts_put')
+$('save_tts_audio_url')
 $('grok_imagine_reel_still')
 $('save_still_url')
 $('prep_grok_video_start')
-$('grok_video_start')
+$('kling_video_request')
 $('grok_video_poll')
+$('kling_video_result')
 $('save_video_url')
+$('prep_pep_lipsync')
+$('pep_lipsync_start')
+$('pep_lipsync_poll')
+$('pep_lipsync_result')
+$('save_lipsync_video_url')
 $('sheets_update_creation')
 ```
 

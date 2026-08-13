@@ -3,8 +3,8 @@
 ## Goal
 For each beat (or the master cut): **ElevenLabs VO → lip-sync mouth to audio → final MP4**.
 
-Do lip-sync **now** on Beat A smoke (see `marketing/n8n-pep-lipsync-setup.md`).  
-Full A→B→C→D stitch can wait until Beat A lipsync looks right.
+One workflow: Kling walk+talk clip → existing lipsync nodes (do not rewrite them) → `save_lipsync_video_url`.  
+Full A→B→C→D stitch can wait until Beat A lipsync looks right. See `marketing/n8n-pep-lipsync-setup.md`.
 
 ## Order (locked)
 1. `tts_pep_voice_over` (ElevenLabs) → public `tts_audio_url`

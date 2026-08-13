@@ -6,15 +6,16 @@
 ```text
 tts_pep_voice_over
   → fal_upload_tts_initiate
+  → merge_tts_binary
   → fal_upload_tts_put
   → save_tts_audio_url
   → grok_imagine_reel_still
   → save_still_url
   → prep_grok_video_start
-  → ai_vid_generator
+  → kling_video_request
   → Wait
   → grok_video_poll
-  → HTTP Request
+  → kling_video_result
   → save_video_url
   → prep_pep_lipsync
   → pep_lipsync_start
@@ -28,6 +29,8 @@ tts_pep_voice_over
 Execute from `tts_pep_voice_over` or earlier so binary `data` and `$('…')` paths exist.
 
 Do **not** use Catbox URLs as fal `audio_url`. Use fal `file_url` only.
+
+**Locked:** lipsync nodes stay as-is. Mouth motion for the full 15s comes from the Kling clip (`prep_grok_video_start` walk+talk lock). Do not disconnect this chain.
 
 ---
 
@@ -163,10 +166,10 @@ save_tts_audio_url
   → grok_imagine_reel_still
   → save_still_url
   → prep_grok_video_start
-  → ai_vid_generator
+  → kling_video_request
   → Wait
   → grok_video_poll
-  → HTTP Request
+  → kling_video_result
   → save_video_url
 ```
 
@@ -240,7 +243,7 @@ return [
 | Exact name | `pep_lipsync_start` |
 | Method | `POST` |
 | URL | `https://queue.fal.run/fal-ai/sync-lipsync/v3` |
-| Authentication | Same fal credential as `ai_vid_generator` (`Authorization: Key YOUR_FAL_KEY`) |
+| Authentication | Same fal credential as `kling_video_request` (`Authorization: Key YOUR_FAL_KEY`) |
 | Send Headers | ON |
 | Header Name | `Content-Type` |
 | Header Value | `application/json` |

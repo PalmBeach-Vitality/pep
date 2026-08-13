@@ -39,7 +39,8 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - Pep video stack: `marketing/n8n-pep-elevenlabs-video.md` (ElevenLabs cartoon intent → fal Kling I2V + ElevenLabs TTS; keep exact node names)
 - Pep fal + Kling setup: `marketing/n8n-pep-fal-kling-setup.md`
 - Pep lip-sync now: `marketing/n8n-pep-lipsync-setup.md`
-- **Kling walk+talk lock:** Beat A I2V must look like Pep is **walking and talking the entire 15s**. Mouth on the 10ml label starts at 0.00s and never stops. Legs keep a walk cycle the whole clip (stay mid-ground, do not walk out of frame). No thumbs-up, hat tip, or grin-hold. Paste `marketing/n8n-pep-prep-video-beat.js` into `prep_grok_video_start`. `cfg_scale` `0.7`. Do not re-run stills unless the picture is wrong. Four 15s beats concat to ~60s (`stitch_pep_master` later / CapCut now).
+- **One workflow:** still → Kling walk+talk → existing lipsync chain → sheets. Do **not** disconnect or rewrite lipsync nodes (`prep_pep_lipsync`, `pep_lipsync_start` / `fal_lipsync_call`, `pep_lipsync_poll`, `pep_lipsync_result` / `pep_lip_sync_result`, `save_lipsync_video_url`). They stay as named on the canvas.
+- **Kling walk+talk lock:** Beat A I2V must look like Pep is **walking and talking the entire 15s**. Mouth on the 10ml label starts at 0.00s and never stops (lipsync needs that motion). Legs keep a walk cycle the whole clip (stay mid-ground, do not walk out of frame). No thumbs-up, hat tip, or grin-hold. Paste `marketing/n8n-pep-prep-video-beat.js` into `prep_grok_video_start`. `cfg_scale` `0.7`. Do not re-run stills unless the picture is wrong. Four 15s beats concat to ~60s (`stitch_pep_master` later / CapCut now).
 
 ## Social / Imagine
 - Aspect ratio for Pep + landscape social workflows: always **9:16**
