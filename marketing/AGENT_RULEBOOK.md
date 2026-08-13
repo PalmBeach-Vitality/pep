@@ -30,6 +30,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - **When telling Sal to add a node, always show wire context:** `before_node` → **`new_node`** → `after_node`
 - **ALWAYS give FULL parameters** for every node (Method, URL, Auth, Headers, Body/JSON, Options, field names/types, exact expressions). No shortcuts, no “same as X”, no partial tables.
 - **ALWAYS use exact canvas node names.** Never invent labels like “HTTP Request — poll”, “Kling result HTTP”, or “the result node”. If a node exists, call it by its exact name (`grok_video_poll`, `fal_lipsync_call`, `pep_lip_sync_result`, …). If you are proposing a new node, give the exact `lower_case_with_underscores` name in that same message and use only that name afterward.
+- **Define n8n UI terms on first use** (e.g. **pin** = n8n “Pin data”: freeze a node’s last output so Test workflow skips that node and does not bill another API call).
 - Keep `vid_gen_landscape_scenes` separate from the original workflow
 - Keep `vid_gen_palm_beach_pep` separate from other video workflows
 - **#1 PRIORITY — Pep character lock:** Pep must match master `https://files.catbox.moe/2yfdbi.jpg` exactly every still. Use `/v1/images/edits` + `<IMAGE_0>` master. Never `/generations` for Pep. QC still vs master before video. See `marketing/n8n-pep-character-lock.md` and `marketing/n8n-pep-grok-still-body-lock.txt`

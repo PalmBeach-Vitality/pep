@@ -193,6 +193,24 @@ Approx (audio off): Kling 15s ≈ **$1.68**. A new still is a separate Grok Imag
 
 ---
 
+## What “pin” means in n8n
+
+**Pin** (n8n calls it **Pin data**) = freeze that node’s last result and tell n8n to **reuse it** instead of running the node again.
+
+- Every node has **output**: the data it produced last time (a still URL, a video URL, a `request_id`, etc.).
+- If a node is **not pinned**, Test workflow **runs it for real** (API call, new still, new Kling clip, new lipsync — that costs money).
+- If a node **is pinned**, Test workflow **skips the API call** and hands the frozen output to the next node. No new image, no new video, no new fal job.
+
+It is a thumbtack on that node’s **OUTPUT**, not a canvas pin and not a GitHub pin.
+
+**You will know it worked when:** the node shows a small pin/thumbtack badge, and the OUTPUT panel still shows the same URL/JSON from the old run.
+
+**Unpin** = remove that freeze. The next Test workflow will run the node for real again and bill if it is a generate node.
+
+Pin does **not** save the workflow by itself. Pin only controls whether a node is skipped on the next run.
+
+---
+
 ## Reuse existing still + video ($0 generate)
 
 n8n cannot execute a mid-chain node alone. To run the workflow **without** a new image or video, **pin every generate node** from a previous good execution, then Test workflow only if you need a free downstream step (e.g. sheets).
