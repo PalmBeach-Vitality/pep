@@ -212,13 +212,39 @@ n8n cannot execute a mid-chain node alone. To run the workflow **without** a new
 **Also PIN if you do not want another lipsync bill:**
 
 - `prep_pep_lipsync`
-- `pep_lipsync_start` (or `fal_lipsync_call`)
-- lipsync `Wait`
+- `pep_lipsync_start` (or `fal_lipsync_call` if that is the name on canvas)
+- the **lipsync** `Wait` (the Wait after the lipsync submit, before `pep_lipsync_poll`)
 - `pep_lipsync_poll`
-- `pep_lipsync_result` (or `pep_lip_sync_result`)
+- `pep_lipsync_result` (or `pep_lip_sync_result` if that is the name on canvas)
 - `save_lipsync_video_url`
 
-**How to pin**
+**Step 3 — how to pin those lipsync nodes (click by click)**
+
+1. In n8n, open **Executions** (left sidebar).
+2. Open a run that already finished lipsync (the output of `save_lipsync_video_url` has an `https://` mp4).
+3. Click **Debug in editor** (copies that run onto the canvas). If you do not have that button, stay in the editor and use the last successful test instead — the OUTPUT panel on each node must already show JSON, not “No output data”.
+4. Pin each node below. For every node:
+   - Click the node on the canvas (use the **exact name**).
+   - Open the **OUTPUT** panel (right side, not Input).
+   - Confirm JSON is present (for `save_lipsync_video_url` you should see `lipsync_video_url` or `video_url`).
+   - Click the **pin / thumbtack** at the top of OUTPUT (or right-click the node → **Pin data**).
+   - The node shows a pin badge. That output is now frozen and will not call fal.
+5. Pin in this order:
+
+| Exact node | What you should see in OUTPUT before pinning |
+|---|---|
+| `prep_pep_lipsync` | `lipsync_request_body` with `video_url` + `audio_url` |
+| `pep_lipsync_start` (or `fal_lipsync_call`) | `request_id`, `status_url`, `response_url` |
+| lipsync `Wait` | items passed through after the wait |
+| `pep_lipsync_poll` | `status`: `COMPLETED` |
+| `pep_lipsync_result` (or `pep_lip_sync_result`) | `video.url` |
+| `save_lipsync_video_url` | `lipsync_video_url` starting with `https://` |
+
+6. If OUTPUT says **No output data**, do not pin. Go back to Executions and pick a run where that node succeeded.
+7. If the submit node is named `fal_lipsync_call` and the result node is `pep_lip_sync_result`, pin **those** names. Do not rename them.
+8. Do **not** click Test workflow after pinning unless you intend a paid run.
+
+---
 
 1. Open the execution that already has the approved still and Kling clip.
 2. Click each node → output panel → pin icon (or right-click → **Pin data**).
