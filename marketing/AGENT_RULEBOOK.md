@@ -29,6 +29,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - One node (or tight group) at a time, with exact node names
 - **When telling Sal to add a node, always show wire context:** `before_node` → **`new_node`** → `after_node`
 - **ALWAYS give FULL parameters** for every node (Method, URL, Auth, Headers, Body/JSON, Options, field names/types, exact expressions). No shortcuts, no “same as X”, no partial tables.
+- **ALWAYS mark n8n fx ON or OFF** for every field/value. `fx ON` = Expression mode. `fx OFF` = Fixed mode. Never give a value without saying which.
 - Keep `vid_gen_landscape_scenes` separate from the original workflow
 - Keep `vid_gen_palm_beach_pep` separate from other video workflows
 - **#1 PRIORITY — Pep character lock:** Pep must match master `https://files.catbox.moe/2yfdbi.jpg` exactly every still. Use `/v1/images/edits` + `<IMAGE_0>` master. Never `/generations` for Pep. QC still vs master before video. See `marketing/n8n-pep-character-lock.md` and `marketing/n8n-pep-grok-still-body-lock.txt`
