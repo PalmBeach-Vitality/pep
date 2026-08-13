@@ -34,6 +34,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - **Define n8n UI terms on first use** (e.g. **pin** = n8n “Pin data”: freeze a node’s last output so Test workflow skips that node and does not bill another API call).
 - Keep `vid_gen_landscape_scenes` separate from the original workflow
 - Keep `vid_gen_palm_beach_pep` separate from other video workflows
+- Sibling Grok Imagine idea-to-video canvas (reference only, do **not** merge into Pep): `custom_vid_gen1.5-idea-to-video-pbv-log` — `marketing/references/n8n-custom-vid-gen-from-other-agent.md`
 - **#1 PRIORITY — Pep character lock:** Pep must match master `https://files.catbox.moe/2yfdbi.jpg` exactly every still. Use `/v1/images/edits` + `<IMAGE_0>` master. Never `/generations` for Pep. QC still vs master before video. See `marketing/n8n-pep-character-lock.md` and `marketing/n8n-pep-grok-still-body-lock.txt`
 - Pep plan: `marketing/n8n-vid-gen-palm-beach-pep-weekly-plan.md`
 - Pep execute guide: `marketing/n8n-vid-gen-palm-beach-pep-execute.md`
