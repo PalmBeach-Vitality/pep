@@ -16,7 +16,7 @@ tts_pep_voice_over
   → (kling_video_result)
   → save_video_url
   → prep_pep_lipsync
-  → fal_lipsync_call
+  → pep_lipsync_fal
   → Wait3
   → pep_lipsync_poll
   → pep_lip_sync_result
@@ -470,6 +470,38 @@ Only execute after `grok_video_poll` `status` = `COMPLETED`.
 
 ---
 
+## FAL NODE: `pep_lipsync_fal`
+
+This is the official fal.ai community node (`@fal-ai/n8n-nodes-fal`), not HTTP Request.
+
+Wire: `save_video_url` → `prep_pep_lipsync` → **`pep_lipsync_fal`** → `save_lipsync_video_url`
+
+If **Wait for Completion** is ON, disconnect `Wait3`, `pep_lipsync_poll`, and `pep_lip_sync_result` so they do not run. Disconnect `fal_lipsync_call` if it is still on the canvas (two lipsync POSTs would double-bill).
+
+| Parameter | fx | Value |
+|---|---|---|
+| Node type | — | fal.ai |
+| Exact name | — | `pep_lipsync_fal` |
+| Credential | — | fal.ai account |
+| Resource | — | Model |
+| Operation | — | Generate Media |
+| Model | — | From list · **sync-3 Lipsync [video-to-video]** (`fal-ai/sync-lipsync/v3`) |
+| Parameter 1 Name | OFF | `video_url` |
+| Parameter 1 Value | ON | `={{ $json.lipsync_video_in }}` |
+| Parameter 2 Name | OFF | `audio_url` |
+| Parameter 2 Value | ON | `={{ $json.lipsync_audio_in }}` |
+| Parameter 3 Name | OFF | `sync_mode` |
+| Parameter 3 Value | OFF | `cut_off` |
+| Wait for Completion | — | **ON** |
+| Poll Interval (Seconds) | — | `5` |
+| Max Wait Time (Seconds) | — | `600` |
+
+`lipsync_video_in` / `lipsync_audio_in` come from `prep_pep_lipsync`. Audio must be a fal CDN URL (`fal_upload_tts_initiate.file_url`), never Catbox.
+
+**Expect OUTPUT:** `{ "video": { "url": "https://v3b.fal.media/..." } }`
+
+---
+
 ## HTTP: `pep_lipsync_start`
 
 | Parameter | Value |
@@ -518,13 +550,13 @@ Only when poll status = `COMPLETED`.
 
 | Parameter | Value |
 |---|---|
-| Include Other Input Fields | ON |
+| Include Other Input Fields | **OFF** |
 
 | Field | Type | Value |
 |---|---|---|
 | `lipsync_video_url` | String | `={{ $json.video.url }}` |
 | `video_url` | String | `={{ $json.video.url }}` |
-| `tts_audio_url` | String | `={{ $('save_tts_audio_url').item.json.tts_audio_url }}` |
+| `tts_audio_url` | String | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
 | `creation_id` | String | `={{ $('prep_pep_beats').item.json.creation_id }}` |
 | `beat` | String | `a` |
 | `model_video` | String | `fal-sync-lipsync-v3` |

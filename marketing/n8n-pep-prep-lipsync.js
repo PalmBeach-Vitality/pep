@@ -1,5 +1,5 @@
 // Node: prep_pep_lipsync (Code)
-// Wire: save_video_url → prep_pep_lipsync → fal_lipsync_call
+// Wire: save_video_url → prep_pep_lipsync → pep_lipsync_fal
 // Audio: fal_upload_tts_initiate.file_url (no save_tts_audio_url on canvas)
 // Mode: Run Once for Each Item
 // Do NOT return [{ json: ... }] — newer n8n errors "A 'json' property isn't an object"

@@ -29,7 +29,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - One node (or tight group) at a time, with exact node names
 - **When telling Sal to add a node, always wrap the new node name in parentheses:** `(kling_video_result)`. Wire as `before_node` → **`(new_node)`** → `after_node`. Existing canvas nodes stay in backticks only.
 - **ALWAYS give FULL parameters** for every node (Method, URL, Auth, Headers, Body/JSON, Options, field names/types, exact expressions). No shortcuts, no “same as X”, no partial tables.
-- **ALWAYS use exact canvas node names.** Never invent labels like “HTTP Request — poll”, “Kling result HTTP”, or “the result node”. Live canvas (do not rename): `if_complaince`, `ai_vid_generator`, `Wait2`, `Wait`, `Wait3`, `fal_lipsync_call`, `pep_lip_sync_result`. There is **no** `save_tts_audio_url`. If you are proposing a new node, give the exact `lower_case_with_underscores` name in that same message and use only that name afterward.
+- **ALWAYS use exact canvas node names.** Never invent labels like “HTTP Request — poll”, “Kling result HTTP”, or “the result node”. Live canvas (do not rename): `if_complaince`, `ai_vid_generator`, `Wait2`, `Wait`, `Wait3`, `pep_lipsync_fal`, `pep_lip_sync_result`. There is **no** `save_tts_audio_url`. If you are proposing a new node, give the exact `lower_case_with_underscores` name in that same message and use only that name afterward.
 - **Define n8n UI terms on first use** (e.g. **pin** = n8n “Pin data”: freeze a node’s last output so Test workflow skips that node and does not bill another API call).
 - Keep `vid_gen_landscape_scenes` separate from the original workflow
 - Keep `vid_gen_palm_beach_pep` separate from other video workflows
@@ -40,8 +40,8 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - Pep video stack: `marketing/n8n-pep-elevenlabs-video.md` (ElevenLabs cartoon intent → fal Kling I2V + ElevenLabs TTS; keep exact node names)
 - Pep fal + Kling setup: `marketing/n8n-pep-fal-kling-setup.md`
 - Pep lip-sync now: `marketing/n8n-pep-lipsync-setup.md`
-- **One workflow:** still → `ai_vid_generator` → `fal_lipsync_call` → `pep_lip_sync_result` → sheets. Do **not** rename lipsync. Do **not** wire `kling_video_request` — that name is not the live POST. Canvas has **no** `save_tts_audio_url`; audio is `fal_upload_tts_initiate.file_url`. Pep video is **fal Kling**, not Luma.
-- **Kling recipe (locked):** Kling I2V animates **body/camera from the still**. It will **not** talk a printed 10ml-label mouth from a prompt — we proved that across multiple paid jobs. Mouth = `fal_lipsync_call` + ElevenLabs TTS (`fal_upload_tts_initiate.file_url`). Do not QC Kling for talking. QC Kling for walk + **no thumbs-up**. Thumbs-up on the still becomes thumbs-up in the video; reroll the still until both gloves are in a walk swing. Paste `marketing/n8n-pep-grok-still-body-lock.txt` into `grok_imagine_reel_still`. Paste `marketing/n8n-pep-prep-video-beat.js` into `prep_grok_video_start`. `cfg_scale` `0.5`.
+- **One workflow:** still → `ai_vid_generator` (Kling walk) → `pep_lipsync_fal` (sync-3 mouth) → sheets. Do **not** rename lipsync. Do **not** wire `kling_video_request`. Canvas has **no** `save_tts_audio_url`; audio is `fal_upload_tts_initiate.file_url`.
+- **Kling recipe (locked):** Leave Kling I2V as the walk clip. Do not rerun Kling to make the mouth talk. Mouth = **`pep_lipsync_fal`** (fal community node, sync-3 Lipsync video-to-video) + ElevenLabs TTS at `fal_upload_tts_initiate.file_url`. Wait for Completion ON. Parameters: `video_url` + `audio_url` + `sync_mode` `cut_off`.
 
 ## Social / Imagine
 - Aspect ratio for Pep + landscape social workflows: always **9:16**
