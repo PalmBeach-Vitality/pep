@@ -16,7 +16,7 @@ Master identity (must match 1:1):
 - White label: big cartoon eyes, open smile + pink tongue, rosy cheeks, bold **10ml**
 - White baseball cap with **Palm Beach Vitality** sunset + palm-tree logo (not molecular)
 - Gray tube limbs, white cartoon gloves, rounded white sneakers
-- Thumbs-up pose language allowed only as slight pose — face/hat/body art unchanged
+- Master file is a planted thumbs-up. Video stills MUST change pose to mid-stride walk (toward camera, slight 3/4, screen-right), mouth open mid-word, no thumbs-up. Face/hat/vial/gloves/sneakers stay identical.
 - Clean sticker / 3D-cartoon illustration style with bold outlines
 
 ---
@@ -48,7 +48,7 @@ Must be true in request preview:
 3. `image.type` is `image_url`
 4. Prompt starts with `EDIT THIS IMAGE ONLY` + identity lock
 
-**QC gate:** open still next to master. Face / hat logo / crimp / gloves / sneakers must match. If not → rerun.
+**QC gate:** open still next to master. Face / hat logo / crimp / gloves / sneakers must match. Pose must be mid-stride walking (not the master thumbs-up). If identity drifts or pose is still planted/thumbs-up → rerun. Do not send a thumbs-up still into `ai_vid_generator`.
 
 ---
 

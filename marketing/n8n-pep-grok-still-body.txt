@@ -31,16 +31,17 @@
   prompt: [
     'EDIT THIS IMAGE ONLY.',
     'CRITICAL #1 PRIORITY: The character in the output MUST be the EXACT SAME character as the input image with ZERO redesign.',
-    'PIXEL-IDENTITY LOCK on Palm Beach Pep from the input: identical face (eyes, eyebrows, open smile, pink tongue, rosy cheeks), identical white 10ml label art and 10ml typography, identical white baseball cap with Palm Beach Vitality sunset-and-palm-tree logo (same art, same PALM BEACH VITALITY wordmark), identical silver aluminum crimp seal, identical clear glass vial body and liquid line, identical gray tube limbs, identical white cartoon gloves, identical white sneakers, identical outline weight, identical 3D sticker cartoon style, identical proportions.',
+    'PIXEL-IDENTITY LOCK on Palm Beach Pep from the input: identical face (eyes, eyebrows, rosy cheeks, pink tongue), identical white 10ml label art and 10ml typography, identical white baseball cap with Palm Beach Vitality sunset-and-palm-tree logo (same art, same PALM BEACH VITALITY wordmark), identical silver aluminum crimp seal, identical clear glass vial body and liquid line, identical gray tube limbs, identical white cartoon gloves, identical white sneakers, identical outline weight, identical 3D sticker cartoon style, identical proportions.',
     'DO NOT: redraw Pep, stylize Pep, cute-ify Pep, change the face, change the hat logo, change the vial shape, add a screw cap, add a black twist cap, add a dropper, add humans, add extra mascots, or invent a new bottle character.',
-    'ALLOWED CHANGES ONLY: (1) replace the solid gray background with a new full-environment 9:16 scene, (2) optional tiny pose tweak (keep thumbs-up energy).',
+    'ALLOWED CHANGES: (1) replace the solid gray background with a new full-environment 9:16 scene, (2) POSE MUST CHANGE from the master planted thumbs-up. Output pose is already mid-stride WALKING toward camera, slight 3/4, screen-right. One sneaker forward, one sneaker back, not both planted. Arms in a walk swing. Mouth open mid-word as if talking. This still is the first frame of a 15s walk-and-talk video.',
+    'NO thumbs-up. NO hat tip. NO planted feet. NO standing pose. NO grin-and-hold. Hands are walking, not posing.',
     'Background / beat A only: ' + String($('prep_pep_beats').item.json.beat_a_brief || '') + '.',
     'Surface: ' + String($('prep_pep_beats').item.json.surface || '') + '.',
     'Lighting on the ENVIRONMENT only: ' + String($('prep_pep_beats').item.json.lighting || '') + '.',
     'Color grade on ENVIRONMENT only: ' + String($('prep_pep_beats').item.json.color_grade || '') + '.',
     'Compose Pep mid-ground, full body visible. Not extreme macro. Not void packshot.',
     'No hospitals, no doctor offices, no clinical rooms, no safety placards, no new on-image text.',
-    'If any conflict: keep Pep identical to the input character and change only the background.'
+    'If any conflict: keep Pep identical (face, hat logo, vial, gloves, sneakers) but the pose MUST be mid-stride walking and talking, never the master thumbs-up.'
   ].join(' ')
 }) }}
 
@@ -65,13 +66,13 @@
     'EDIT THIS IMAGE ONLY.',
     'CRITICAL #1 PRIORITY: The character in the output MUST be the EXACT SAME character as the input image with ZERO redesign.',
     'PIXEL-IDENTITY LOCK on Palm Beach Pep from the input: identical face, 10ml label, Palm Beach Vitality hat logo, crimp seal, vial, gray limbs, white gloves, white sneakers, style, proportions.',
-    'DO NOT redesign Pep. ALLOWED CHANGES ONLY: background + tiny pose.',
+    'DO NOT redesign Pep. ALLOWED CHANGES: background + pose MUST be mid-stride walking toward camera slight 3/4 screen-right, mouth open mid-word, NO thumbs-up.',
     'Background / beat B only: ' + String($('prep_pep_beats').item.json.beat_b_brief || '') + '.',
     'Surface: ' + String($('prep_pep_beats').item.json.surface || '') + '.',
     'Lighting on the ENVIRONMENT only: ' + String($('prep_pep_beats').item.json.lighting || '') + '.',
     'Color grade on ENVIRONMENT only: ' + String($('prep_pep_beats').item.json.color_grade || '') + '.',
     'Compose Pep mid-ground, full body visible. No humans, hospitals, doctor offices, new on-image text.',
-    'If any conflict: keep Pep identical and change only the background.',
+    'If any conflict: keep Pep identical (face, hat logo, vial, gloves, sneakers) but the pose MUST be mid-stride walking, never thumbs-up.',
     'Motion intent: ' + String($('prep_pep_beats').item.json.beat_b_motion || '') + '.'
   ].join(' ')
 }) }}

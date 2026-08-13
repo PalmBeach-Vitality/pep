@@ -149,7 +149,7 @@ On node **`Prep_day_variant`**, set field:
    - Body → **`marketing/n8n-pep-grok-still-body-lock.txt`** (EDIT `<IMAGE_0>` only)
    - Confirm request preview: `images[0].url` = master
 3. `save_still_url` — save `reel_still_url` / `data[0].url`
-4. **QC gate:** still vs master side-by-side. Face / hat logo / crimp / gloves / sneakers must match. Drift → reroll. Do not continue to video on a bad still.
+4. **QC gate:** still vs master side-by-side. Face / hat logo / crimp / gloves / sneakers must match. Pose must be mid-stride walking (not master thumbs-up). Drift or planted thumbs-up → reroll. Do not send a thumbs-up still into `ai_vid_generator`.
 
 **Then duplicate for 4 stills** (keep original names for A):
 

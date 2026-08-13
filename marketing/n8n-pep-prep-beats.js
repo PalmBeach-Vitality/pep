@@ -37,7 +37,7 @@ const pepLock = [
   'white mid-body label with cheerful cartoon face and bold 10ml text,',
   'white baseball cap with Palm Beach Vitality sunset + palm-tree logo,',
   'gray tube limbs, white cartoon gloves, rounded white sneakers,',
-  'optimistic thumbs-up energy, clean 3D-cartoon / sticker style with bold outlines.',
+  'mid-stride walking pose toward camera slight 3/4 screen-right, mouth open mid-word, no thumbs-up, clean 3D-cartoon / sticker style with bold outlines.',
   'No humans. No doctor offices. No hospitals.',
 ].join(' ');
 
