@@ -183,6 +183,62 @@ Duplicate pattern for beats B–D after A works:
 
 ---
 
+## Saving vs running (cost)
+
+Pasting code into `prep_grok_video_start` and filling **`kling_video_request`** parameters is free. **Test workflow / Execute** is what bills Grok stills, Kling video, and fal lipsync.
+
+Do **not** click Test workflow just to save the canvas.
+
+Approx (audio off): Kling 15s ≈ **$1.68**. A new still is a separate Grok Imagine charge. fal lipsync is a third charge.
+
+---
+
+## Reuse existing still + video ($0 generate)
+
+n8n cannot execute a mid-chain node alone. To run the workflow **without** a new image or video, **pin every generate node** from a previous good execution, then Test workflow only if you need a free downstream step (e.g. sheets).
+
+**PIN (do not regenerate — $0):**
+
+- `grok_imagine_reel_still`
+- `save_still_url`
+- `prep_grok_video_start`
+- `kling_video_request`
+- Kling `Wait`
+- `grok_video_poll`
+- `kling_video_result`
+- `save_video_url`
+- plus sheet/TTS nodes if you also do not want those to rerun: `get_rows_in_sheet` through `save_tts_audio_url`
+
+**Also PIN if you do not want another lipsync bill:**
+
+- `prep_pep_lipsync`
+- `pep_lipsync_start` (or `fal_lipsync_call`)
+- lipsync `Wait`
+- `pep_lipsync_poll`
+- `pep_lipsync_result` (or `pep_lip_sync_result`)
+- `save_lipsync_video_url`
+
+**How to pin**
+
+1. Open the execution that already has the approved still and Kling clip.
+2. Click each node → output panel → pin icon (or right-click → **Pin data**).
+3. Confirm `save_still_url` and `save_video_url` still show the URLs you like.
+4. Do not Test workflow unless you intend a paid run.
+
+---
+
+## When you *choose* to buy one new Kling clip (no new still)
+
+**PIN:** `grok_imagine_reel_still`, `save_still_url`, and the TTS chain (`tts_pep_voice_over` through `save_tts_audio_url`).
+
+**UNPIN:** `prep_grok_video_start`, `kling_video_request`, Kling `Wait`, `grok_video_poll`, `kling_video_result`, `save_video_url`, then the lipsync chain if you want VO on the new clip.
+
+Then **Test workflow** once. That is one 15s Kling job, not a new still.
+
+Do **not** pin `kling_video_request` on that run or n8n will replay the old clip with no new charge and no new motion.
+
+---
+
 ## Phase E — ElevenLabs TTS + lipsync (same workflow)
 TTS and lipsync already sit on this canvas. Do not split them out.  
 See `marketing/n8n-pep-stitch-notes.md` and `marketing/n8n-pep-lipsync-setup.md`.  
