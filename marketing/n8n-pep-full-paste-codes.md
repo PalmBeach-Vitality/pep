@@ -59,14 +59,17 @@ return [
 |---|---|
 | Node type | Code |
 | Exact name | `prep_grok_video_start` |
-| Mode | Run Once for All Items |
+| Mode | Run Once for Each Item |
 | Language | JavaScript |
+
+Do **not** use Run Once for All Items. Do **not** `return [{ json: ... }]`. Next HTTP node is **`ai_vid_generator`**. If `kling_video_request` is on the canvas, disconnect it.
 
 ```javascript
 // Node name (exact): prep_grok_video_start
-// Next node on canvas: kling_video_request (fal.ai · Kling v3 Pro I2V)
+// Next node on canvas: ai_vid_generator → Wait2 → Wait → grok_video_poll
 // Duplicates later: prep_grok_video_start_b / _c / _d
-// Mode: Run Once for All Items
+// Mode: Run Once for Each Item
+// Do not return [{ json: ... }] — that errors with A 'json' property isn't an object.
 // IMPORTANT: change BEAT to 'a' | 'b' | 'c' | 'd' in each duplicated node
 // Kling hard limit: prompt max 2500 characters
 
@@ -164,7 +167,7 @@ const negativePrompt = clip([
 
 const MODEL_VIDEO = 'fal-kling-v3-pro-i2v';
 const FAL_ENDPOINT = 'fal-ai/kling-video/v3/pro/image-to-video';
-const FAL_NODE = 'kling_video_request';
+const FAL_NODE = 'ai_vid_generator';
 
 const videoRequestBody = {
   prompt: videoPrompt,
@@ -178,33 +181,31 @@ if (endImageUrl) {
   videoRequestBody.end_image_url = endImageUrl;
 }
 
-return [
-  {
-    ...prep,
-    beat: BEAT,
-    fal_node: FAL_NODE,
-    reel_still_url: stillUrl,
-    [`reel_still_url_${BEAT}`]: stillUrl,
-    prompt: videoPrompt,
-    video_prompt: videoPrompt,
-    prompt_char_count: videoPrompt.length,
-    start_image_url: stillUrl,
-    end_image_url: endImageUrl || '',
-    next_beat: NEXT_BEAT || '',
-    negative_prompt: negativePrompt,
-    video_motion_prompt: motion,
-    duration: '15',
-    duration_seconds: 15,
-    generate_audio: false,
-    aspect_ratio: '9:16',
-    resolution: '1080p',
-    model_video: MODEL_VIDEO,
-    fal_endpoint: FAL_ENDPOINT,
-    fal_submit_url: `https://queue.fal.run/${FAL_ENDPOINT}`,
-    video_request_body: videoRequestBody,
-    video_request_body_string: JSON.stringify(videoRequestBody),
-  },
-];
+return {
+  ...prep,
+  beat: BEAT,
+  fal_node: FAL_NODE,
+  reel_still_url: stillUrl,
+  [`reel_still_url_${BEAT}`]: stillUrl,
+  prompt: videoPrompt,
+  video_prompt: videoPrompt,
+  prompt_char_count: videoPrompt.length,
+  start_image_url: stillUrl,
+  end_image_url: endImageUrl || '',
+  next_beat: NEXT_BEAT || '',
+  negative_prompt: negativePrompt,
+  video_motion_prompt: motion,
+  duration: '15',
+  duration_seconds: 15,
+  generate_audio: false,
+  aspect_ratio: '9:16',
+  resolution: '1080p',
+  model_video: MODEL_VIDEO,
+  fal_endpoint: FAL_ENDPOINT,
+  fal_submit_url: `https://queue.fal.run/${FAL_ENDPOINT}`,
+  video_request_body: videoRequestBody,
+  video_request_body_string: JSON.stringify(videoRequestBody),
+};
 ```
 
 ---
@@ -383,12 +384,14 @@ Exact name on canvas is **`ai_vid_generator`**. Do not rename. This is fal Kling
 | Send Body | — | ON |
 | Body Content Type | — | JSON |
 | Specify Body | — | Using JSON |
-| JSON | ON | `={{ $json.video_request_body }}` |
+| JSON | ON | `={{ JSON.parse($json.video_request_body_string) }}` |
 | Options → Timeout | OFF | `300000` |
 | Options → Response → Response Format | — | JSON |
 | Options → Never Error | — | OFF |
 
-If `={{ $json.video_request_body }}` errors, JSON fx ON: `={{ JSON.parse($json.video_request_body_string) }}`
+Do **not** use `={{ $json.video_request_body }}` — if that field is missing, n8n sends the text `undefined` and errors. Use `video_request_body_string` as above.
+
+If `kling_video_request` is on the canvas, disconnect it. The live POST is **`ai_vid_generator`**. Two POST nodes would bill Kling twice.
 
 Do **not** send `frontal_image_url` at root.
 

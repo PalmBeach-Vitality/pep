@@ -1,7 +1,8 @@
 // Node name (exact): prep_grok_video_start
 // Next node on canvas: ai_vid_generator → Wait2 → Wait → grok_video_poll
 // Duplicates later: prep_grok_video_start_b / _c / _d
-// Mode: Run Once for All Items
+// Mode: Run Once for Each Item
+// Do not return [{ json: ... }] — that errors with A 'json' property isn't an object.
 // IMPORTANT: change BEAT to 'a' | 'b' | 'c' | 'd' in each duplicated node
 // Kling hard limit: prompt max 2500 characters
 
@@ -116,30 +117,28 @@ if (endImageUrl) {
   videoRequestBody.end_image_url = endImageUrl;
 }
 
-return [
-  {
-    ...prep,
-    beat: BEAT,
-    fal_node: FAL_NODE,
-    reel_still_url: stillUrl,
-    [`reel_still_url_${BEAT}`]: stillUrl,
-    prompt: videoPrompt,
-    video_prompt: videoPrompt,
-    prompt_char_count: videoPrompt.length,
-    start_image_url: stillUrl,
-    end_image_url: endImageUrl || '',
-    next_beat: NEXT_BEAT || '',
-    negative_prompt: negativePrompt,
-    video_motion_prompt: motion,
-    duration: '15',
-    duration_seconds: 15,
-    generate_audio: false,
-    aspect_ratio: '9:16',
-    resolution: '1080p',
-    model_video: MODEL_VIDEO,
-    fal_endpoint: FAL_ENDPOINT,
-    fal_submit_url: `https://queue.fal.run/${FAL_ENDPOINT}`,
-    video_request_body: videoRequestBody,
-    video_request_body_string: JSON.stringify(videoRequestBody),
-  },
-];
+return {
+  ...prep,
+  beat: BEAT,
+  fal_node: FAL_NODE,
+  reel_still_url: stillUrl,
+  [`reel_still_url_${BEAT}`]: stillUrl,
+  prompt: videoPrompt,
+  video_prompt: videoPrompt,
+  prompt_char_count: videoPrompt.length,
+  start_image_url: stillUrl,
+  end_image_url: endImageUrl || '',
+  next_beat: NEXT_BEAT || '',
+  negative_prompt: negativePrompt,
+  video_motion_prompt: motion,
+  duration: '15',
+  duration_seconds: 15,
+  generate_audio: false,
+  aspect_ratio: '9:16',
+  resolution: '1080p',
+  model_video: MODEL_VIDEO,
+  fal_endpoint: FAL_ENDPOINT,
+  fal_submit_url: `https://queue.fal.run/${FAL_ENDPOINT}`,
+  video_request_body: videoRequestBody,
+  video_request_body_string: JSON.stringify(videoRequestBody),
+};

@@ -47,7 +47,7 @@ Schedule Trigger
                  → sheets_update_creation
 ```
 
-**Not on canvas:** `save_tts_audio_url`, `kling_video_request`, `kling_video_result`, `pep_lipsync_start`, `pep_lipsync_result`. Do not use those names.
+**Not on canvas / do not wire:** `save_tts_audio_url`, `kling_video_request`, `pep_lipsync_start`, `pep_lipsync_result`. Live Kling POST is **`ai_vid_generator`**. Result GET is **`(kling_video_result)`**.
 
 TTS public URL = `fal_upload_tts_initiate.file_url`.
 
