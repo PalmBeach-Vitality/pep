@@ -27,6 +27,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 ## n8n
 - New node names: `lower_case_with_underscores`
 - One node (or tight group) at a time, with exact node names
+- **When telling Sal to pin or unpin, always list the exact canvas node names.** Never say “pin TTS” or “unpin video” without the names. Example: PIN `tts_pep_voice_over`, `fal_upload_tts_initiate`. UNPIN `pep_lipsync_fal`.
 - **When telling Sal to add a node, always wrap the new node name in parentheses:** `(kling_video_result)`. Wire as `before_node` → **`(new_node)`** → `after_node`. Existing canvas nodes stay in backticks only.
 - **ALWAYS give FULL parameters** for every node (Method, URL, Auth, Headers, Body/JSON, Options, field names/types, exact expressions). No shortcuts, no “same as X”, no partial tables.
 - **ALWAYS use exact canvas node names.** Never invent labels like “HTTP Request — poll”, “Kling result HTTP”, or “the result node”. Live canvas (do not rename): `if_complaince`, `ai_vid_generator`, `Wait2`, `Wait`, `Wait3`, `pep_lipsync_fal`, `pep_lip_sync_result`. There is **no** `save_tts_audio_url`. If you are proposing a new node, give the exact `lower_case_with_underscores` name in that same message and use only that name afterward.
