@@ -44,23 +44,23 @@ const pepLock = [
 const beats = {
   a: {
     name: 'hook',
-    brief: `Beat A HOOK: Palm Beach Pep mid-ground in this unique set: ${surface}. Walking and talking the whole beat — no smile holds, no planted feet. ${pepLock} Product lock: ${compound} (${compoundId}). Lighting: ${lighting}. Grade: ${grade}. Full environment, not void packshot.`,
-    motion: `continuous walking + talking mouth 0–15s with zero pauses; walk cycle on gray legs and white sneakers; stay mid-ground; no thumbs-up; no hat tip; no smile hold; camera tracks; ${motion}; preserve Pep identity`,
+    brief: `Beat A HOOK: Palm Beach Pep mid-ground in this unique set: ${surface}. Walking and talking the whole beat — mid-stride in and out for dissolve to Beat B. ${pepLock} Product lock: ${compound} (${compoundId}). Lighting: ${lighting}. Grade: ${grade}. Full environment, not void packshot.`,
+    motion: `continuous walking + talking 0–15s; toward camera slight 3/4 screen-right; mid-stride first and last frame; no thumbs-up; no hat tip; no smile hold; camera tracks; ${motion}; preserve Pep identity`,
   },
   b: {
     name: 'product',
-    brief: `Beat B PRODUCT: Same set (${surface}). Closer emphasis on Pep label / 10ml text clarity while keeping full scene depth. Pep glances at label then smiles. ${pepLock} Product lock: ${compound} (${compoundId}). Hero: ${hero}.`,
-    motion: 'slow push-in toward label area; preserve Pep identity; no new text',
+    brief: `Beat B PRODUCT: Same set (${surface}). Keep walking and talking — slightly closer on the 10ml label while full scene stays. Mid-stride in from Beat A, mid-stride out to Beat C. No smile hold. ${pepLock} Product lock: ${compound} (${compoundId}). Hero: ${hero}.`,
+    motion: 'continue same walk toward camera slight 3/4 screen-right + talking mouth; mid-stride in/out; slow track; preserve Pep identity; no new text',
   },
   c: {
     name: 'world',
-    brief: `Beat C WORLD: Same set (${surface}). Stronger environment motion (breeze, light sweep, soft background activity) while Pep holds mid-ground presence. ${pepLock} Product lock: ${compound} (${compoundId}). Source scene: ${String(sceneBrief).slice(0, 500)}`,
-    motion: 'subtle environment drift/orbit; Pep micro-gesture; preserve identity',
+    brief: `Beat C WORLD: Same set (${surface}). Keep walking and talking. Stronger environment motion (breeze, light sweep) while Pep stays mid-ground. Mid-stride in from Beat B, mid-stride out to Beat D. ${pepLock} Product lock: ${compound} (${compoundId}). Source scene: ${String(sceneBrief).slice(0, 500)}`,
+    motion: 'continue same walk toward camera slight 3/4 screen-right + talking mouth; mid-stride in/out; environment drift; preserve identity',
   },
   d: {
     name: 'close',
-    brief: `Beat D CLOSE: Same set (${surface}). Pep confident thumbs-up hold for CTA/disclaimer ending. Calm premium finish. ${pepLock} Product lock: ${compound} (${compoundId}). No new on-screen text.`,
-    motion: 'micro push then settle hold; preserve Pep identity; no new text',
+    brief: `Beat D CLOSE: Same set (${surface}). Keep walking and talking. Mid-stride in from Beat C. Last second can ease the walk but mouth keeps moving. No thumbs-up freeze. ${pepLock} Product lock: ${compound} (${compoundId}). No new on-screen text.`,
+    motion: 'continue same walk toward camera slight 3/4 screen-right + talking mouth; mid-stride in; ease last 1s without planting; preserve Pep identity; no new text',
   },
 };
 

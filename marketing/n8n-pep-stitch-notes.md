@@ -41,17 +41,32 @@ Full A→B→C→D stitch can wait until Beat A lipsync looks right. See `market
 
 ## Node: `stitch_pep_master` (after all beats)
 
-### Preferred — ffmpeg (self-hosted n8n Execute Command)
-1. Download lipsynced beat_a/b/c/d mp4  
-2. `ffmpeg` concat  
-3. Upload → `final_video_url`
+Smooth joins, not hard cuts. Each Kling clip starts and ends **mid-stride** (same walk direction). When Beat B/C/D stills exist, Kling `end_image_url` is the **next** still so the clip lands on the next shot.
+
+### CapCut (now)
+1. Timeline: lipsync A, then B, then C, then D (9:16).
+2. At each join (A→B, B→C, C→D): **Cross Dissolve / Film Dissolve**, **8–12 frames** (~0.3–0.5s). Not fade-to-black.
+3. Do **not** fade in/out every clip or it will feel like four ads.
+4. Optional 6–8 frame fade in on Beat A only, fade out on Beat D only.
+
+Three 0.5s dissolves on 4×15s clips → finished length ~**58.5s**. Use 8 frames if you need closer to 60s.
+
+### ffmpeg (later, `stitch_pep_master`)
+```bash
+ffmpeg -y -i a.mp4 -i b.mp4 -i c.mp4 -i d.mp4 -filter_complex \
+"[0][1]xfade=transition=fade:duration=0.4:offset=14.6[ab]; \
+ [ab][2]xfade=transition=fade:duration=0.4:offset=29.2[abc]; \
+ [abc][3]xfade=transition=fade:duration=0.4:offset=43.8[v]" \
+-map "[v]" -c:v libx264 -pix_fmt yuv420p pep-60s.mp4
+```
+Offset math: clip length 15 minus dissolve 0.4. Three dissolves → ~58.8s.
 
 ### Fallback — no ffmpeg yet
 1. Ship Beat A lipsync first  
-2. Manual stitch in CapCut once for taste  
-3. Add ffmpeg later  
+2. Manual stitch in CapCut with the dissolves above  
+3. Add `stitch_pep_master` later  
 
 ## Timing
 - Beat A smoke: ~15s video + `vo_beat_a`  
-- Full: 4 × 15s concat = **~60s** + full `voice_over` / disclaimer at end
-- Each beat is a walking+talking shot. Hard cuts between A→B→C→D are the stitch. Stride will not match across stills — that is fine for a reel. Same still + same walk direction stitches smoother if Sal wants one continuous walk.
+- Full: 4 × 15s with short dissolves ≈ **58–60s** + VO / disclaimer at end
+- Walk direction is locked (toward camera, slight 3/4, screen-right) so dissolves hide the remaining pose mismatch.

@@ -39,8 +39,18 @@ function stillUrlFor(beat) {
     if (u) return String(u);
   } catch (e) {}
 
-  return String($json.reel_still_url || $json.data?.[0]?.url || '');
+  try {
+    const u = prep[`reel_still_url_${beat}`] || '';
+    if (u) return String(u);
+  } catch (e) {}
+
+  if (beat === BEAT) {
+    return String($json.reel_still_url || $json.data?.[0]?.url || '');
+  }
+  return '';
 }
+
+const NEXT_BEAT = { a: 'b', b: 'c', c: 'd' }[BEAT] || '';
 
 const stillUrl = stillUrlFor(BEAT);
 if (!stillUrl) {
@@ -48,6 +58,9 @@ if (!stillUrl) {
     `Missing Pep still URL for beat ${BEAT}. Check save_still_url / grok_imagine_reel_still.`
   );
 }
+
+// Next-beat still → Kling end_image_url so this clip lands on the next shot (match-cut / dissolve).
+const endImageUrl = NEXT_BEAT ? stillUrlFor(NEXT_BEAT) : '';
 
 const compound = clip(prep.compound_name || 'research compound', 80);
 const compoundId = clip(prep.compound_id || '', 40);
@@ -58,22 +71,26 @@ const surface = clip(prep.surface || prep.material_detail || '', 120);
 
 const videoPrompt = clip([
   'PRIMARY ACTION: walking AND talking at the same time for the entire 15 seconds. Both never stop.',
-  'Start walking and talking immediately at 0.00 seconds. Do not wait. Do not delay. Do not start at 3 seconds.',
-  'WALK: continuous cartoon walk cycle the whole clip. Gray tube legs and white sneakers stride the entire 0.00s–15.00s. Pep stays mid-ground. Does not plant his feet. Does not stand still. Does not stop walking. Does not walk out of frame. Arms swing naturally with the walk.',
-  'TALK: the cartoon mouth printed on the white 10ml label opens and closes continuously from 0.00s through 15.00s WHILE he walks. Mouth never rests closed. Mouth never holds a smile. No grin-and-hold. No talk-stop-smile-talk. Constant chatter, like a presenter walking and never taking a breath.',
-  'NO pose beats. NO thumbs-up. NO hat tip. NO pause-to-smile. NO stop-to-talk. Walking and talking together, no freeze.',
+  'STITCH LOCK: This clip must dissolve into the next 15s shot. Same walk the whole time.',
+  'Start already mid-stride at 0.00 seconds — first frame is a walking pose, not a planted still. Talking immediately. Do not wait. Do not start at 3 seconds.',
+  'End still mid-stride at 15.00 seconds — last frame is a walking pose, mouth open mid-speech. Do not plant feet. Do not freeze. Do not pose for a cut.',
+  'WALK DIRECTION (every beat): walk toward camera on a slight 3/4, screen-right bias, mid-ground. Same direction every clip so A→B→C→D can cross-dissolve. Gray tube legs and white sneakers in a continuous cartoon walk. Does not walk out of frame. Arms swing with the walk.',
+  'TALK: the cartoon mouth printed on the white 10ml label opens and closes continuously from 0.00s through 15.00s WHILE he walks. Mouth never rests closed. Mouth never holds a smile. No grin-and-hold. No talk-stop-smile-talk.',
+  'NO pose beats. NO thumbs-up. NO hat tip. NO pause-to-smile. NO stop-to-talk. NO freeze on first or last frame.',
   'Eyes blink. Hands stay in a walk swing, not posing.',
   'CHARACTER LOCK: Palm Beach Pep identical — 10mL crimp-seal glass vial mascot, Palm Beach Vitality sunset palm logo on white baseball cap, face on white 10ml label, gray limbs, white gloves and sneakers. No morphing.',
   `Product: ${compound} (${compoundId}). Beat ${BEAT.toUpperCase()}.`,
   `Set: ${surface}.`,
-  'CAMERA: track with Pep as he walks; keep him mid-ground in 9:16; soft parallax; environment moves (waves/breeze/light). Do not lose him. Do not crop to a void.',
+  'CAMERA: track with Pep as he walks; keep him mid-ground in 9:16; soft parallax; environment moves (waves/breeze/light). Do not lose him. Do not crop to a void. Camera move stays consistent across beats for dissolves.',
   `Lighting: ${lighting}. Grade: ${grade}.`,
   'ONLY Pep — no extra vials/bottles/pens/syringes. Crimp seal only. No humans, hospital, on-screen text. Silent. Keep scene depth.',
 ].filter(Boolean).join(' '), PROMPT_MAX);
 
 const negativePrompt = clip([
   'delayed start, waits 3 seconds, starts talking late, standing still, planted feet, idle stance,',
+  'freeze on first frame, freeze on last frame, pose for cut, stop at the end,',
   'stops walking, walks out of frame, moonwalk, sliding without steps, frozen legs,',
+  'walks the opposite direction, sudden turn, jump cut pose,',
   'pause, stop talking, smile hold, frozen grin, closed mouth, closed-mouth smile,',
   'thumbs up, hat tip, pose and hold, talk then stop, idle, silent gap,',
   'static face, mouth not moving, mouth closed, rest face,',
@@ -95,6 +112,9 @@ const videoRequestBody = {
   negative_prompt: negativePrompt,
   cfg_scale: 0.7,
 };
+if (endImageUrl) {
+  videoRequestBody.end_image_url = endImageUrl;
+}
 
 return [
   {
@@ -107,6 +127,8 @@ return [
     video_prompt: videoPrompt,
     prompt_char_count: videoPrompt.length,
     start_image_url: stillUrl,
+    end_image_url: endImageUrl || '',
+    next_beat: NEXT_BEAT || '',
     negative_prompt: negativePrompt,
     video_motion_prompt: motion,
     duration: '15',
