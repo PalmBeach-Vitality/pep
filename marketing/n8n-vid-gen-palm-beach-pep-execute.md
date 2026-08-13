@@ -201,13 +201,37 @@ Approx (audio off): Kling 15s ≈ **$1.68**. A new still is a separate Grok Imag
 - If a node is **not pinned**, Test workflow **runs it for real** (API call, new still, new Kling clip, new lipsync — that costs money).
 - If a node **is pinned**, Test workflow **skips the API call** and hands the frozen output to the next node. No new image, no new video, no new fal job.
 
-It is a thumbtack on that node’s **OUTPUT**, not a canvas pin and not a GitHub pin.
+It is a thumbtack on that node’s **OUTPUT** in the **workflow editor** (the canvas). You cannot pin inside the **Executions** history list — that screen is read-only.
 
-**You will know it worked when:** the node shows a small pin/thumbtack badge, and the OUTPUT panel still shows the same URL/JSON from the old run.
+**You will know it worked when:** the node on the canvas shows a small pin/thumbtack badge, and the OUTPUT panel still shows the same URL/JSON from the old run.
 
-**Unpin** = remove that freeze. The next Test workflow will run the node for real again and bill if it is a generate node.
+**Unpin** = click the thumbtack again. That removes the freeze. The next Test workflow will run the node for real again and bill if it is a generate node.
 
 Pin does **not** save the workflow by itself. Pin only controls whether a node is skipped on the next run.
+
+---
+
+## Where to pin (not in Executions)
+
+Do this on the **canvas** (the screen with all the nodes wired together).
+
+1. Open the workflow editor (not the Executions list).
+2. Click a node on the canvas.
+3. Open **OUTPUT** on the right.
+4. If you see JSON/URLs → click the **thumbtack** at the top of OUTPUT (or right-click the node → **Pin data**).
+5. If OUTPUT says **No output data**, the canvas does not have that run loaded yet. You cannot pin air.
+
+**To load an old run onto the canvas** (then pin in the editor):
+
+1. Stay in this workflow.
+2. Open **Executions** for this workflow.
+3. Click the successful run (the one that already has still + video + lipsync URLs).
+4. Click **Debug in editor** (wording may be **Copy to editor** or a three-dot menu → **Debug**). That dumps that run’s outputs onto the canvas. It does not re-run anything and does not cost money.
+5. You are now back on the canvas. Click each node → OUTPUT → thumbtack.
+
+If there is **no Debug in editor / Copy to editor** button: you can only pin nodes that already show OUTPUT from the last time you tested while this tab was open. You cannot pin from the Executions page itself.
+
+If the canvas has no OUTPUT on the nodes and you cannot debug-in-editor: **do not Test workflow**. Just paste/save node parameters. Saving is free and does not need pin.
 
 ---
 
