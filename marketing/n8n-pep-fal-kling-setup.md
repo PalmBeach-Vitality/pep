@@ -4,8 +4,7 @@ Get fal billing + API key live, then wire Beat A video.
 **Preferred:** official fal community node (`@fal-ai/n8n-nodes-fal`).  
 **Fallback:** HTTP Request queue submit/poll (appendix).
 
-Keep **exact** canvas names: `prep_grok_video_start` → `ai_vid_generator` → `Wait` → `grok_video_poll` → `HTTP Request` → `save_video_url`.  
-(Older docs may say `grok_video_start` — canvas now uses **`ai_vid_generator`** for the Kling queue POST.)
+Keep **exact** canvas names: `prep_grok_video_start` → **`kling_video_request`** → `Wait` → `grok_video_poll` → `kling_video_result` → `save_video_url`.
 
 **Model:** Kling Video v3 Pro · image-to-video  
 **Endpoint id:** `fal-ai/kling-video/v3/pro/image-to-video`
@@ -125,20 +124,44 @@ If Pep morphs: fix still lock first, then re-run I2V.
 
 ---
 
-## Appendix — HTTP Request fallback (no fal node)
+## Appendix — HTTP Request: `kling_video_request` (full parameters)
 
-Credential: Header Auth · Name `Authorization` · Value `Key YOUR_FAL_KEY`
+Wire: `prep_grok_video_start` → **`kling_video_request`** → `Wait` → `grok_video_poll`
 
-**`grok_video_start`** POST  
-`https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video`  
-Body: `={{ $json.video_request_body }}`
+| Parameter | fx | Value |
+|---|---|---|
+| Node type | — | HTTP Request |
+| Exact name | — | `kling_video_request` |
+| Method | OFF | `POST` |
+| URL | OFF | `https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video` |
+| Authentication | — | Generic Credential Type |
+| Generic Auth Type | — | Header Auth |
+| Header Auth → Name | OFF | `Authorization` |
+| Header Auth → Value | OFF | `Key YOUR_FAL_KEY` |
+| Send Query Parameters | — | OFF |
+| Send Headers | — | ON |
+| Header 1 Name | OFF | `Content-Type` |
+| Header 1 Value | OFF | `application/json` |
+| Header 2 Name | OFF | `Accept` |
+| Header 2 Value | OFF | `application/json` |
+| Send Body | — | ON |
+| Body Content Type | — | JSON |
+| Specify Body | — | Using JSON |
+| JSON | ON | `={{ $json.video_request_body }}` |
+| Options → Timeout | OFF | `300000` |
+| Options → Response → Response Format | — | JSON |
+| Options → Never Error | — | OFF |
 
-**`grok_video_poll`**  
-1. Wait 20–30s  
-2. GET `…/requests/{{ $('grok_video_start').item.json.request_id }}/status`  
+Fallback JSON (fx ON) if the object expression fails: `={{ JSON.parse($json.video_request_body_string) }}`
+
+Do **not** add `frontal_image_url` at root. Do **not** use the fal community node / fal.ai credential on this HTTP node (it sets `User-Agent: n8n-nodes-fal/1.0.1` and can break later GETs).
+
+**`grok_video_poll`**
+1. Wait 90–120s  
+2. GET `={{ $('kling_video_request').item.json.status_url }}`  
 3. Loop until `COMPLETED`  
-4. GET `…/requests/{{ $('grok_video_start').item.json.request_id }}`  
-5. `{{ $json.video.url }}`
+4. GET `={{ $('kling_video_request').item.json.response_url }}` on **`kling_video_result`** (too early → 400 `"Request is still in progress"`)  
+5. `save_video_url`: `={{ $json.video.url }}`
 
 Optional curl key smoke:
 

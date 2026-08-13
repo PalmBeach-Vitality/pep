@@ -80,6 +80,8 @@ Schedule Trigger
 
 **Hard rule:** Do not rename these nodes. When adding Beat B–D stills/videos, **duplicate** and use suffixed names only for the new copies (e.g. `grok_imagine_reel_still_b`), leaving the originals above intact.
 
+If the lipsync submit node on canvas is already named `fal_lipsync_call` and the result node is `pep_lip_sync_result`, **keep those names**. Do not rewrite lipsync parameters.
+
 ---
 
 ## Phase 0 — Pep master LOCKED

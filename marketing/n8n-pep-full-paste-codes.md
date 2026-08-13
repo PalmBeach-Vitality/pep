@@ -341,18 +341,67 @@ JSON Body:
 
 ## HTTP: `kling_video_request`
 
-| Parameter | Value |
+Wire: `prep_grok_video_start` → **`kling_video_request`** → `Wait` → `grok_video_poll`
+
+Do **not** use the fal community node here. HTTP Request + Header Auth only.
+
+| Parameter | fx | Value |
+|---|---|---|
+| Node type | — | HTTP Request |
+| Exact name | — | `kling_video_request` |
+| Method | OFF | `POST` |
+| URL | OFF | `https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video` |
+| Authentication | — | Generic Credential Type |
+| Generic Auth Type | — | Header Auth |
+| Header Auth → Name | OFF | `Authorization` |
+| Header Auth → Value | OFF | `Key YOUR_FAL_KEY` |
+| Send Query Parameters | — | OFF |
+| Send Headers | — | ON |
+| Header 1 Name | OFF | `Content-Type` |
+| Header 1 Value | OFF | `application/json` |
+| Header 2 Name | OFF | `Accept` |
+| Header 2 Value | OFF | `application/json` |
+| Send Body | — | ON |
+| Body Content Type | — | JSON |
+| Specify Body | — | Using JSON |
+| JSON | ON | `={{ $json.video_request_body }}` |
+| Options → Timeout | OFF | `300000` |
+| Options → Response → Response Format | — | JSON |
+| Options → Response → Include Response Headers and Status | — | OFF |
+| Options → Ignore SSL Issues | — | OFF |
+| Options → Redirects → Follow Redirects | — | ON (default) |
+| Options → Never Error | — | OFF |
+| Options → Batching | — | OFF |
+
+If `={{ $json.video_request_body }}` errors, use this JSON instead (fx ON):
+
+`={{ JSON.parse($json.video_request_body_string) }}`
+
+**Do not send** `frontal_image_url` at the root. That field is 400 on this endpoint. `end_image_url` is already inside `video_request_body` when the next beat still exists — do not add it as a separate n8n field.
+
+**Body fields coming from `prep_grok_video_start` (do not retype these in the HTTP node):**
+
+| Body key | Type | Source |
+|---|---|---|
+| `prompt` | string | `$json.video_request_body.prompt` |
+| `start_image_url` | string | `$json.video_request_body.start_image_url` |
+| `duration` | string | `"15"` |
+| `generate_audio` | boolean | `false` |
+| `negative_prompt` | string | `$json.video_request_body.negative_prompt` |
+| `cfg_scale` | number | `0.7` |
+| `end_image_url` | string | only present when next-beat still exists |
+
+**Expect output JSON:**
+
+| Field | Example |
 |---|---|
-| Method | POST |
-| URL | `https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video` |
-| Authentication | fal Key YOUR_FAL_KEY |
-| Send Headers | ON |
-| Header `Content-Type` | `application/json` |
-| Send Body | ON |
-| Body Content Type | JSON |
-| Specify Body | Using JSON |
-| JSON Body | `={{ JSON.parse($json.video_request_body_string) }}` |
-| Options → Timeout | `300000` |
+| `status` | `IN_QUEUE` |
+| `request_id` | uuid |
+| `status_url` | `https://queue.fal.run/fal-ai/kling-video/requests/{id}/status` |
+| `response_url` | `https://queue.fal.run/fal-ai/kling-video/requests/{id}` |
+| `cancel_url` | `https://queue.fal.run/fal-ai/kling-video/requests/{id}/cancel` |
+
+Then: **`kling_video_request`** → `Wait` → `grok_video_poll` (GET `$('kling_video_request').item.json.status_url`) → only after `COMPLETED` → `kling_video_result` (GET `$('kling_video_request').item.json.response_url`).
 
 ---
 
