@@ -1,5 +1,5 @@
 // Node name (exact): prep_grok_video_start
-// Next node on canvas: ai_vid_generator (fal.ai · Kling v3 Pro I2V)
+// Next node on canvas: kling_video_request (fal.ai · Kling v3 Pro I2V)
 // Duplicates later: prep_grok_video_start_b / _c / _d
 // Mode: Run Once for All Items
 // IMPORTANT: change BEAT to 'a' | 'b' | 'c' | 'd' in each duplicated node
@@ -51,28 +51,32 @@ if (!stillUrl) {
 
 const compound = clip(prep.compound_name || 'research compound', 80);
 const compoundId = clip(prep.compound_id || '', 40);
-const brief = clip(prep[`beat_${BEAT}_brief`] || prep.scene_brief || '', 280);
 const motion = clip(prep[`beat_${BEAT}_motion`] || prep.video_motion_prompt || 'slow push-in', 180);
 const lighting = clip(prep.lighting || '', 80);
 const grade = clip(prep.color_grade || '', 80);
 const surface = clip(prep.surface || prep.material_detail || '', 120);
 
 const videoPrompt = clip([
-  'Animate this 9:16 still into a lively 15s cartoon clip.',
+  'PRIMARY ACTION: talking the entire clip with zero pauses.',
+  'Start talking immediately at 0.00 seconds. Do not wait. Do not delay. Do not start at 3 seconds.',
+  'The cartoon mouth printed on the white 10ml label opens and closes continuously from 0.00s through 15.00s with no gap.',
+  'Mouth never rests closed. Mouth never holds a smile. Mouth never freezes. No grin-and-hold. No talk-stop-smile-talk.',
+  'Rhythm: constant chatter, lips always in motion, like a presenter who never takes a breath.',
+  'NO pose beats. NO thumbs-up. NO hat tip. NO pause-to-smile. Those freeze the mouth — forbidden.',
+  'Body: small bounce and weight shift only, WHILE the mouth keeps talking. Eyes blink. Hands stay natural, not posing.',
   'CHARACTER LOCK: Palm Beach Pep identical — 10mL crimp-seal glass vial mascot, Palm Beach Vitality sunset palm logo on white baseball cap, face on white 10ml label, gray limbs, white gloves and sneakers. No morphing.',
-  `Product: ${compound} (${compoundId}).`,
-  `Beat ${BEAT.toUpperCase()}: ${brief}`,
+  `Product: ${compound} (${compoundId}). Beat ${BEAT.toUpperCase()}.`,
   `Set: ${surface}.`,
-  'TALKING LOCK (non-negotiable): From frame 1 to the last frame (0.0s–15.0s) Pep is mid-speech. The cartoon mouth on the 10ml label NEVER stops: it keeps opening and closing in a steady talking rhythm with no pauses. Do NOT stop to smile. Do NOT hold a grin. Do NOT close the mouth and pose. No 1s–3s smile holds. No talk-then-pause-then-talk. Continuous chatter the entire clip, like a presenter who never takes a breath break.',
-  'GESTURE (while still talking): one thumbs-up and one hat tip without stopping the mouth. Weight shift and small bounce OK. Eyes blink. Mouth keeps moving during every gesture.',
   'CAMERA: slow push-in + soft parallax; environment moves (waves/breeze/light).',
   `Lighting: ${lighting}. Grade: ${grade}.`,
-  'ONLY Pep — no extra vials/bottles/pens/syringes/devices. Crimp seal only. No humans, hospitals, clinics, on-screen text. Silent (VO added later). Keep full scene depth.',
+  'ONLY Pep — no extra vials/bottles/pens/syringes. Crimp seal only. No humans, hospital, on-screen text. Silent. Keep scene depth.',
 ].filter(Boolean).join(' '), PROMPT_MAX);
 
 const negativePrompt = clip([
-  'pause, stop talking, smile hold, frozen grin, closed mouth, closed-mouth smile, pose and hold,',
-  'talk then stop, idle between lines, 3 second smile, silent gap, static face, mouth not moving,',
+  'delayed start, waits 3 seconds, starts talking late,',
+  'pause, stop talking, smile hold, frozen grin, closed mouth, closed-mouth smile,',
+  'thumbs up, hat tip, pose and hold, talk then stop, idle, silent gap,',
+  'static face, mouth not moving, mouth closed, rest face,',
   'blur, distort, morphing, deformed vial, idle freeze,',
   'extra vials, extra bottles, pens, syringes, humans, hospital, on-screen text, watermarks',
 ].join(' '), 800);
@@ -89,7 +93,7 @@ const videoRequestBody = {
   duration: '15',
   generate_audio: false,
   negative_prompt: negativePrompt,
-  cfg_scale: 0.5,
+  cfg_scale: 0.7,
 };
 
 return [

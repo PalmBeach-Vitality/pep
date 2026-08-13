@@ -64,11 +64,13 @@ return [
 
 ```javascript
 // Node name (exact): prep_grok_video_start
-// Next: kling_video_request
+// Next node on canvas: kling_video_request (fal.ai · Kling v3 Pro I2V)
+// Duplicates later: prep_grok_video_start_b / _c / _d
 // Mode: Run Once for All Items
+// IMPORTANT: change BEAT to 'a' | 'b' | 'c' | 'd' in each duplicated node
 // Kling hard limit: prompt max 2500 characters
 
-const BEAT = 'a';
+const BEAT = 'a'; // ← change per node: a, b, c, or d
 const PROMPT_MAX = 2500;
 
 const beats = ['a', 'b', 'c', 'd'];
@@ -114,29 +116,34 @@ if (!stillUrl) {
 
 const compound = clip(prep.compound_name || 'research compound', 80);
 const compoundId = clip(prep.compound_id || '', 40);
-const brief = clip(prep[`beat_${BEAT}_brief`] || prep.scene_brief || '', 280);
 const motion = clip(prep[`beat_${BEAT}_motion`] || prep.video_motion_prompt || 'slow push-in', 180);
 const lighting = clip(prep.lighting || '', 80);
 const grade = clip(prep.color_grade || '', 80);
 const surface = clip(prep.surface || prep.material_detail || '', 120);
 
 const videoPrompt = clip([
-  'Animate this 9:16 still into a lively 15s cartoon clip.',
+  'PRIMARY ACTION: talking the entire clip with zero pauses.',
+  'Start talking immediately at 0.00 seconds. Do not wait. Do not delay. Do not start at 3 seconds.',
+  'The cartoon mouth printed on the white 10ml label opens and closes continuously from 0.00s through 15.00s with no gap.',
+  'Mouth never rests closed. Mouth never holds a smile. Mouth never freezes. No grin-and-hold. No talk-stop-smile-talk.',
+  'Rhythm: constant chatter, lips always in motion, like a presenter who never takes a breath.',
+  'NO pose beats. NO thumbs-up. NO hat tip. NO pause-to-smile. Those freeze the mouth — forbidden.',
+  'Body: small bounce and weight shift only, WHILE the mouth keeps talking. Eyes blink. Hands stay natural, not posing.',
   'CHARACTER LOCK: Palm Beach Pep identical — 10mL crimp-seal glass vial mascot, Palm Beach Vitality sunset palm logo on white baseball cap, face on white 10ml label, gray limbs, white gloves and sneakers. No morphing.',
-  `Product: ${compound} (${compoundId}).`,
-  `Beat ${BEAT.toUpperCase()}: ${brief}`,
+  `Product: ${compound} (${compoundId}). Beat ${BEAT.toUpperCase()}.`,
   `Set: ${surface}.`,
-  `Motion: ${motion}.`,
-  'ACTION: Pep talks to camera — mouth on 10ml label opens/closes in speech rhythm all 15s; clear thumbs-up; tip hat once; weight shift; cheerful bounce; natural blinks. Not idle/frozen.',
   'CAMERA: slow push-in + soft parallax; environment moves (waves/breeze/light).',
   `Lighting: ${lighting}. Grade: ${grade}.`,
-  'ONLY Pep — no extra vials/bottles/pens/syringes/devices. Crimp seal only (no twist/screw/dropper caps). No humans, hospitals, clinics, on-screen text, or safety placards. Silent (VO added later). Keep full scene depth.',
+  'ONLY Pep — no extra vials/bottles/pens/syringes. Crimp seal only. No humans, hospital, on-screen text. Silent. Keep scene depth.',
 ].filter(Boolean).join(' '), PROMPT_MAX);
 
 const negativePrompt = clip([
-  'blur, distort, low quality, morphing, deformed vial, static idle freeze, closed frozen mouth, no talking,',
-  'extra vials, extra bottles, pens, insulin pens, syringes, injectors, needles, droppers, ampoules,',
-  'humans, hospital, doctor office, clinic, black twist cap, screw cap, on-screen text, watermarks, safety placard',
+  'delayed start, waits 3 seconds, starts talking late,',
+  'pause, stop talking, smile hold, frozen grin, closed mouth, closed-mouth smile,',
+  'thumbs up, hat tip, pose and hold, talk then stop, idle, silent gap,',
+  'static face, mouth not moving, mouth closed, rest face,',
+  'blur, distort, morphing, deformed vial, idle freeze,',
+  'extra vials, extra bottles, pens, syringes, humans, hospital, on-screen text, watermarks',
 ].join(' '), 800);
 
 const MODEL_VIDEO = 'fal-kling-v3-pro-i2v';
@@ -149,7 +156,7 @@ const videoRequestBody = {
   duration: '15',
   generate_audio: false,
   negative_prompt: negativePrompt,
-  cfg_scale: 0.5,
+  cfg_scale: 0.7,
 };
 
 return [
