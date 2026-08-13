@@ -168,7 +168,7 @@ On node **`Prep_day_variant`**, set field:
 | Exact node | Action |
 |---|---|
 | `prep_grok_video_start` | Paste `marketing/n8n-pep-prep-video-beat.js` (BEAT=`a`). Walk+talk lock. Outputs `video_request_body` for fal Kling |
-| `kling_video_request` | HTTP POST fal Kling queue (`fal-ai/kling-video/v3/pro/image-to-video`) · body from prep |
+| `kling_video_request` | Full HTTP params in `marketing/n8n-pep-full-paste-codes.md` · POST queue · body `={{ $json.video_request_body }}` |
 | `Wait` | Brief wait before poll |
 | `grok_video_poll` | Poll fal status until COMPLETED |
 | `kling_video_result` | GET `response_url` only after COMPLETED |
