@@ -8,20 +8,20 @@ tts_pep_voice_over
   → fal_upload_tts_initiate
   → merge_tts_binary
   → fal_upload_tts_put
-  → save_tts_audio_url
   → grok_imagine_reel_still
   → save_still_url
   → prep_grok_video_start
-  → kling_video_request
+  → ai_vid_generator
+  → Wait2
+  → luma_video_request
   → Wait
   → grok_video_poll
-  → kling_video_result
   → save_video_url
   → prep_pep_lipsync
-  → pep_lipsync_start
-  → Wait          (lipsync wait — 60 seconds)
+  → fal_lipsync_call
+  → Wait3
   → pep_lipsync_poll
-  → pep_lipsync_result
+  → pep_lip_sync_result
   → save_lipsync_video_url
   → sheets_update_creation
 ```

@@ -29,58 +29,62 @@ Schedule Trigger
                  → fal_upload_tts_initiate
                  → merge_tts_binary
                  → fal_upload_tts_put
-                 → save_tts_audio_url
                  → grok_imagine_reel_still
                  → save_still_url
                  → prep_grok_video_start
-                 → kling_video_request
+                 → ai_vid_generator
+                 → Wait2
+                 → luma_video_request
                  → Wait
                  → grok_video_poll
-                 → kling_video_result
                  → save_video_url
                  → prep_pep_lipsync
-                 → pep_lipsync_start
-                 → Wait
+                 → fal_lipsync_call
+                 → Wait3
                  → pep_lipsync_poll
-                 → pep_lipsync_result
+                 → pep_lip_sync_result
                  → save_lipsync_video_url
                  → sheets_update_creation
 ```
 
-| # | Exact node name | Role |
+**Not on canvas:** `save_tts_audio_url`, `kling_video_request`, `kling_video_result`, `pep_lipsync_start`, `pep_lipsync_result`. Do not use those names.
+
+TTS public URL = `fal_upload_tts_initiate.file_url`.
+
+| # | Exact node name | Function |
 |---|---|---|
-| 1 | `get_rows_in_sheet` | Read Pep sheet |
+| — | `Schedule Trigger` | Starts the run |
+| 1 | `get_rows_in_sheet` | Read tab `150-pb-pep-scenes` |
 | 2 | `filter_active` | Keep Active rows |
 | 3 | `sort_rotation` | Rotation sort |
 | 4 | `Limit` | One row only |
 | 5 | `Prep_day_variant` | Map row fields + `pep_ref_url` |
-| 6 | `grok_api` | Caption LLM |
+| 6 | `grok_api` | Caption LLM (`POST /v1/chat/completions`) |
 | 7 | `parse_grok` | Parse caption JSON |
-| 8 | `if_complaince` | Compliance gate (exact spelling) |
-| 9 | `prep_pep_beats` | Build 4 beat briefs + VO splits |
-| 10 | `tts_pep_voice_over` | ElevenLabs TTS (binary MP3) |
-| 11 | `fal_upload_tts_initiate` | fal storage initiate → `file_url` |
-| 12 | `merge_tts_binary` | Attach TTS binary onto fal upload |
-| 13 | `fal_upload_tts_put` | PUT binary (`data`) to `upload_url` |
-| 14 | `save_tts_audio_url` | Store public `tts_audio_url` |
-| 15 | `grok_imagine_reel_still` | Pep still (Beat A first; DUP for B–D later) |
-| 16 | `save_still_url` | Save still URL |
-| 17 | `prep_grok_video_start` | Prep fal Kling I2V body (walk+talk lock) |
-| 18 | `kling_video_request` | Start video (fal Kling queue) |
-| 19 | `Wait` | Brief wait before poll |
-| 20 | `grok_video_poll` | Poll fal until done |
-| 21 | `kling_video_result` | Fetch fal result payload |
-| 22 | `save_video_url` | Save silent Kling `video_url` |
-| 23 | `prep_pep_lipsync` | Build lipsync body (unchanged) |
-| 24 | `pep_lipsync_start` | fal sync-lipsync/v3 submit (unchanged) |
-| 25 | `pep_lipsync_poll` | Poll lipsync until COMPLETED (unchanged) |
-| 26 | `pep_lipsync_result` | Fetch lipsync result (unchanged) |
-| 27 | `save_lipsync_video_url` | Save final `lipsync_video_url` |
-| 28 | `sheets_update_creation` | Writeback |
+| 8 | `if_complaince` | Compliance gate (`complaince` spelling is on purpose) |
+| 9 | `prep_pep_beats` | Beat briefs + `vo_beat_a` |
+| 10 | `tts_pep_voice_over` | ElevenLabs TTS binary MP3 |
+| 11 | `fal_upload_tts_initiate` | fal upload initiate → `file_url` + `upload_url` |
+| 12 | `merge_tts_binary` | Attach TTS binary onto initiate item |
+| 13 | `fal_upload_tts_put` | PUT binary `data` to `upload_url` |
+| 14 | `grok_imagine_reel_still` | Pep still — URL must be `/v1/images/edits` + master, not `/generations` |
+| 15 | `save_still_url` | Save `reel_still_url` |
+| 16 | `prep_grok_video_start` | Build I2V JSON body |
+| 17 | `ai_vid_generator` | Video HTTP after prep |
+| 18 | `Wait2` | Wait after `ai_vid_generator` |
+| 19 | `luma_video_request` | Next video HTTP (name as on canvas) |
+| 20 | `Wait` | Wait before `grok_video_poll` |
+| 21 | `grok_video_poll` | Poll video job |
+| 22 | `save_video_url` | Save silent `video_url` |
+| 23 | `prep_pep_lipsync` | Lipsync body from `save_video_url` + `fal_upload_tts_initiate.file_url` |
+| 24 | `fal_lipsync_call` | POST fal `sync-lipsync/v3` |
+| 25 | `Wait3` | Wait before lipsync poll |
+| 26 | `pep_lipsync_poll` | GET lipsync `/status` |
+| 27 | `pep_lip_sync_result` | GET lipsync result |
+| 28 | `save_lipsync_video_url` | Save `lipsync_video_url` |
+| 29 | `sheets_update_creation` | Sheet writeback |
 
-**Hard rule:** Do not rename these nodes. When adding Beat B–D stills/videos, **duplicate** and use suffixed names only for the new copies (e.g. `grok_imagine_reel_still_b`), leaving the originals above intact.
-
-If the lipsync submit node on canvas is already named `fal_lipsync_call` and the result node is `pep_lip_sync_result`, **keep those names**. Do not rewrite lipsync parameters.
+**Hard rule:** Do not rename these nodes.
 
 ---
 
@@ -260,20 +264,13 @@ n8n cannot execute a mid-chain node alone. To run the workflow **without** a new
 - `pep_lipsync_result` (or `pep_lip_sync_result` if that is the name on canvas)
 - `save_lipsync_video_url`
 
-**Step 3 — how to pin those lipsync nodes (click by click)**
+**Step 3 — pin the lipsync nodes on the canvas**
 
-1. In n8n, open **Executions** (left sidebar).
-2. Open a run that already finished lipsync (the output of `save_lipsync_video_url` has an `https://` mp4).
-3. Click **Debug in editor** (copies that run onto the canvas). If you do not have that button, stay in the editor and use the last successful test instead — the OUTPUT panel on each node must already show JSON, not “No output data”.
-4. Pin each node below. For every node:
-   - Click the node on the canvas (use the **exact name**).
-   - Open the **OUTPUT** panel (right side, not Input).
-   - Confirm JSON is present (for `save_lipsync_video_url` you should see `lipsync_video_url` or `video_url`).
-   - Click the **pin / thumbtack** at the top of OUTPUT (or right-click the node → **Pin data**).
-   - The node shows a pin badge. That output is now frozen and will not call fal.
-5. Pin in this order:
+After the old run is loaded onto the canvas (Debug in editor, or leftover OUTPUT from the last test):
 
-| Exact node | What you should see in OUTPUT before pinning |
+For every node in the list: click it on the canvas → **OUTPUT** → thumbtack.
+
+| Exact node | OUTPUT must show this before you pin |
 |---|---|
 | `prep_pep_lipsync` | `lipsync_request_body` with `video_url` + `audio_url` |
 | `pep_lipsync_start` (or `fal_lipsync_call`) | `request_id`, `status_url`, `response_url` |
@@ -282,9 +279,7 @@ n8n cannot execute a mid-chain node alone. To run the workflow **without** a new
 | `pep_lipsync_result` (or `pep_lip_sync_result`) | `video.url` |
 | `save_lipsync_video_url` | `lipsync_video_url` starting with `https://` |
 
-6. If OUTPUT says **No output data**, do not pin. Go back to Executions and pick a run where that node succeeded.
-7. If the submit node is named `fal_lipsync_call` and the result node is `pep_lip_sync_result`, pin **those** names. Do not rename them.
-8. Do **not** click Test workflow after pinning unless you intend a paid run.
+Do **not** click Test workflow after pinning unless you intend a paid run.
 
 ---
 

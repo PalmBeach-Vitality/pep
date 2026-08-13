@@ -29,7 +29,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - One node (or tight group) at a time, with exact node names
 - **When telling Sal to add a node, always show wire context:** `before_node` → **`new_node`** → `after_node`
 - **ALWAYS give FULL parameters** for every node (Method, URL, Auth, Headers, Body/JSON, Options, field names/types, exact expressions). No shortcuts, no “same as X”, no partial tables.
-- **ALWAYS use exact canvas node names.** Never invent labels like “HTTP Request — poll”, “Kling result HTTP”, or “the result node”. If a node exists, call it by its exact name (`grok_video_poll`, `fal_lipsync_call`, `pep_lip_sync_result`, …). If you are proposing a new node, give the exact `lower_case_with_underscores` name in that same message and use only that name afterward.
+- **ALWAYS use exact canvas node names.** Never invent labels like “HTTP Request — poll”, “Kling result HTTP”, or “the result node”. Live canvas (do not rename): `if_complaince`, `ai_vid_generator`, `luma_video_request`, `Wait2`, `Wait`, `Wait3`, `fal_lipsync_call`, `pep_lip_sync_result`. There is **no** `save_tts_audio_url` and **no** `kling_video_request` on the canvas. If you are proposing a new node, give the exact `lower_case_with_underscores` name in that same message and use only that name afterward.
 - **Define n8n UI terms on first use** (e.g. **pin** = n8n “Pin data”: freeze a node’s last output so Test workflow skips that node and does not bill another API call).
 - Keep `vid_gen_landscape_scenes` separate from the original workflow
 - Keep `vid_gen_palm_beach_pep` separate from other video workflows
@@ -40,7 +40,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - Pep video stack: `marketing/n8n-pep-elevenlabs-video.md` (ElevenLabs cartoon intent → fal Kling I2V + ElevenLabs TTS; keep exact node names)
 - Pep fal + Kling setup: `marketing/n8n-pep-fal-kling-setup.md`
 - Pep lip-sync now: `marketing/n8n-pep-lipsync-setup.md`
-- **One workflow:** still → Kling walk+talk → existing lipsync chain → sheets. Do **not** disconnect or rewrite lipsync nodes (`prep_pep_lipsync`, `pep_lipsync_start` / `fal_lipsync_call`, `pep_lipsync_poll`, `pep_lipsync_result` / `pep_lip_sync_result`, `save_lipsync_video_url`). They stay as named on the canvas.
+- **One workflow:** still → `ai_vid_generator` / `luma_video_request` → `fal_lipsync_call` → `pep_lip_sync_result` → sheets. Do **not** rename lipsync. Canvas has **no** `save_tts_audio_url`; audio is `fal_upload_tts_initiate.file_url`.
 - **Kling walk+talk lock:** Beat A I2V must look like Pep is **walking and talking the entire 15s**. Mouth on the 10ml label starts at 0.00s and never stops (lipsync needs that motion). Legs keep a walk cycle the whole clip (stay mid-ground, do not walk out of frame). **Stitch:** first and last frame are mid-stride, same walk direction (toward camera, slight 3/4, screen-right). When the next beat still exists, send Kling `end_image_url` so the clip lands on the next shot. CapCut: 8–12 frame cross-dissolve at A→B, B→C, C→D (not fade-to-black). No thumbs-up, hat tip, or grin-hold. Paste `marketing/n8n-pep-prep-video-beat.js` into `prep_grok_video_start`. `cfg_scale` `0.7`. Do not re-run stills unless the picture is wrong.
 
 ## Social / Imagine

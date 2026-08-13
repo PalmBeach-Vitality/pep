@@ -1,5 +1,5 @@
 // Node name (exact): prep_grok_video_start
-// Next node on canvas: kling_video_request (fal.ai · Kling v3 Pro I2V)
+// Next node on canvas: ai_vid_generator (then luma_video_request → Wait → grok_video_poll)
 // Duplicates later: prep_grok_video_start_b / _c / _d
 // Mode: Run Once for All Items
 // IMPORTANT: change BEAT to 'a' | 'b' | 'c' | 'd' in each duplicated node
@@ -100,7 +100,7 @@ const negativePrompt = clip([
 
 const MODEL_VIDEO = 'fal-kling-v3-pro-i2v';
 const FAL_ENDPOINT = 'fal-ai/kling-video/v3/pro/image-to-video';
-const FAL_NODE = 'kling_video_request';
+const FAL_NODE = 'ai_vid_generator';
 
 // Kling I2V accepts ONLY these top-level fields (no frontal_image_url at root —
 // that belongs inside elements[] only and causes 400 Bad Request if sent at root).

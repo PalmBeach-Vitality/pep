@@ -1,14 +1,35 @@
 // Node: prep_pep_lipsync (Code)
-// Wire: save_video_url → prep_pep_lipsync → pep_lipsync_start
-// Also needs save_tts_audio_url upstream on the same execution path
+// Wire: save_video_url → prep_pep_lipsync → fal_lipsync_call
+// Audio URL lives on fal_upload_tts_initiate.file_url (no save_tts_audio_url node on canvas)
 // Mode: Run Once for All Items
 // n8n: return plain objects (do NOT wrap in { json: ... })
 
-const videoUrl = String($('save_video_url').item.json.video_url || '');
-const audioUrl = String($('save_tts_audio_url').item.json.tts_audio_url || '');
+function fromNode(name, keys) {
+  try {
+    const j = $(name).item.json;
+    for (const k of keys) {
+      const v = j?.[k];
+      if (v) return String(v);
+    }
+  } catch (e) {}
+  return '';
+}
+
+const videoUrl = fromNode('save_video_url', ['video_url']) || String($json.video_url || '');
+const audioUrl =
+  fromNode('fal_upload_tts_initiate', ['file_url', 'tts_audio_url']) ||
+  fromNode('save_tts_audio_url', ['tts_audio_url', 'file_url']) ||
+  String($json.tts_audio_url || $json.file_url || '');
 
 if (!videoUrl) throw new Error('Missing video_url from save_video_url');
-if (!audioUrl) throw new Error('Missing tts_audio_url from save_tts_audio_url');
+if (!audioUrl) {
+  throw new Error(
+    'Missing TTS audio URL. Expected fal_upload_tts_initiate.file_url (canvas has no save_tts_audio_url).'
+  );
+}
+if (/catbox\.moe/i.test(audioUrl)) {
+  throw new Error('TTS audio is Catbox — fal cannot fetch files.catbox.moe. Use fal_upload_tts_initiate.file_url on fal.media.');
+}
 
 const lipsync_request_body = {
   video_url: videoUrl,
