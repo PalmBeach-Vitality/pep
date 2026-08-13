@@ -63,17 +63,18 @@ const videoPrompt = clip([
   `Product: ${compound} (${compoundId}).`,
   `Beat ${BEAT.toUpperCase()}: ${brief}`,
   `Set: ${surface}.`,
-  `Motion: ${motion}.`,
-  'ACTION: Pep talks to camera — mouth on 10ml label opens/closes in speech rhythm all 15s; clear thumbs-up; tip hat once; weight shift; cheerful bounce; natural blinks. Not idle/frozen.',
+  'TALKING LOCK (non-negotiable): From frame 1 to the last frame (0.0s–15.0s) Pep is mid-speech. The cartoon mouth on the 10ml label NEVER stops: it keeps opening and closing in a steady talking rhythm with no pauses. Do NOT stop to smile. Do NOT hold a grin. Do NOT close the mouth and pose. No 1s–3s smile holds. No talk-then-pause-then-talk. Continuous chatter the entire clip, like a presenter who never takes a breath break.',
+  'GESTURE (while still talking): one thumbs-up and one hat tip without stopping the mouth. Weight shift and small bounce OK. Eyes blink. Mouth keeps moving during every gesture.',
   'CAMERA: slow push-in + soft parallax; environment moves (waves/breeze/light).',
   `Lighting: ${lighting}. Grade: ${grade}.`,
-  'ONLY Pep — no extra vials/bottles/pens/syringes/devices. Crimp seal only (no twist/screw/dropper caps). No humans, hospitals, clinics, on-screen text, or safety placards. Silent (VO added later). Keep full scene depth.',
+  'ONLY Pep — no extra vials/bottles/pens/syringes/devices. Crimp seal only. No humans, hospitals, clinics, on-screen text. Silent (VO added later). Keep full scene depth.',
 ].filter(Boolean).join(' '), PROMPT_MAX);
 
 const negativePrompt = clip([
-  'blur, distort, low quality, morphing, deformed vial, static idle freeze, closed frozen mouth, no talking,',
-  'extra vials, extra bottles, pens, insulin pens, syringes, injectors, needles, droppers, ampoules,',
-  'humans, hospital, doctor office, clinic, black twist cap, screw cap, on-screen text, watermarks, safety placard',
+  'pause, stop talking, smile hold, frozen grin, closed mouth, closed-mouth smile, pose and hold,',
+  'talk then stop, idle between lines, 3 second smile, silent gap, static face, mouth not moving,',
+  'blur, distort, morphing, deformed vial, idle freeze,',
+  'extra vials, extra bottles, pens, syringes, humans, hospital, on-screen text, watermarks',
 ].join(' '), 800);
 
 const MODEL_VIDEO = 'fal-kling-v3-pro-i2v';
