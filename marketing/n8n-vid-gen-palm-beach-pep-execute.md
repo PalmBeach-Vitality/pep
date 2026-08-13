@@ -246,13 +246,6 @@ n8n cannot execute a mid-chain node alone. To run the workflow **without** a new
 
 ---
 
-1. Open the execution that already has the approved still and Kling clip.
-2. Click each node → output panel → pin icon (or right-click → **Pin data**).
-3. Confirm `save_still_url` and `save_video_url` still show the URLs you like.
-4. Do not Test workflow unless you intend a paid run.
-
----
-
 ## When you *choose* to buy one new Kling clip (no new still)
 
 **PIN:** `grok_imagine_reel_still`, `save_still_url`, and the TTS chain (`tts_pep_voice_over` through `save_tts_audio_url`).
