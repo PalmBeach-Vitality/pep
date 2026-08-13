@@ -11,7 +11,6 @@ tts_pep_voice_over
   → prep_grok_video_start
   → ai_vid_generator
   → Wait2
-  → luma_video_request
   → Wait
   → grok_video_poll
   → save_video_url

@@ -1,5 +1,5 @@
 // Node name (exact): prep_grok_video_start
-// Next node on canvas: ai_vid_generator (then luma_video_request → Wait → grok_video_poll)
+// Next node on canvas: ai_vid_generator → Wait2 → Wait → grok_video_poll
 // Duplicates later: prep_grok_video_start_b / _c / _d
 // Mode: Run Once for All Items
 // IMPORTANT: change BEAT to 'a' | 'b' | 'c' | 'd' in each duplicated node

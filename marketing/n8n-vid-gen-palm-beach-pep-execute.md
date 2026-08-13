@@ -34,7 +34,6 @@ Schedule Trigger
                  → prep_grok_video_start
                  → ai_vid_generator
                  → Wait2
-                 → luma_video_request
                  → Wait
                  → grok_video_poll
                  → save_video_url
@@ -70,19 +69,18 @@ TTS public URL = `fal_upload_tts_initiate.file_url`.
 | 14 | `grok_imagine_reel_still` | Pep still — URL must be `/v1/images/edits` + master, not `/generations` |
 | 15 | `save_still_url` | Save `reel_still_url` |
 | 16 | `prep_grok_video_start` | Build I2V JSON body |
-| 17 | `ai_vid_generator` | Video HTTP after prep |
+| 17 | `ai_vid_generator` | Video HTTP after prep (fal Kling queue — confirm URL is `queue.fal.run/.../kling-video/...`) |
 | 18 | `Wait2` | Wait after `ai_vid_generator` |
-| 19 | `luma_video_request` | Next video HTTP (name as on canvas) |
-| 20 | `Wait` | Wait before `grok_video_poll` |
-| 21 | `grok_video_poll` | Poll video job |
-| 22 | `save_video_url` | Save silent `video_url` |
-| 23 | `prep_pep_lipsync` | Lipsync body from `save_video_url` + `fal_upload_tts_initiate.file_url` |
-| 24 | `fal_lipsync_call` | POST fal `sync-lipsync/v3` |
-| 25 | `Wait3` | Wait before lipsync poll |
-| 26 | `pep_lipsync_poll` | GET lipsync `/status` |
-| 27 | `pep_lip_sync_result` | GET lipsync result |
-| 28 | `save_lipsync_video_url` | Save `lipsync_video_url` |
-| 29 | `sheets_update_creation` | Sheet writeback |
+| 19 | `Wait` | Wait before `grok_video_poll` |
+| 20 | `grok_video_poll` | Poll video job |
+| 21 | `save_video_url` | Save silent `video_url` |
+| 22 | `prep_pep_lipsync` | Lipsync body from `save_video_url` + `fal_upload_tts_initiate.file_url` |
+| 23 | `fal_lipsync_call` | POST fal `sync-lipsync/v3` |
+| 24 | `Wait3` | Wait before lipsync poll |
+| 25 | `pep_lipsync_poll` | GET lipsync `/status` |
+| 26 | `pep_lip_sync_result` | GET lipsync result |
+| 27 | `save_lipsync_video_url` | Save `lipsync_video_url` |
+| 28 | `sheets_update_creation` | Sheet writeback |
 
 **Hard rule:** Do not rename these nodes.
 
