@@ -1,5 +1,7 @@
 # Pep n8n — FULL paste codes (no excerpts)
 
+Talking model is **OmniHuman v1.5** on `pep_lipsync_fal` (image + audio). Not sync-3. Not Kling.
+
 Wire:
 ```text
 tts_pep_voice_over
@@ -8,18 +10,8 @@ tts_pep_voice_over
   → fal_upload_tts_put
   → grok_imagine_reel_still
   → save_still_url
-  → prep_grok_video_start
-  → ai_vid_generator
-  → Wait2
-  → Wait
-  → grok_video_poll
-  → (kling_video_result)
-  → save_video_url
   → prep_pep_lipsync
   → pep_lipsync_fal
-  → Wait3
-  → pep_lipsync_poll
-  → pep_lip_sync_result
   → save_lipsync_video_url
   → sheets_update_creation
 ```
@@ -223,17 +215,26 @@ function fromNode(name, keys) {
   return '';
 }
 
-const videoUrl = fromNode('save_video_url', ['video_url']) || String($json.video_url || '');
+const imageUrl =
+  fromNode('save_still_url', ['reel_still_url', 'reel_still_url_a']) ||
+  fromNode('grok_imagine_reel_still', ['reel_still_url']) ||
+  String($json.reel_still_url || $json.data?.[0]?.url || '');
+
 const audioUrl =
   fromNode('fal_upload_tts_initiate', ['file_url', 'tts_audio_url']) ||
   String($json.tts_audio_url || $json.file_url || '');
 
-if (!videoUrl) throw new Error('Missing video_url from save_video_url');
+if (!imageUrl) {
+  throw new Error('Missing Pep still URL. Expected save_still_url.reel_still_url');
+}
 if (!audioUrl) {
   throw new Error('Missing TTS audio URL. Expected fal_upload_tts_initiate.file_url');
 }
 if (/catbox\.moe/i.test(audioUrl)) {
   throw new Error('TTS audio is Catbox — fal cannot fetch files.catbox.moe.');
+}
+if (/catbox\.moe/i.test(imageUrl)) {
+  throw new Error('Still is Catbox — fal OmniHuman may not fetch files.catbox.moe. Use the xAI still URL.');
 }
 
 let creation_id = '';
@@ -243,23 +244,23 @@ try {
   creation_id = '';
 }
 
-const bodyString = JSON.stringify({
-  video_url: videoUrl,
-  audio_url: audioUrl,
-  sync_mode: 'cut_off',
-});
+const omniPrompt = [
+  'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot,',
+  'talking with the audio. Mouth on the white 10ml label moves with speech.',
+  'Walk toward camera, slight 3/4, screen-right. Both white gloves in a walk swing at hip height.',
+  'No thumbs-up. No hat tip. No planted freeze.',
+].join(' ');
 
 return {
   creation_id: creation_id,
   beat: 'a',
-  video_url: videoUrl,
-  tts_audio_url: audioUrl,
-  fal_lipsync_endpoint: 'fal-ai/sync-lipsync/v3',
-  fal_lipsync_submit_url: 'https://queue.fal.run/fal-ai/sync-lipsync/v3',
-  lipsync_video_in: videoUrl,
+  lipsync_image_in: imageUrl,
   lipsync_audio_in: audioUrl,
-  lipsync_sync_mode: 'cut_off',
-  lipsync_request_body_string: bodyString,
+  reel_still_url: imageUrl,
+  tts_audio_url: audioUrl,
+  omnihuman_prompt: omniPrompt,
+  omnihuman_resolution: '720p',
+  fal_lipsync_endpoint: 'fal-ai/bytedance/omnihuman/v1.5',
 };
 ```
 
@@ -339,14 +340,7 @@ JSON Body:
 
 ## SET: `save_tts_audio_url`
 
-| Parameter | Value |
-|---|---|
-| Include Other Input Fields | ON |
-
-| Field | Type | Value |
-|---|---|---|
-| `tts_audio_url` | String | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
-| `beat` | String | `a` |
+**Not on canvas. Do not add.** TTS public URL is `$('fal_upload_tts_initiate').item.json.file_url`.
 
 ---
 
@@ -472,11 +466,11 @@ Only execute after `grok_video_poll` `status` = `COMPLETED`.
 
 ## FAL NODE: `pep_lipsync_fal`
 
-This is the official fal.ai community node (`@fal-ai/n8n-nodes-fal`), not HTTP Request.
+OmniHuman is **image + audio → talking video**. It does **not** take a Kling `video_url`.
 
-Wire: `save_video_url` → `prep_pep_lipsync` → **`pep_lipsync_fal`** → `save_lipsync_video_url`
+Wire: `save_still_url` → `prep_pep_lipsync` → **`pep_lipsync_fal`** → `save_lipsync_video_url`
 
-If **Wait for Completion** is ON, disconnect `Wait3`, `pep_lipsync_poll`, and `pep_lip_sync_result` so they do not run. Disconnect `fal_lipsync_call` if it is still on the canvas (two lipsync POSTs would double-bill).
+Disconnect `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result`. Leave Kling nodes pinned / off this talking path.
 
 | Parameter | fx | Value |
 |---|---|---|
@@ -485,64 +479,32 @@ If **Wait for Completion** is ON, disconnect `Wait3`, `pep_lipsync_poll`, and `p
 | Credential | — | fal.ai account |
 | Resource | — | Model |
 | Operation | — | Generate Media |
-| Model | — | From list · **sync-3 Lipsync [video-to-video]** (`fal-ai/sync-lipsync/v3`) |
-| Parameter 1 Name | OFF | `video_url` |
-| Parameter 1 Value | ON | `={{ $json.lipsync_video_in }}` |
+| Model | — | From list · **OmniHuman** / **Omnihuman v1.5** (`fal-ai/bytedance/omnihuman/v1.5`) |
+| Parameter 1 Name | OFF | `image_url` |
+| Parameter 1 Value | ON | `={{ $json.lipsync_image_in }}` |
 | Parameter 2 Name | OFF | `audio_url` |
 | Parameter 2 Value | ON | `={{ $json.lipsync_audio_in }}` |
-| Parameter 3 Name | OFF | `sync_mode` |
-| Parameter 3 Value | OFF | `cut_off` |
+| Parameter 3 Name | OFF | `resolution` |
+| Parameter 3 Value | OFF | `720p` |
+| Parameter 4 Name | OFF | `prompt` |
+| Parameter 4 Value | ON | `={{ $json.omnihuman_prompt }}` |
 | Wait for Completion | — | **ON** |
 | Poll Interval (Seconds) | — | `5` |
 | Max Wait Time (Seconds) | — | `600` |
 
-`lipsync_video_in` / `lipsync_audio_in` come from `prep_pep_lipsync`. Audio must be a fal CDN URL (`fal_upload_tts_initiate.file_url`), never Catbox.
+Do **not** send `video_url`. That is sync-3. OmniHuman needs the Pep **still**.
 
-**Expect OUTPUT:** `{ "video": { "url": "https://v3b.fal.media/..." } }`
-
----
-
-## HTTP: `pep_lipsync_start`
-
-| Parameter | Value |
-|---|---|
-| Method | POST |
-| URL | `https://queue.fal.run/fal-ai/sync-lipsync/v3` |
-| Authentication | fal Key YOUR_FAL_KEY |
-| Send Headers | ON |
-| Header `Content-Type` | `application/json` |
-| Send Body | ON |
-| Body Content Type | JSON |
-| Specify Body | Using JSON |
-| JSON Body | `={{ JSON.parse($json.lipsync_request_body_string) }}` |
-| Options → Timeout | `300000` |
+**Expect OUTPUT:** `{ "video": { "url": "https://..." } }`
 
 ---
 
-## HTTP: `pep_lipsync_poll`
+## HTTP: disconnected sync-3 chain (do not wire)
 
-| Parameter | Value |
-|---|---|
-| Method | GET |
-| URL | `={{ $('pep_lipsync_start').item.json.status_url }}` |
-| Authentication | fal Key YOUR_FAL_KEY |
-| Send Body | OFF |
-| Options → Timeout | `60000` |
+These exist on canvas from the old sync-3 attempt. **Leave disconnected.** Talking clip is `pep_lipsync_fal` OmniHuman.
 
----
+Do **not** execute: `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result`.
 
-## HTTP: `pep_lipsync_result`
-
-| Parameter | Value |
-|---|---|
-| Method | GET |
-| URL | `={{ $('pep_lipsync_start').item.json.response_url }}` |
-| Authentication | fal Key YOUR_FAL_KEY |
-| Send Body | OFF |
-| Options → Response → Response Format | JSON |
-| Options → Timeout | `120000` |
-
-Only when poll status = `COMPLETED`.
+**Not on canvas / do not invent:** `pep_lipsync_start`, `pep_lipsync_result`.
 
 ---
 
@@ -559,7 +521,7 @@ Only when poll status = `COMPLETED`.
 | `tts_audio_url` | String | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
 | `creation_id` | String | `={{ $('prep_pep_beats').item.json.creation_id }}` |
 | `beat` | String | `a` |
-| `model_video` | String | `fal-sync-lipsync-v3` |
+| `model_video` | String | `fal-omnihuman-v1.5` |
 
 ---
 
@@ -579,4 +541,4 @@ Only when poll status = `COMPLETED`.
 | `times_used` | `={{ Number($('Limit').item.json.times_used \|\| $('Prep_day_variant').item.json.times_used \|\| 0) + 1 }}` |
 | `reel_still_url` | `={{ $('save_still_url').item.json.reel_still_url \|\| $('save_still_url').item.json.data[0].url }}` |
 | `video_url` | `={{ $('save_lipsync_video_url').item.json.lipsync_video_url \|\| $('save_lipsync_video_url').item.json.video_url \|\| $('save_video_url').item.json.video_url }}` |
-| `model_video` | `={{ $('save_lipsync_video_url').item.json.model_video \|\| 'fal-sync-lipsync-v3' }}` |
+| `model_video` | `={{ $('save_lipsync_video_url').item.json.model_video \|\| 'fal-omnihuman-v1.5' }}` |

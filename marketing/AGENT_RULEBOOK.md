@@ -41,8 +41,8 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - Pep video stack: `marketing/n8n-pep-elevenlabs-video.md` (ElevenLabs cartoon intent → fal Kling I2V + ElevenLabs TTS; keep exact node names)
 - Pep fal + Kling setup: `marketing/n8n-pep-fal-kling-setup.md`
 - Pep lip-sync now: `marketing/n8n-pep-lipsync-setup.md`
-- **One workflow:** still → `ai_vid_generator` (Kling walk) → `pep_lipsync_fal` (sync-3 mouth) → sheets. Do **not** rename lipsync. Do **not** wire `kling_video_request`. Canvas has **no** `save_tts_audio_url`; audio is `fal_upload_tts_initiate.file_url`.
-- **Kling recipe (locked):** Leave Kling I2V as the walk clip. Do not rerun Kling to make the mouth talk. Mouth = **`pep_lipsync_fal`** (fal community node, sync-3 Lipsync video-to-video) + ElevenLabs TTS at `fal_upload_tts_initiate.file_url`. Wait for Completion ON. Parameters: `video_url` + `audio_url` + `sync_mode` `cut_off`.
+- **One workflow (talking path):** still → `prep_pep_lipsync` → `pep_lipsync_fal` (OmniHuman v1.5) → `save_lipsync_video_url` → sheets. Do **not** rename lipsync. Do **not** wire `kling_video_request`. Canvas has **no** `save_tts_audio_url`; audio is `fal_upload_tts_initiate.file_url`.
+- **Talking recipe (locked):** Talking clip = **`pep_lipsync_fal`** OmniHuman v1.5 (`fal-ai/bytedance/omnihuman/v1.5`): **`image_url`** (Pep still from `save_still_url`) + **`audio_url`** (`fal_upload_tts_initiate.file_url`). Not `video_url` (that is sync-3). Wait for Completion ON. Resolution `720p`. Kling I2V stays on canvas as optional walk B-roll only — keep it disconnected from this talking path.
 
 ## Social / Imagine
 - Aspect ratio for Pep + landscape social workflows: always **9:16**

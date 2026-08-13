@@ -8,34 +8,46 @@
 | Layer | Tool | Why |
 |---|---|---|
 | Pep still (character lock) | Grok `/v1/images/edits` + master PNG | Identical Pep every beat |
-| Beat video (I2V) | **Kling Video v3 Pro** via **fal.ai** | Same cartoon-strong model family ElevenLabs exposes in Image & Video; callable from n8n |
+| Talking clip | **OmniHuman v1.5** via **fal.ai** (`pep_lipsync_fal`) | Image + ElevenLabs audio → mouth + body motion |
+| Walk B-roll (optional) | **Kling Video v3 Pro** via **fal.ai** | Keep disconnected from the talking path |
 | Voiceover | **ElevenLabs TTS** API | Best VO; already documented in stitch notes |
-| Final cut | ffmpeg stitch A→B→C→D + mux VO | ~60s 9:16 |
+| Final cut | ffmpeg stitch A→B→C→D | ~60s 9:16 |
 
-Keep **exact canvas node names** (`prep_grok_video_start`, `grok_video_start`, `grok_video_poll`, …). Only change the HTTP URL + body inside those nodes — do not rename.
+Keep **exact canvas node names** (`prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url`, plus optional Kling `prep_grok_video_start`, `ai_vid_generator`, `grok_video_poll`). Do not rename.
 
-## Manual taste tests (optional)
+## Talking clip — OmniHuman (`pep_lipsync_fal`)
 
-Until Flows API ships, Sal can smoke cartoon motion in the ElevenLabs UI (Image & Video / Flows) with the Pep still as start frame + Kling. Automation stays on fal so the weekly job does not block on the waitlist.
+- Community node: `@fal-ai/n8n-nodes-fal`
+- Model: `fal-ai/bytedance/omnihuman/v1.5`
+- `image_url` = `save_still_url.reel_still_url`
+- `audio_url` = `fal_upload_tts_initiate.file_url`
+- `resolution` = `720p`
+- Wait for Completion ON
+- Full params: `marketing/n8n-pep-lipsync-setup.md`
+
+## Optional Kling walk B-roll
+
+Keep disconnected from the talking path. Live Kling POST is **`ai_vid_generator`** (not `grok_video_start`). Setup: `marketing/n8n-pep-fal-kling-setup.md`.
+
+Until Flows API ships, Sal can smoke cartoon motion in the ElevenLabs UI if wanted. Weekly talking clips stay on OmniHuman.
 
 ## Full setup (account → n8n)
-Step-by-step: **`marketing/n8n-pep-fal-kling-setup.md`**
+Talking: **`marketing/n8n-pep-lipsync-setup.md`**  
+Optional Kling: **`marketing/n8n-pep-fal-kling-setup.md`**
 
-## fal Kling — n8n wiring (Beat A)
+## fal Kling — n8n wiring (optional B-roll only)
 
-**Preferred:** official fal community node `@fal-ai/n8n-nodes-fal` on node `grok_video_start` (keep the name).  
-**Fallback:** HTTP Header Auth + queue submit/poll (setup doc appendix).
+**Preferred:** HTTP on **`ai_vid_generator`** (live canvas name).  
+**Fallback:** official fal community node `@fal-ai/n8n-nodes-fal`.
 
-### `grok_video_start` (fal node)
-- Install: Settings → Community Nodes → `@fal-ai/n8n-nodes-fal`
+### `ai_vid_generator` (HTTP)
 - Credential: fal.ai API key
-- Operation: Generate Media / Image to Video
-- Model: `fal-ai/kling-video/v3/pro/image-to-video`
-- Map prompt + `start_image_url` (+ duration `15`, `generate_audio: false`) from `prep_grok_video_start`
+- POST `https://queue.fal.run/fal-ai/kling-video/v3/pro/image-to-video`
+- Body `={{ JSON.parse($json.video_request_body_string) }}` from `prep_grok_video_start`
 
 ### `grok_video_poll`
-- Skip/pass-through if the fal node waits for completion and returns `video.url`
-- Else poll `request_id` until `COMPLETED` (HTTP appendix in setup doc)
+- Poll `status_url` until `COMPLETED`
+- Then GET `response_url` on **`(kling_video_result)`** — poll status has no `video.url`
 
 ### Request body shape (from prep code)
 
@@ -53,9 +65,9 @@ Step-by-step: **`marketing/n8n-pep-fal-kling-setup.md`**
 
 ## Sheet / CSV field
 
-`model_video` = `fal-kling-v3-pro-i2v`  
-(meaning: Kling v3 Pro I2V through fal, ElevenLabs-style cartoon target)
+`model_video` = `fal-omnihuman-v1.5` for the talking clip.  
+Optional Kling B-roll stays `fal-kling-v3-pro-i2v` if that chain is used.
 
 ## When ElevenLabs Flows API ships
 
-Swap only the HTTP targets inside `grok_video_start` / `grok_video_poll` (and update `model_video`). Keep node names, still lock, TTS, and stitch.
+Swap only the talking model inside `pep_lipsync_fal` if a better image+audio model ships. Keep node names, still lock, TTS, and stitch.

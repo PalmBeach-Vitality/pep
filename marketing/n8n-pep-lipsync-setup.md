@@ -1,35 +1,54 @@
-# Pep lipsync — FULL n8n parameters (no shortcuts)
+# Pep talking clip — OmniHuman v1.5 (FULL n8n parameters)
 
 **Rule for agents:** Always give Sal the **complete** parameter list for every node (Method, URL, Auth, Headers, Body, Options, field types). No abbreviated “see below / same as Kling” replies.
 
-**Wire (exact):**
+**Locked talking model:** ByteDance **OmniHuman v1.5** on fal (`fal-ai/bytedance/omnihuman/v1.5`).  
+OmniHuman is **image + audio → talking video**. It does **not** take a Kling `video_url`. That is sync-3.
+
+**Live canvas node for the job:** `pep_lipsync_fal` (fal.ai community node). Do **not** rename it.
+
+**Not on canvas / do not invent:** `save_tts_audio_url`, `pep_lipsync_start`, `pep_lipsync_result`.
+
+TTS public URL = `$('fal_upload_tts_initiate').item.json.file_url` (fal CDN). **Catbox is blocked by fal** for audio/video inputs. Master Catbox URL is OK only as Pep still *reference* for Grok EDIT.
+
+Audio must be under **60s at 720p** (under 30s at 1080p). Pep VO is ~15s, so `720p` is the lock (fal: faster and higher quality).
+
+---
+
+## Talking wire (exact)
+
 ```text
-tts_pep_voice_over
+Schedule Trigger
+  → get_rows_in_sheet
+  → filter_active
+  → sort_rotation
+  → Limit
+  → Prep_day_variant
+  → grok_api
+  → parse_grok
+  → if_complaince
+  → prep_pep_beats
+  → tts_pep_voice_over
   → fal_upload_tts_initiate
   → merge_tts_binary
   → fal_upload_tts_put
   → grok_imagine_reel_still
   → save_still_url
-  → prep_grok_video_start
-  → ai_vid_generator
-  → Wait2
-  → Wait
-  → grok_video_poll
-  → save_video_url
   → prep_pep_lipsync
-  → fal_lipsync_call
-  → Wait3
-  → pep_lipsync_poll
-  → pep_lip_sync_result
+  → pep_lipsync_fal
   → save_lipsync_video_url
   → sheets_update_creation
 ```
 
-Execute from `tts_pep_voice_over` or earlier so binary `data` and `$('…')` paths exist.
+Kling walk chain still exists — **leave it, do not delete**, keep it **disconnected** from this talking path:
 
-Do **not** use Catbox URLs as fal `audio_url`. Use fal `file_url` only.
+```text
+prep_grok_video_start → ai_vid_generator → Wait2 → Wait → grok_video_poll → kling_video_result → save_video_url
+```
 
-**Locked:** lipsync nodes stay as-is. Mouth motion for the full 15s comes from the Kling clip (`prep_grok_video_start` walk+talk lock). Do not disconnect this chain.
+**Disconnect (do not delete/rename):** `fal_lipsync_call` → `Wait3` → `pep_lipsync_poll` → `pep_lip_sync_result`, and `kling_video_request`.
+
+Execute with **Test workflow** (not Execute node) so `$('other_node')` has a path. Pin = n8n “Pin data” (thumbtack on OUTPUT). Frozen output is reused; Test workflow skips that API call.
 
 ---
 
@@ -94,7 +113,6 @@ Do **not** use Catbox URLs as fal `audio_url`. Use fal `file_url` only.
 | Options → Response → Response Format | Autodetect / JSON |
 | Options → Response → Include Response Headers and Status | OFF |
 | Options → Timeout | `60000` |
-| **Critical** | Must **keep incoming binary** `data` for the next node. If your n8n version has “Include Binary Data” / does not strip binary on HTTP JSON responses, leave that enabled. If binary is dropped after this node, use a Merge of TTS binary + initiate JSON before PUT. |
 
 **JSON Body:**
 ```json
@@ -106,9 +124,34 @@ Do **not** use Catbox URLs as fal `audio_url`. Use fal `file_url` only.
 
 **Expect output JSON:**
 - `upload_url` (signed PUT URL)
-- `file_url` (public CDN URL to use later as `tts_audio_url`)
+- `file_url` (public fal CDN URL — this is OmniHuman `audio_url`)
 
-**Expect binary still present:** `data` from `tts_pep_voice_over`
+---
+
+## Node: `merge_tts_binary`
+
+| Parameter | Value |
+|---|---|
+| Node type | Code |
+| Exact name | `merge_tts_binary` |
+| Mode | Run Once for All Items |
+| Language | JavaScript |
+
+```javascript
+const initiate = $input.first();
+const tts = $('tts_pep_voice_over').first();
+
+if (!tts.binary || !tts.binary.data) {
+  throw new Error('No binary data on tts_pep_voice_over — re-run TTS first');
+}
+
+return [
+  {
+    json: initiate.json,
+    binary: tts.binary,
+  },
+];
+```
 
 ---
 
@@ -129,231 +172,108 @@ Do **not** use Catbox URLs as fal `audio_url`. Use fal `file_url` only.
 | Input Data Field Name | `data` |
 | Options → Timeout | `120000` |
 
-**Expect:** HTTP 200 / empty or OK body. Binary uploaded to fal.
-
-If error **“No fields / empty binary”**: `data` was lost. Re-run from `tts_pep_voice_over`, or Merge binary back onto the item before this PUT.
-
----
-
-## Node: `save_tts_audio_url`
-
-| Parameter | Value |
-|---|---|
-| Node type | Set / Edit Fields |
-| Exact name | `save_tts_audio_url` |
-| Mode | Manual Mapping |
-| Include Other Input Fields | **ON** |
-| Include Binary | OFF (unless you need it later) |
-
-**Fields:**
-
-| Field Name | Field Type | Value |
-|---|---|---|
-| `tts_audio_url` | String | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
-| `beat` | String | `a` |
-
-**Expect:** `tts_audio_url` starts with `https://` and is on `fal.media` / `v3.fal.media` / `v3b.fal.media`.
-
----
-
-## Nodes between audio save and lipsync (already on canvas — do not rename)
-
-Keep exactly as built:
-
-```text
-save_tts_audio_url
-  → grok_imagine_reel_still
-  → save_still_url
-  → prep_grok_video_start
-  → kling_video_request
-  → Wait
-  → grok_video_poll
-  → kling_video_result
-  → save_video_url
-```
-
-`save_video_url` must output:
-
-| Field Name | Value |
-|---|---|
-| `video_url` | `={{ $json.video.url }}` *(or your existing working expression)* |
+**Expect:** HTTP 200. Binary uploaded to fal. OmniHuman reads `fal_upload_tts_initiate.file_url`.
 
 ---
 
 ## Node: `prep_pep_lipsync`
 
-| Parameter | Value |
-|---|---|
-| Node type | **Code** |
-| Exact name | `prep_pep_lipsync` |
-| Mode | **Run Once for All Items** |
-| Language | **JavaScript** |
-| Code | paste entire block below |
+| Parameter | fx | Value |
+|---|---|---|
+| Node type | — | Code |
+| Exact name | — | `prep_pep_lipsync` |
+| Mode | — | **Run Once for Each Item** |
+| Language | — | JavaScript |
 
-**Code (full):**
-```javascript
-// Node: prep_pep_lipsync
-// Wire: save_video_url → prep_pep_lipsync → pep_lipsync_start
-// Mode: Run Once for All Items
-// Return plain objects — do NOT wrap in { json: ... }
+Do **not** use Run Once for All Items. Do **not** `return [{ json: ... }]`.
 
-const videoUrl = String($('save_video_url').item.json.video_url || '');
-const audioUrl = String($('save_tts_audio_url').item.json.tts_audio_url || '');
+Wire: `save_still_url` → `prep_pep_lipsync` → `pep_lipsync_fal`
 
-if (!videoUrl) throw new Error('Missing video_url from save_video_url');
-if (!audioUrl) throw new Error('Missing tts_audio_url from save_tts_audio_url');
+Paste the full file `marketing/n8n-pep-prep-lipsync.js`.
 
-const lipsync_request_body = {
-  video_url: videoUrl,
-  audio_url: audioUrl,
-  sync_mode: 'cut_off',
-};
-
-let creation_id = '';
-try {
-  creation_id = String($('prep_pep_beats').item.json.creation_id || '');
-} catch (e) {
-  creation_id = '';
-}
-
-return [
-  {
-    creation_id: creation_id,
-    beat: 'a',
-    video_url: videoUrl,
-    tts_audio_url: audioUrl,
-    fal_lipsync_endpoint: 'fal-ai/sync-lipsync/v3',
-    fal_lipsync_submit_url: 'https://queue.fal.run/fal-ai/sync-lipsync/v3',
-    lipsync_request_body: lipsync_request_body,
-    lipsync_request_body_string: JSON.stringify(lipsync_request_body),
-  },
-];
-```
-
-**Expect output fields:** `video_url`, `tts_audio_url`, `lipsync_request_body`, `lipsync_request_body_string`
+**Expect OUTPUT fields:** `lipsync_image_in` (xAI still URL), `lipsync_audio_in` (fal CDN), `omnihuman_prompt`, `omnihuman_resolution` = `720p`.
 
 ---
 
-## Node: `pep_lipsync_start`
+## FAL NODE: `pep_lipsync_fal`
 
-| Parameter | Value |
-|---|---|
-| Node type | HTTP Request |
-| Exact name | `pep_lipsync_start` |
-| Method | `POST` |
-| URL | `https://queue.fal.run/fal-ai/sync-lipsync/v3` |
-| Authentication | Same fal credential as `kling_video_request` (`Authorization: Key YOUR_FAL_KEY`) |
-| Send Headers | ON |
-| Header Name | `Content-Type` |
-| Header Value | `application/json` |
-| Send Body | ON |
-| Body Content Type | JSON |
-| Specify Body | Using JSON |
-| JSON Body | `={{ $json.lipsync_request_body }}` |
-| Alternate JSON Body (if object expression fails) | `={{ JSON.parse($json.lipsync_request_body_string) }}` |
-| Options → Timeout | `300000` |
+This is the official fal.ai community node (`@fal-ai/n8n-nodes-fal`), not HTTP Request.
 
-**Expect output JSON:**
-- `status` (e.g. `IN_QUEUE`)
-- `request_id`
-- `status_url`
-- `response_url`
-- `cancel_url`
+| Parameter | fx | Value |
+|---|---|---|
+| Node type | — | fal.ai |
+| Exact name | — | `pep_lipsync_fal` |
+| Credential | — | fal.ai account |
+| Resource | — | Model |
+| Operation | — | Generate Media |
+| Model | — | From list · **OmniHuman** / **Omnihuman v1.5** (`fal-ai/bytedance/omnihuman/v1.5`) |
+| Parameter 1 Name | OFF | `image_url` |
+| Parameter 1 Value | ON | `={{ $json.lipsync_image_in }}` |
+| Parameter 2 Name | OFF | `audio_url` |
+| Parameter 2 Value | ON | `={{ $json.lipsync_audio_in }}` |
+| Parameter 3 Name | OFF | `resolution` |
+| Parameter 3 Value | OFF | `720p` |
+| Parameter 4 Name | OFF | `prompt` |
+| Parameter 4 Value | ON | `={{ $json.omnihuman_prompt }}` |
+| Wait for Completion | — | **ON** |
+| Poll Interval (Seconds) | — | `5` |
+| Max Wait Time (Seconds) | — | `600` |
 
----
+Do **not** send `video_url`. That is sync-3. OmniHuman needs the Pep **still**.
 
-## Node: `Wait` (lipsync)
+Use `$json` from `prep_pep_lipsync` (avoids n8n error `[ERROR: No path back to node]`).
 
-| Parameter | Value |
-|---|---|
-| Node type | Wait |
-| Exact name | `Wait` *(or `pep_lipsync_wait` if you already have another Wait — if renaming, keep wire clear)* |
-| Resume | After Time Interval |
-| Wait Amount | `60` |
-| Wait Unit | Seconds |
-
-**Wire:** `pep_lipsync_start` → this Wait → `pep_lipsync_poll`
+**Expect OUTPUT:** `{ "video": { "url": "https://..." } }`
 
 ---
 
-## Node: `pep_lipsync_poll`
-
-| Parameter | Value |
-|---|---|
-| Node type | HTTP Request |
-| Exact name | `pep_lipsync_poll` |
-| Method | `GET` |
-| URL | `={{ $('pep_lipsync_start').item.json.status_url }}` |
-| Authentication | Same fal credential |
-| Send Query Parameters | OFF |
-| Send Headers | OFF (unless credential needs manual Auth header) |
-| Send Body | OFF |
-| Options → Timeout | `60000` |
-
-**Expect:** `status` = `IN_QUEUE` | `IN_PROGRESS` | `COMPLETED`
-
-If not `COMPLETED`: Wait another 30–60s and execute poll again (or add IF loop later).
-
----
-
-## Node: `pep_lipsync_result`
-
-| Parameter | Value |
-|---|---|
-| Node type | HTTP Request |
-| Exact name | `pep_lipsync_result` |
-| Method | `GET` |
-| URL | `={{ $('pep_lipsync_start').item.json.response_url }}` |
-| Authentication | Same fal credential |
-| Send Body | OFF |
-| Options → Timeout | `60000` |
-
-**Only run when** `pep_lipsync_poll` shows `status` = `COMPLETED`.
-
-**Expect output JSON:**
-```json
-{
-  "video": {
-    "url": "https://v3b.fal.media/files/.../output.mp4"
-  }
-}
-```
-
----
-
-## Node: `save_lipsync_video_url`
+## SET: `save_lipsync_video_url`
 
 | Parameter | Value |
 |---|---|
 | Node type | Set / Edit Fields |
 | Exact name | `save_lipsync_video_url` |
 | Mode | Manual Mapping |
-| Include Other Input Fields | **ON** |
+| Include Other Input Fields | **OFF** |
 
-**Fields:**
-
-| Field Name | Field Type | Value |
-|---|---|---|
-| `lipsync_video_url` | String | `={{ $json.video.url }}` |
-| `video_url` | String | `={{ $json.video.url }}` |
-| `tts_audio_url` | String | `={{ $('save_tts_audio_url').item.json.tts_audio_url }}` |
-| `creation_id` | String | `={{ $('prep_pep_beats').item.json.creation_id }}` |
-| `beat` | String | `a` |
-| `model_video` | String | `fal-sync-lipsync-v3` |
+| Field Name | Field Type | fx | Value |
+|---|---|---|---|
+| `lipsync_video_url` | String | ON | `={{ $json.video.url }}` |
+| `video_url` | String | ON | `={{ $json.video.url }}` |
+| `tts_audio_url` | String | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
+| `creation_id` | String | ON | `={{ $('prep_pep_beats').item.json.creation_id }}` |
+| `beat` | String | OFF | `a` |
+| `model_video` | String | OFF | `fal-omnihuman-v1.5` |
 
 **Wire next:** `save_lipsync_video_url` → `sheets_update_creation`
 
 ---
 
-## Checklist before execute
+## Pin / unpin for one OmniHuman talking Test
 
-- [ ] `tts_pep_voice_over` Response Format = **File**, field = `data`
-- [ ] `fal_upload_tts_initiate` returns `upload_url` + `file_url`
-- [ ] `fal_upload_tts_put` Input Data Field Name = `data` (binary not empty)
-- [ ] `save_tts_audio_url.tts_audio_url` is a fal CDN URL (not catbox)
-- [ ] `save_video_url.video_url` is set
-- [ ] `prep_pep_lipsync` is Code, returns plain objects (no `{ json: ... }` wrapper)
-- [ ] `pep_lipsync_start` returns `status_url` + `response_url`
-- [ ] Wait 60s before poll
-- [ ] `pep_lipsync_result` GET `response_url` before save
-- [ ] `save_lipsync_video_url.lipsync_video_url` is non-null playable mp4
+**Pin** = n8n “Pin data” (thumbtack on OUTPUT). Saving params is free. **Test workflow** is what bills APIs.
+
+**PIN:** `Schedule Trigger`, `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `prep_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_grok_video_start`, `ai_vid_generator`, `Wait2`, `Wait`, `grok_video_poll`, `kling_video_result`, `save_video_url`
+
+**UNPIN:** `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url` (and `sheets_update_creation` if you want the sheet updated)
+
+Leave disconnected: `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result`, `kling_video_request`.
+
+Confirm `save_still_url.reel_still_url` is the no-thumbs xAI still (not Catbox). Confirm `fal_upload_tts_initiate.file_url` is a fal CDN URL.
+
+Then **Test workflow** once. QC: mouth moves with VO, no thumbs-up.
+
+---
+
+## Checklist before Test workflow
+
+- [ ] `pep_lipsync_fal` Model = **OmniHuman / Omnihuman v1.5** (not sync-3 Lipsync)
+- [ ] Parameters are `image_url` + `audio_url` + `resolution` `720p` + `prompt` (no `video_url`)
+- [ ] Wait for Completion **ON**
+- [ ] `prep_pep_lipsync` Mode = Run Once for Each Item, returns a plain object
+- [ ] `lipsync_image_in` is an xAI still URL (not Catbox)
+- [ ] `lipsync_audio_in` is `fal_upload_tts_initiate.file_url` (not Catbox)
+- [ ] `save_lipsync_video_url` Include Other Input Fields **OFF**
+- [ ] `creation_id` fx **ON**
+- [ ] Kling chain is pinned / disconnected so it does not bill
+- [ ] Disconnected: `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result`

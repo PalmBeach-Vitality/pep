@@ -5,7 +5,7 @@
 **Sheet / CSV:** `150-pb-pep-scenes` / `marketing/sheets/150-pb-pep-scenes.csv`  
 **Length:** **~60 seconds** (4× ~15s beats + ElevenLabs TTS)  
 **Character lock:** canonical Pep master via `/v1/images/edits` (`n8n-pep-character-lock.md`)  
-**Video stack:** ElevenLabs cartoon intent → **fal Kling v3 Pro I2V** + **ElevenLabs TTS** (`n8n-pep-elevenlabs-video.md`)
+**Video stack:** ElevenLabs TTS + **fal OmniHuman v1.5** talking clip (`n8n-pep-lipsync-setup.md`). Kling I2V is optional walk B-roll only.
 
 ---
 
@@ -14,7 +14,7 @@
 - **~1 minute** final cut
 - Keep **EXACT** canvas node names (do not rename)
 - **Identical Pep** every still = master `https://files.catbox.moe/2yfdbi.jpg` as `pep_ref_url`
-- **Cartoon-friendly motion** (ElevenLabs Image & Video taste) — automate via fal Kling until ElevenLabs Flows API ships
+- **Cartoon-friendly motion** via **OmniHuman v1.5** (image + ElevenLabs audio). Kling I2V stays optional walk B-roll only.
 
 ---
 
@@ -32,10 +32,9 @@ get_rows_in_sheet
        true → prep_pep_beats
               → grok_imagine_reel_still
               → save_still_url
-              → prep_grok_video_start
-              → grok_video_start          ← HTTP → fal Kling queue (keep name)
-              → grok_video_poll           ← poll fal result (keep name)
-              → save_video_url
+              → prep_pep_lipsync
+              → pep_lipsync_fal
+              → save_lipsync_video_url
               → sheets_update_creation
 ```
 

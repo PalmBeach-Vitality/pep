@@ -4,7 +4,7 @@
 **Length:** ~60s (4× ~15s) + ElevenLabs TTS  
 **Sheet:** `150-pb-pep-scenes`  
 **Character lock:** `marketing/n8n-pep-character-lock.md`  
-**Video stack:** `marketing/n8n-pep-elevenlabs-video.md` (fal Kling I2V + ElevenLabs TTS)  
+**Video stack:** `marketing/n8n-pep-elevenlabs-video.md` (fal OmniHuman talking clip + ElevenLabs TTS; Kling optional walk B-roll)  
 **Pep master:** `https://files.catbox.moe/2yfdbi.jpg`
 
 ---
@@ -12,6 +12,8 @@
 ## EXACT node names (current canvas — do not rename)
 
 These are the **exact** n8n node names. All `$('…')` expressions and build steps must use them as written (including casing and the `if_complaince` spelling).
+
+Talking path (locked — OmniHuman):
 
 ```text
 Schedule Trigger
@@ -31,23 +33,21 @@ Schedule Trigger
                  → fal_upload_tts_put
                  → grok_imagine_reel_still
                  → save_still_url
-                 → prep_grok_video_start
-                 → ai_vid_generator
-                 → Wait2
-                 → Wait
-                 → grok_video_poll
-                 → kling_video_result
-                 → save_video_url
                  → prep_pep_lipsync
-                 → fal_lipsync_call
-                 → Wait3
-                 → pep_lipsync_poll
-                 → pep_lip_sync_result
+                 → pep_lipsync_fal
                  → save_lipsync_video_url
                  → sheets_update_creation
 ```
 
-**Not on canvas / do not wire:** `save_tts_audio_url`, `kling_video_request`, `pep_lipsync_start`, `pep_lipsync_result`. Live Kling POST is **`ai_vid_generator`**. Result GET is **`(kling_video_result)`**.
+Kling walk chain still exists — **leave it, do not delete**, keep it **disconnected** from the talking path:
+
+```text
+prep_grok_video_start → ai_vid_generator → Wait2 → Wait → grok_video_poll → kling_video_result → save_video_url
+```
+
+**Disconnect (do not delete/rename):** `fal_lipsync_call` → `Wait3` → `pep_lipsync_poll` → `pep_lip_sync_result`, and `kling_video_request`.
+
+**Not on canvas / do not invent:** `save_tts_audio_url`, `pep_lipsync_start`, `pep_lipsync_result`. Live Kling POST is **`ai_vid_generator`**. Result GET is **`(kling_video_result)`**. Talking job is **`pep_lipsync_fal`** OmniHuman v1.5.
 
 TTS public URL = `fal_upload_tts_initiate.file_url`.
 
@@ -69,20 +69,17 @@ TTS public URL = `fal_upload_tts_initiate.file_url`.
 | 13 | `fal_upload_tts_put` | PUT binary `data` to `upload_url` |
 | 14 | `grok_imagine_reel_still` | Pep still — URL must be `/v1/images/edits` + master, not `/generations` |
 | 15 | `save_still_url` | Save `reel_still_url` |
-| 16 | `prep_grok_video_start` | Build I2V JSON body |
-| 17 | `ai_vid_generator` | Video HTTP after prep (fal Kling queue — confirm URL is `queue.fal.run/.../kling-video/...`) |
-| 18 | `Wait2` | Wait after `ai_vid_generator` |
-| 19 | `Wait` | Wait before `grok_video_poll` |
-| 20 | `grok_video_poll` | Poll video job (`status_url`) |
-| 21 | `kling_video_result` | GET `response_url` after COMPLETED — this is where `video.url` lives |
-| 22 | `save_video_url` | Save silent `video_url` from `$json.video.url` · Include Other Input Fields **OFF** · no `video_url_a` |
-| 23 | `prep_pep_lipsync` | Lipsync body from `save_video_url` + `fal_upload_tts_initiate.file_url` |
-| 24 | `fal_lipsync_call` | POST fal `sync-lipsync/v3` |
-| 25 | `Wait3` | Wait before lipsync poll |
-| 26 | `pep_lipsync_poll` | GET lipsync `/status` |
-| 27 | `pep_lip_sync_result` | GET lipsync result |
-| 28 | `save_lipsync_video_url` | Save `lipsync_video_url` |
-| 29 | `sheets_update_creation` | Sheet writeback |
+| 16 | `prep_pep_lipsync` | OmniHuman inputs from `save_still_url.reel_still_url` + `fal_upload_tts_initiate.file_url` |
+| 17 | `pep_lipsync_fal` | fal OmniHuman v1.5 — `image_url` + `audio_url` + `resolution` `720p`. Wait for Completion ON |
+| 18 | `save_lipsync_video_url` | Save `lipsync_video_url` from `$json.video.url` · Include Other Input Fields **OFF** |
+| 19 | `sheets_update_creation` | Sheet writeback |
+| — | `prep_grok_video_start` | Optional Kling walk B-roll — keep disconnected from talking path |
+| — | `ai_vid_generator` | Optional Kling POST (`queue.fal.run/.../kling-video/...`) |
+| — | `Wait2` | Wait after `ai_vid_generator` |
+| — | `Wait` | Wait before `grok_video_poll` |
+| — | `grok_video_poll` | Poll Kling job (`status_url`) |
+| — | `kling_video_result` | GET Kling `response_url` after COMPLETED |
+| — | `save_video_url` | Save silent Kling `video_url` · Include Other Input Fields **OFF** · no `video_url_a` |
 
 **Hard rule:** Do not rename these nodes.
 
@@ -162,38 +159,32 @@ On node **`Prep_day_variant`**, set field:
 
 ---
 
-## Phase D — Cartoon video via fal Kling (exact names first)
+## Phase D — Talking clip via OmniHuman (exact names first)
 
-**Why fal, not ElevenLabs HTTP:** ElevenLabs Image & Video / Flows is UI-only today (Flows API “coming soon”). We use **Kling v3 Pro I2V on fal** — same cartoon-strong model family — so n8n can run weekly.  
+**Locked talking model:** ByteDance **OmniHuman v1.5** on fal (`fal-ai/bytedance/omnihuman/v1.5`). Image + audio → talking video. Not Kling. Not sync-3.
 
-**Setup (account + key + n8n):** `marketing/n8n-pep-fal-kling-setup.md`  
-**Stack note:** `marketing/n8n-pep-elevenlabs-video.md`
+**Setup:** `marketing/n8n-pep-lipsync-setup.md`  
+**Paste codes:** `marketing/n8n-pep-full-paste-codes.md`
 
 | Exact node | Action |
 |---|---|
-| `prep_grok_video_start` | Paste `marketing/n8n-pep-prep-video-beat.js` (BEAT=`a`). Walk+talk lock. Outputs `video_request_body` for fal Kling |
-| `kling_video_request` | Full HTTP params in `marketing/n8n-pep-full-paste-codes.md` · POST queue · body `={{ $json.video_request_body }}` |
-| `Wait` | Brief wait before poll |
-| `grok_video_poll` | Poll fal status until COMPLETED |
-| `kling_video_result` | GET `response_url` only after COMPLETED |
-| `save_video_url` | Save silent Kling `video_url` from `video.url` |
-| `prep_pep_lipsync` → `pep_lipsync_start` → Wait → `pep_lipsync_poll` → `pep_lipsync_result` → `save_lipsync_video_url` | **Unchanged.** Keep this chain. Mouth motion comes from the Kling clip. |
+| `prep_pep_lipsync` | Paste `marketing/n8n-pep-prep-lipsync.js`. Each Item. Outputs `lipsync_image_in` + `lipsync_audio_in` |
+| `pep_lipsync_fal` | fal community node · Model **OmniHuman / Omnihuman v1.5** · `image_url` + `audio_url` + `resolution` `720p` · Wait for Completion ON |
+| `save_lipsync_video_url` | `lipsync_video_url` `={{ $json.video.url }}` · Include Other Input Fields **OFF** · `model_video` = `fal-omnihuman-v1.5` |
 
-Duplicate pattern for beats B–D after A works:
-`prep_grok_video_start_b` → `kling_video_request_b` → `grok_video_poll_b` → …  
-(same for c/d)
+Kling I2V stays on canvas as **optional walk B-roll only**. Do **not** wire it into the talking path. Do **not** wire `kling_video_request`.
 
-**Sheet field:** `model_video` = `fal-kling-v3-pro-i2v`
+**Sheet field (talking clip):** `model_video` = `fal-omnihuman-v1.5`
 
 ---
 
 ## Saving vs running (cost)
 
-Pasting code into `prep_grok_video_start` and filling **`kling_video_request`** parameters is free. **Test workflow / Execute** is what bills Grok stills, Kling video, and fal lipsync.
+Pasting code into `prep_pep_lipsync` and filling **`pep_lipsync_fal`** parameters is free. **Test workflow / Execute** is what bills Grok stills, OmniHuman, and (if unpinned) Kling.
 
 Do **not** click Test workflow just to save the canvas.
 
-Approx (audio off): Kling 15s ≈ **$1.68**. A new still is a separate Grok Imagine charge. fal lipsync is a third charge.
+A new still is a Grok Imagine charge. OmniHuman is a separate fal charge. Kling walk B-roll is a third charge only if that chain is unpinned and wired.
 
 ---
 
@@ -202,7 +193,7 @@ Approx (audio off): Kling 15s ≈ **$1.68**. A new still is a separate Grok Imag
 **Pin** (n8n calls it **Pin data**) = freeze that node’s last result and tell n8n to **reuse it** instead of running the node again.
 
 - Every node has **output**: the data it produced last time (a still URL, a video URL, a `request_id`, etc.).
-- If a node is **not pinned**, Test workflow **runs it for real** (API call, new still, new Kling clip, new lipsync — that costs money).
+- If a node is **not pinned**, Test workflow **runs it for real** (API call, new still, new OmniHuman clip, new Kling if that chain is live — that costs money).
 - If a node **is pinned**, Test workflow **skips the API call** and hands the frozen output to the next node. No new image, no new video, no new fal job.
 
 It is a thumbtack on that node’s **OUTPUT** in the **workflow editor** (the canvas). You cannot pin inside the **Executions** history list — that screen is read-only.
@@ -239,66 +230,50 @@ If the canvas has no OUTPUT on the nodes and you cannot debug-in-editor: **do no
 
 ---
 
-## Reuse existing still + video ($0 generate)
+## Reuse existing still + TTS ($0 generate except OmniHuman)
 
-n8n cannot execute a mid-chain node alone. To run the workflow **without** a new image or video, **pin every generate node** from a previous good execution, then Test workflow only if you need a free downstream step (e.g. sheets).
+n8n cannot execute a mid-chain node alone. To run **one OmniHuman talking clip** without a new still or new TTS, **pin every generate node** from a previous good execution, then Test workflow.
 
-**PIN (do not regenerate — $0):**
+**PIN (do not regenerate — $0):** `Schedule Trigger`, `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `prep_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_grok_video_start`, `ai_vid_generator`, `Wait2`, `Wait`, `grok_video_poll`, `kling_video_result`, `save_video_url`
 
-- `grok_imagine_reel_still`
-- `save_still_url`
-- `prep_grok_video_start`
-- `kling_video_request`
-- Kling `Wait`
-- `grok_video_poll`
-- `kling_video_result`
-- `save_video_url`
-- plus sheet/TTS nodes if you also do not want those to rerun: `get_rows_in_sheet` through `save_tts_audio_url`
+**UNPIN (this is the paid OmniHuman run):** `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url` (and `sheets_update_creation` if you want the sheet updated)
 
-**Also PIN if you do not want another lipsync bill:**
+Leave disconnected: `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result`, `kling_video_request`.
 
-- `prep_pep_lipsync`
-- `pep_lipsync_start` (or `fal_lipsync_call` if that is the name on canvas)
-- the **lipsync** `Wait` (the Wait after the lipsync submit, before `pep_lipsync_poll`)
-- `pep_lipsync_poll`
-- `pep_lipsync_result` (or `pep_lip_sync_result` if that is the name on canvas)
-- `save_lipsync_video_url`
-
-**Step 3 — pin the lipsync nodes on the canvas**
+**Step 3 — pin the frozen nodes on the canvas**
 
 After the old run is loaded onto the canvas (Debug in editor, or leftover OUTPUT from the last test):
 
-For every node in the list: click it on the canvas → **OUTPUT** → thumbtack.
+For every node in the PIN list: click it on the canvas → **OUTPUT** → thumbtack.
 
 | Exact node | OUTPUT must show this before you pin |
 |---|---|
-| `prep_pep_lipsync` | `lipsync_request_body` with `video_url` + `audio_url` |
-| `pep_lipsync_start` (or `fal_lipsync_call`) | `request_id`, `status_url`, `response_url` |
-| lipsync `Wait` | items passed through after the wait |
-| `pep_lipsync_poll` | `status`: `COMPLETED` |
-| `pep_lipsync_result` (or `pep_lip_sync_result`) | `video.url` |
+| `save_still_url` | `reel_still_url` starting with `https://` (xAI still, not Catbox) |
+| `fal_upload_tts_initiate` | `file_url` on fal CDN |
+| `prep_pep_lipsync` | `lipsync_image_in` + `lipsync_audio_in` |
+| `pep_lipsync_fal` | `video.url` (after a successful OmniHuman run) |
 | `save_lipsync_video_url` | `lipsync_video_url` starting with `https://` |
 
 Do **not** click Test workflow after pinning unless you intend a paid run.
 
 ---
 
-## When you *choose* to buy one new Kling clip (no new still)
+## When you *choose* to buy one new OmniHuman clip (no new still)
 
-**PIN:** `grok_imagine_reel_still`, `save_still_url`, and the TTS chain (`tts_pep_voice_over` through `save_tts_audio_url`).
+**PIN:** `Schedule Trigger`, `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `prep_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_grok_video_start`, `ai_vid_generator`, `Wait2`, `Wait`, `grok_video_poll`, `kling_video_result`, `save_video_url`
 
-**UNPIN:** `prep_grok_video_start`, `kling_video_request`, Kling `Wait`, `grok_video_poll`, `kling_video_result`, `save_video_url`, then the lipsync chain if you want VO on the new clip.
+**UNPIN:** `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url`
 
-Then **Test workflow** once. That is one 15s Kling job, not a new still.
+Then **Test workflow** once. That is one OmniHuman job, not a new still and not a Kling job.
 
-Do **not** pin `kling_video_request` on that run or n8n will replay the old clip with no new charge and no new motion.
+Do **not** pin `pep_lipsync_fal` on that run or n8n will replay the old clip with no new charge and no new mouth.
 
 ---
 
-## Phase E — ElevenLabs TTS + lipsync (same workflow)
-TTS and lipsync already sit on this canvas. Do not split them out.  
+## Phase E — ElevenLabs TTS + OmniHuman (same workflow)
+TTS and OmniHuman already sit on this canvas. Do not split them out.  
 See `marketing/n8n-pep-stitch-notes.md` and `marketing/n8n-pep-lipsync-setup.md`.  
-A→B→C→D concat (~60s) waits until Beat A lipsync looks right.
+A→B→C→D concat (~60s) waits until Beat A OmniHuman looks right.
 
 ---
 
@@ -319,28 +294,25 @@ $('filter_active')
 $('sort_rotation')
 $('Limit')
 $('Prep_day_variant')
-$('GROK_API')
-$('Parse_Grok')
+$('grok_api')
+$('parse_grok')
 $('if_complaince')
 $('prep_pep_beats')
 $('tts_pep_voice_over')
 $('fal_upload_tts_initiate')
 $('merge_tts_binary')
 $('fal_upload_tts_put')
-$('save_tts_audio_url')
 $('grok_imagine_reel_still')
 $('save_still_url')
+$('prep_pep_lipsync')
+$('pep_lipsync_fal')
+$('save_lipsync_video_url')
+$('sheets_update_creation')
 $('prep_grok_video_start')
-$('kling_video_request')
+$('ai_vid_generator')
 $('grok_video_poll')
 $('kling_video_result')
 $('save_video_url')
-$('prep_pep_lipsync')
-$('pep_lipsync_start')
-$('pep_lipsync_poll')
-$('pep_lipsync_result')
-$('save_lipsync_video_url')
-$('sheets_update_creation')
 ```
 
 ---
@@ -348,11 +320,12 @@ $('sheets_update_creation')
 ## Support files
 | File | Use |
 |---|---|
-| `marketing/n8n-pep-elevenlabs-video.md` | ElevenLabs intent + fal Kling wiring |
+| `marketing/n8n-pep-elevenlabs-video.md` | ElevenLabs TTS + OmniHuman talking clip (Kling optional B-roll) |
 | `marketing/n8n-pep-prep-beats.js` | Code for `prep_pep_beats` |
 | `marketing/n8n-pep-grok-still-body.txt` | Body for `grok_imagine_reel_still` (+ _b/_c/_d) |
 | `marketing/n8n-pep-prep-video-beat.js` | Template for fal Kling video prep (set BEAT) |
 | `marketing/n8n-pep-save-outputs.txt` | Optional expanded save fields |
 | `marketing/n8n-pep-sheets-update.txt` | `sheets_update_creation` mapping |
+| `marketing/n8n-pep-lipsync-setup.md` | OmniHuman talking clip — full `pep_lipsync_fal` params |
 | `marketing/n8n-pep-stitch-notes.md` | ElevenLabs TTS + stitch |
 | `marketing/n8n-pep-character-lock.md` | Master likeness rules |
