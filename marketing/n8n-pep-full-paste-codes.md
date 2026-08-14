@@ -518,14 +518,16 @@ Disconnect `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result
 
 Do **not** hardcode Audio Url. Do **not** send `video_url` (sync-3 / VEED / Kling lipsync / LatentSync).
 
-**Model Parameters** — click **Add Parameter** exactly **4** times. Parameter Name or ID is the dropdown (**fx OFF**). Do not add `video_url` or `sync_mode`.
+**Model Parameters** — click **Add Parameter** exactly **4** times. **Parameter Name or ID** is the dropdown (**fx OFF**). Pick **Image**, **Audio**, **Resolution**, **Prompt**. Do not add a fifth row.
 
-| # | Parameter Name or ID (fx OFF) | Value fx | Value |
+| # | Parameter Name or ID dropdown (fx OFF) | Value fx | Value |
 |---|---|---|---|
-| 1 | `image_url` | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
-| 2 | `audio_url` | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
-| 3 | `resolution` | OFF | `1080p` |
-| 4 | `prompt` | ON | `={{ $json.omnihuman_prompt }}` |
+| 1 | **Image** (`image_url`) | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
+| 2 | **Audio** (`audio_url`) | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
+| 3 | **Resolution** (`resolution`) | OFF | `1080p` |
+| 4 | **Prompt** (`prompt`) | ON | `={{ $json.omnihuman_prompt }}` |
+
+The dropdown may show `Image Url [string] *` / `Audio Url [string] *` / `Resolution [select]` / `Prompt [string]`. Those are the same four.
 
 | Parameter | fx | Value |
 |---|---|---|
