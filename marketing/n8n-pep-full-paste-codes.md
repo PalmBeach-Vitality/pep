@@ -32,7 +32,7 @@ Schedule Trigger
   → get_blocking_pool    (side branch only — do NOT insert on the talking path)
 ```
 
-`prep_pep_beats` reads `$('get_blocking_pool').all()` and picks **four unique** body + gesture combos (one per beat). If `(get_blocking_pool)` is not on the canvas yet, builtin pools still randomize.
+`prep_pep_beats` reads `$('get_blocking_pool').all()` and picks **two unique** body + gesture combos (one per scene cut). If `(get_blocking_pool)` is not on the canvas yet, builtin pools still randomize. Spoken VO is product talk only — compliance stays on captions.
 
 ---
 
@@ -113,7 +113,7 @@ Wire: `if_complaince` (true) → `prep_pep_beats` → **`(split_pep_beats)`** �
 
 Paste the full file `marketing/n8n-pep-prep-beats.js`.
 
-OUTPUT must show `beat_items` (4) and different `pep_body_action_a`…`_d`. `pose_still` on each split item feeds `grok_imagine_reel_still`. `omnihuman_prompt` on each split item feeds `prep_pep_lipsync`.
+OUTPUT must show `beat_items` (2) and different `pep_body_action_a` / `_b`. `pose_still` on each split item feeds `grok_imagine_reel_still`. `omnihuman_prompt` on each split item feeds `prep_pep_lipsync`.
 
 60s canvas list: `marketing/n8n-pep-60s-1080-execute.md`.
 
@@ -324,7 +324,7 @@ return {
 
 Do **not** use Run Once for All Items. Do **not** `return [{ json: ... }]`.
 
-Paste the full file `marketing/n8n-pep-prep-lipsync.js`. OUTPUT `beat` is `a`/`b`/`c`/`d` from `(split_pep_beats)`, not hardcoded `a`.
+Paste the full file `marketing/n8n-pep-prep-lipsync.js`. OUTPUT `beat` is `a`/`b` from `(split_pep_beats)`, not hardcoded `a`.
 
 ---
 
@@ -382,7 +382,7 @@ JSON Body (fx **ON**). Paste this whole block. Do **not** paste a JSON object wi
 })() }}
 ```
 
-`tts_text` is that beat’s ~15s slice of the row’s `voice_over` on tab `150-pb-pep-scenes`. Request preview must show those sheet words, not `$('prep_pep_beats')`.
+`tts_text` is that scene’s ~30s slice of the row’s `voice_over` on tab `150-pb-pep-scenes` after stripping caption-only compliance. Request preview must show product words, not `$('prep_pep_beats')`, not FDA/disclaimer.
 
 ---
 
@@ -630,7 +630,7 @@ Wire: `save_lipsync_video_url` → **`(gather_pep_clips)`** → `sheets_update_c
 
 Tab `150-pb-pep-scenes` must have columns `times_used` and `last_used_at`. Empty `last_used_at` + `times_used` = `0` means unused.
 
-Paste `marketing/n8n-pep-gather-clips.js` into `(gather_pep_clips)` (All Items). Sheet `video_url` is Beat A. CapCut uses `gather_pep_clips.stitch_clip_urls`.
+Paste `marketing/n8n-pep-gather-clips.js` into `(gather_pep_clips)` (All Items). Sheet `video_url` is scene A. Keep A and B as separate cuts — do not blend into one 60s film.
 
 | Parameter | fx | Value |
 |---|---|---|

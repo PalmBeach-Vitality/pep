@@ -4,10 +4,10 @@
 // Uses: Prep_day_variant → Limit (EXACT names)
 // Mode: Run Once for Each Item
 // Do NOT return [{ json: ... }]
-// Picks FOUR unique body+gesture combos (beats A–D) so a 60s 1080p
-// stitch does not drift on one pose. Thumbs-up is never allowed.
-// Spoken lines come from tab 150-pb-pep-scenes column voice_over only.
-// Do not hardcode VO. "research language only" is caption-only.
+// Picks TWO unique body+gesture combos (scene A + scene B).
+// 1080p OmniHuman max 30s audio, so two cuts — not four, not one 60s blend.
+// Spoken VO is product talk only. Compliance / disclaimer is caption-only.
+// Thumbs-up is never allowed.
 
 const row = (() => {
   try { return $('Prep_day_variant').item.json; } catch (e) {}
@@ -33,15 +33,36 @@ if (voiceOverRaw.includes("$('") || voiceOverRaw.includes('={{')) {
   throw new Error('voice_over looks like an n8n expression, not sheet text.');
 }
 
-// Caption-only phrase. Never speak it. Source of truth is the sheet column after re-import.
-const voiceOver = voiceOverRaw
-  .replace(/\s*[—–-]\s*research language only\.?/gi, '.')
-  .replace(/\bresearch language only\.?/gi, '')
-  .replace(/\s{2,}/g, ' ')
-  .replace(/\s+\./g, '.')
-  .trim();
+// Caption-only. Never speak legal/compliance lines. Captions stay on grok_api / caption_lock.
+function stripSpokenCompliance(text, disclaimerText) {
+  let t = String(text || '').replace(/\s+/g, ' ').trim();
+  t = t.replace(/\s*[—–-]\s*research language only\.?/gi, '.');
+  const drop = [
+    /research language only\.?/gi,
+    /for laboratory research use only\.?/gi,
+    /not for human use or consumption\.?/gi,
+    /not a drug, dietary supplement, or cosmetic\.?/gi,
+    /not evaluated by the fda\.?/gi,
+    /research use only\.?/gi,
+    /no treatment claims\.?/gi,
+    /no human-use advice\.?/gi,
+    /everything stays in the research and laboratory space\.?/gi,
+  ];
+  for (const re of drop) t = t.replace(re, ' ');
+  const d = String(disclaimerText || '').trim();
+  if (d) {
+    const esc = d.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    t = t.replace(new RegExp(esc, 'gi'), ' ');
+  }
+  return t.replace(/\s{2,}/g, ' ').replace(/\s+\./g, '.').replace(/^\.\s*/, '').trim();
+}
+
 const pepScript = String(row.pep_script || '').trim();
 const disclaimer = String(row.disclaimer_short || '').trim();
+const voiceOver = stripSpokenCompliance(voiceOverRaw, disclaimer);
+if (!voiceOver) {
+  throw new Error('Spoken voice_over was empty after stripping caption-only compliance lines.');
+}
 
 const PEP_MASTER_DEFAULT = 'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-master.jpg';
 const pepRefUrl = String(row.pep_ref_url || PEP_MASTER_DEFAULT).trim();
@@ -204,13 +225,13 @@ const sheetGestures = rowsFromBlockingPool('gesture');
 const sheetAngles = rowsFromBlockingPool('angle');
 const blockingSource = (sheetBodies.length && sheetGestures.length) ? 'pep-blocking-pool' : 'builtin';
 
-const BEAT_IDS = ['a', 'b', 'c', 'd'];
-const bodies = pickUnique(sheetBodies.length ? sheetBodies : BODY_ACTIONS, 4);
-const gestures = pickUnique(sheetGestures.length ? sheetGestures : GESTURES, 4);
+const BEAT_IDS = ['a', 'b'];
+const bodies = pickUnique(sheetBodies.length ? sheetBodies : BODY_ACTIONS, 2);
+const gestures = pickUnique(sheetGestures.length ? sheetGestures : GESTURES, 2);
 const anglePool = sheetAngles.length
   ? sheetAngles
   : ANGLES.map((label) => ({ id: label, brief: label }));
-const angles = pickUnique(anglePool, 4);
+const angles = pickUnique(anglePool, 2);
 
 const pepLock = [
   'CHARACTER LOCK — use master Pep reference exactly (https://files.catbox.moe/2yfdbi.jpg).',
@@ -246,10 +267,8 @@ const poseStill = packs[0].poseStill;
 const poseMotion = packs[0].poseMotion;
 
 const beatMeta = {
-  a: { name: 'hook', window: '0–15s', extra: `${motion}; preserve Pep identity; no thumbs-up; no new text` },
-  b: { name: 'product', window: '15–30s', extra: 'slightly closer on the 10ml label while full scene stays; preserve Pep identity; no thumbs-up; no new text' },
-  c: { name: 'world', window: '30–45s', extra: 'stronger environment motion while Pep stays mid-ground; preserve identity; no thumbs-up' },
-  d: { name: 'close', window: '45–60s', extra: 'ease last 1s; preserve Pep identity; no thumbs-up; no new text' },
+  a: { name: 'scene_a', window: '0–30s', extra: `${motion}; preserve Pep identity; no thumbs-up; no new text` },
+  b: { name: 'scene_b', window: '30–60s', extra: 'new blocking in the same set; preserve Pep identity; no thumbs-up; no new text' },
 };
 
 const beats = {};
@@ -260,39 +279,32 @@ for (let i = 0; i < BEAT_IDS.length; i++) {
   const gestureLabel = String(p.gesture.id || '').replace(/_/g, ' ');
   beats[id] = {
     name: meta.name,
-    brief: `Beat ${id.toUpperCase()} ${meta.name.toUpperCase()}: Palm Beach Pep mid-ground in this unique set: ${surface}. Blocking this beat: ${p.body.brief}, ${gestureLabel}. ${p.poseStill} ${pepLock} Product lock: ${compound} (${compoundId}). Lighting: ${lighting}. Grade: ${grade}. Hero: ${hero}. ${id === 'c' ? 'Source scene: ' + String(sceneBrief).slice(0, 400) : 'Full environment, not void packshot.'}`,
+    brief: `Scene ${id.toUpperCase()} ${meta.name.toUpperCase()}: Palm Beach Pep mid-ground in this unique set: ${surface}. Blocking this cut: ${p.body.brief}, ${gestureLabel}. ${p.poseStill} ${pepLock} Product lock: ${compound} (${compoundId}). Lighting: ${lighting}. Grade: ${grade}. Hero: ${hero}. Full environment, not void packshot.`,
     motion: `${p.poseMotion}; ${meta.window}; ${meta.extra}`,
   };
 }
 
 function splitVoice(text) {
   const sentences = String(text || '').split(/(?<=[.!?])\s+/).filter(Boolean);
-  if (sentences.length >= 4) {
-    const n = Math.ceil(sentences.length / 4);
+  if (sentences.length >= 2) {
+    const n = Math.ceil(sentences.length / 2);
     return {
       a: sentences.slice(0, n).join(' ').trim(),
-      b: sentences.slice(n, n * 2).join(' ').trim(),
-      c: sentences.slice(n * 2, n * 3).join(' ').trim(),
-      d: sentences.slice(n * 3).join(' ').trim(),
+      b: sentences.slice(n).join(' ').trim(),
     };
   }
   const words = String(text || '').split(/\s+/).filter(Boolean);
-  const n = Math.max(1, Math.ceil(words.length / 4));
+  const n = Math.max(1, Math.ceil(words.length / 2));
   return {
     a: words.slice(0, n).join(' ').trim(),
-    b: words.slice(n, n * 2).join(' ').trim(),
-    c: words.slice(n * 2, n * 3).join(' ').trim(),
-    d: words.slice(n * 3).join(' ').trim(),
+    b: words.slice(n).join(' ').trim(),
   };
 }
 
 const vo = splitVoice(voiceOver);
-if (disclaimer && !String(vo.d).includes('laboratory research use only')) {
-  vo.d = `${vo.d} ${disclaimer}`.trim();
-}
 for (const id of BEAT_IDS) {
   if (!String(vo[id] || '').trim()) {
-    throw new Error(`Empty vo_beat_${id}. Sheet voice_over is too short to split into four 1080p clips.`);
+    throw new Error(`Empty vo_beat_${id}. Sheet voice_over is too short to split into two 1080p clips.`);
   }
 }
 
@@ -326,43 +338,29 @@ return {
   compound_name: compound,
   pep_ref_url: pepRefUrl,
   target_duration_seconds: 60,
-  beat_count: 4,
+  beat_count: 2,
   pep_body_action: body.id,
   pep_hand_gesture: gesture.id,
   pep_angle: angle,
   pep_body_action_a: packs[0].body.id,
   pep_body_action_b: packs[1].body.id,
-  pep_body_action_c: packs[2].body.id,
-  pep_body_action_d: packs[3].body.id,
   pep_hand_gesture_a: packs[0].gesture.id,
   pep_hand_gesture_b: packs[1].gesture.id,
-  pep_hand_gesture_c: packs[2].gesture.id,
-  pep_hand_gesture_d: packs[3].gesture.id,
   blocking_source: blockingSource,
   pose_still: poseStill,
   pose_still_a: packs[0].poseStill,
   pose_still_b: packs[1].poseStill,
-  pose_still_c: packs[2].poseStill,
-  pose_still_d: packs[3].poseStill,
   pose_motion: poseMotion,
   omnihuman_prompt: omnihuman_prompt,
   omnihuman_prompt_a: packs[0].omnihuman_prompt,
   omnihuman_prompt_b: packs[1].omnihuman_prompt,
-  omnihuman_prompt_c: packs[2].omnihuman_prompt,
-  omnihuman_prompt_d: packs[3].omnihuman_prompt,
   beat_items: beat_items,
   beat_a_brief: beats.a.brief,
   beat_b_brief: beats.b.brief,
-  beat_c_brief: beats.c.brief,
-  beat_d_brief: beats.d.brief,
   beat_a_motion: beats.a.motion,
   beat_b_motion: beats.b.motion,
-  beat_c_motion: beats.c.motion,
-  beat_d_motion: beats.d.motion,
   vo_beat_a: vo.a,
   vo_beat_b: vo.b,
-  vo_beat_c: vo.c,
-  vo_beat_d: vo.d,
   tts_text: vo.a,
   vo_source: 'sheet',
   voice_over: voiceOver,

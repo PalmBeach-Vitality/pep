@@ -11,9 +11,9 @@ OmniHuman is **image + audio → talking video**. It does **not** take a Kling `
 
 TTS public URL = `$('fal_upload_tts_initiate').item.json.file_url` (fal CDN). **Catbox is blocked by fal** for audio/video inputs. Master Catbox URL is OK only as Pep still *reference* for Grok EDIT.
 
-Audio must be under **30s at 1080p**. Split the row’s unique `voice_over` into four ~15s beats via `(split_pep_beats)`. Do not send the full 60s script into one 1080p job.
+Audio must be under **30s at 1080p**. Split the row’s unique `voice_over` into **two** ~30s scene cuts via `(split_pep_beats)`. Do not send the full script into one 1080p job. Do not speak compliance/disclaimer.
 
-Canvas steps for the 60s stitch: `marketing/n8n-pep-60s-1080-execute.md`.
+Canvas steps: `marketing/n8n-pep-60s-1080-execute.md`.
 
 Keeper QC: `marketing/n8n-pep-omnihuman-keeper.txt`
 
@@ -303,7 +303,7 @@ If n8n errors `[ERROR: No path back to node]` on `$('save_still_url')`, fall bac
 
 **Wire next:** `save_lipsync_video_url` → **`(gather_pep_clips)`** → `sheets_update_creation`
 
-Paste `marketing/n8n-pep-gather-clips.js` into `(gather_pep_clips)` (All Items). Full 60s canvas list: `marketing/n8n-pep-60s-1080-execute.md`.
+Paste `marketing/n8n-pep-gather-clips.js` into `(gather_pep_clips)` (All Items). Two scene cuts, not a 60s blend. Canvas list: `marketing/n8n-pep-60s-1080-execute.md`.
 
 ---
 

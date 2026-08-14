@@ -1,19 +1,19 @@
 // Node: split_pep_beats (Code)
 // Wire: prep_pep_beats → split_pep_beats → tts_pep_voice_over
 // Mode: Run Once for All Items
-// DO return [{ json: ... }, ...] — four items, beats a/b/c/d
+// DO return [{ json: ... }, ...] — two items, scenes a/b
 // Each item carries its own tts_text + pose_still + omnihuman_prompt.
-// Downstream TTS / still / OmniHuman run four times on the same talking path.
+// Downstream TTS / still / OmniHuman run twice on the same talking path.
 
 const src = $input.first().json || {};
 const packs = Array.isArray(src.beat_items) ? src.beat_items : [];
-if (packs.length !== 4) {
+if (packs.length !== 2) {
   throw new Error(
-    `split_pep_beats expected 4 beat_items from prep_pep_beats, got ${packs.length}. Re-paste marketing/n8n-pep-prep-beats.js.`
+    `split_pep_beats expected 2 beat_items from prep_pep_beats, got ${packs.length}. Re-paste marketing/n8n-pep-prep-beats.js.`
   );
 }
 
-const BEATS = ['a', 'b', 'c', 'd'];
+const BEATS = ['a', 'b'];
 return packs.map((pack, i) => {
   const beat = String(pack.beat || BEATS[i] || '').toLowerCase();
   const tts_text = String(pack.tts_text || src[`vo_beat_${beat}`] || '').trim();
@@ -46,7 +46,7 @@ return packs.map((pack, i) => {
       omnihuman_prompt: omnihuman_prompt,
       beat_brief: pack.beat_brief || src[`beat_${beat}_brief`],
       beat_motion: pack.beat_motion || src[`beat_${beat}_motion`],
-      target_duration_seconds: 15,
+      target_duration_seconds: 30,
       resolution: '1080p',
     },
   };

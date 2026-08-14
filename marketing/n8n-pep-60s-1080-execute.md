@@ -1,6 +1,6 @@
 # 60s 1080p stitch — nodes Sal must add or change
 
-1080p audio cap is **under 30s**. Full sheet `voice_over` is ~60s, so this is **4 × ~15s OmniHuman clips** with a **new pose each beat** (no 60s drift), then CapCut.
+1080p audio cap is **under 30s**. Next run is **2 scene cuts** (~30s each), new pose each cut. Not four clips. Not one blended 60s. Spoken VO is product talk only — no compliance/disclaimer.
 
 Do **not** duplicate `_b/_c/_d` still/TTS/OmniHuman nodes. `(split_pep_beats)` + `(loop_pep_beats)` run the talking chain **one beat at a time** (fal max 3 concurrent).
 
@@ -8,7 +8,7 @@ Do **not** Test workflow until you are ready to smoke. Saving params is free.
 
 ## Wire
 
-fal max concurrent = **3**. Four beats in parallel will 429. Run them **one at a time**.
+fal max concurrent = **3**. Two beats in parallel can still 429 if anything else is running. Keep **`(loop_pep_beats)`** Batch Size **1**.
 
 ```text
 if_complaince (true)
@@ -37,7 +37,7 @@ if_complaince (true)
 
 Mode: **Run Once for Each Item**. Replace the JS with `marketing/n8n-pep-prep-beats.js`.
 
-OUTPUT must show `beat_items` (length 4) and four different `pep_body_action_a`…`_d`.
+OUTPUT must show `beat_items` (length **2**) and different `pep_body_action_a` / `pep_body_action_b`. Spoken `vo_beat_*` must have **no** FDA / not-for-human-use / laboratory-research lines.
 
 ---
 
@@ -54,7 +54,7 @@ OUTPUT must show `beat_items` (length 4) and four different `pep_body_action_a`�
 
 Paste `marketing/n8n-pep-split-beats.js`.
 
-OUTPUT = **4 items**. Each item has `beat` (`a`/`b`/`c`/`d`), `tts_text`, `pose_still`, `omnihuman_prompt`.
+OUTPUT = **2 items**. Each item has `beat` (`a`/`b`), `tts_text`, `pose_still`, `omnihuman_prompt`.
 
 ---
 
@@ -80,13 +80,13 @@ Two outputs on this node: **loop** and **done**.
 Disconnect `split_pep_beats` → `tts_pep_voice_over` (that link is replaced by loop).  
 Disconnect `save_lipsync_video_url` → `gather_pep_clips` (gather hangs off **done**, not off save).
 
-Do **not** Test until this loop is in. Four parallel OmniHuman/fal jobs will 429 again.
+Do **not** Test until this loop is in. Parallel OmniHuman/fal jobs will 429.
 
 ---
 
 ## 3. CHANGE `tts_pep_voice_over` JSON Body only
 
-JSON Body fx **ON**. Paste this whole block (starts with `={{`). Do **not** keep `$('prep_pep_beats').item.json.tts_text` — that is Beat A four times.
+JSON Body fx **ON**. Paste this whole block (starts with `={{`). Do **not** keep `$('prep_pep_beats').item.json.tts_text` — that is Beat A twice.
 
 ```
 ={{ (() => {
@@ -109,7 +109,7 @@ JSON Body fx **ON**. Paste this whole block (starts with `={{`). Do **not** keep
 })() }}
 ```
 
-Request preview (item 0) should be Beat A sheet words. Items 1–3 are B/C/D.
+Request preview (item 0) should be Beat A product words. Item 1 is Beat B. No disclaimer speech.
 
 ---
 
@@ -146,7 +146,7 @@ POSE now reads `$('split_pep_beats').item.json.pose_still` so each beat gets a d
 
 Mode: **Run Once for Each Item**. Replace the JS with `marketing/n8n-pep-prep-lipsync.js`.
 
-OUTPUT `beat` must be `a` then `b` then `c` then `d`. `omnihuman_prompt` must match that beat’s pose, not Beat A for all four.
+OUTPUT `beat` must be `a` then `b`. `omnihuman_prompt` must match that beat’s pose, not Beat A for both.
 
 ---
 
@@ -179,9 +179,9 @@ Include Other Input Fields stays **OFF**.
 
 Paste `marketing/n8n-pep-gather-clips.js`.
 
-Reads every loop run via `$('save_lipsync_video_url').all(0, runIndex)`. A plain `.all()` is only Beat D.
+Reads every loop run via `$('save_lipsync_video_url').all(0, runIndex)`. A plain `.all()` is only the last scene.
 
-OUTPUT (one item): `lipsync_video_url_a`…`_d` plus `stitch_clip_urls`. That is the CapCut source. Sheet still has one `video_url` column (Beat A).
+OUTPUT (one item): `lipsync_video_url_a` / `_b` plus `stitch_clip_urls`. Two separate scenes. Sheet still has one `video_url` column (scene A).
 
 ---
 
@@ -203,25 +203,23 @@ Wire: `loop_pep_beats` (**done**) → `gather_pep_clips` → `sheets_update_crea
 | `video_url` | String | ON | `={{ $('gather_pep_clips').item.json.video_url }}` |
 | `model_video` | String | ON | `={{ $('gather_pep_clips').item.json.model_video \|\| 'fal-omnihuman-v1.5' }}` |
 
-Do **not** add sheet columns. Copy B/C/D URLs from `gather_pep_clips` OUTPUT when you stitch.
+Do **not** add sheet columns. Copy scene B from `gather_pep_clips` OUTPUT if you need it. Do **not** blend A+B into one 60s film.
 
 ---
 
 ## Leave alone
 
-`pep_lipsync_fal` — still 1080p, Max Wait `1200`, Image/Audio/Prompt as they are. Four paired items reuse the same node.
+`pep_lipsync_fal` — still 1080p, Max Wait `1200`, Image/Audio/Prompt as they are. Two loop passes reuse the same node.
 
 `(get_blocking_pool)` stays a dead-end side branch.
 
 ---
 
-## CapCut (after the four URLs exist)
+## After the two URLs exist
 
-1. Timeline: OmniHuman A, B, C, D (9:16).
-2. Joins A→B, B→C, C→D: **Cross Dissolve / Film Dissolve**, **8–12 frames**. Not fade-to-black.
-3. Optional short fade in on A, fade out on D only.
+These are **two different scene cuts**, not one smooth 60s clip. Do **not** CapCut-morph / dissolve them into one film.
 
-Three ~0.4s dissolves on 4×15s → ~**58.8s**.
+If you concat later: **hard cut** A then B. No extra VO track — audio is already in each mp4.
 
 ---
 
@@ -231,4 +229,4 @@ Three ~0.4s dissolves on 4×15s → ~**58.8s**.
 
 **NEVER PIN:** `grok_imagine_reel_still`, `tts_pep_voice_over`, `pep_lipsync_fal`
 
-One Test workflow = 4 stills + 4 TTS + 4 OmniHuman 1080p. Budget a long wait (four × up to 1200s).
+One Test workflow = 2 stills + 2 TTS + 2 OmniHuman 1080p. Loop runs 3 times (A, B, then done). Budget a long wait (two × up to 1200s).

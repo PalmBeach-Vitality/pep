@@ -11,7 +11,7 @@
 | Talking clip | **OmniHuman v1.5** via **fal.ai** (`pep_lipsync_fal`) | Image + ElevenLabs audio → mouth + body motion |
 | Walk B-roll (optional) | **Kling Video v3 Pro** via **fal.ai** | Keep disconnected from the talking path |
 | Voiceover | **ElevenLabs TTS** API | Best VO; already documented in stitch notes |
-| Final cut | ffmpeg stitch A→B→C→D | ~60s 9:16 |
+| Final cut | keep A and B as separate scene cuts | two ~30s 9:16 clips |
 
 Keep **exact canvas node names** (`prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url`, plus optional Kling `prep_grok_video_start`, `ai_vid_generator`, `grok_video_poll`). Do not rename.
 

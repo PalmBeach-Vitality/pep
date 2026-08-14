@@ -3,7 +3,7 @@
 // Mode: Run Once for Each Item
 // Do NOT return [{ json: ... }]
 // Paired TTS binary for THIS beat. Works with (loop_pep_beats) batch size 1
-// and with four items. Do not use .all() zip — a loop makes .all() grow.
+// and with two scene items. Do not use .all() zip — a loop makes .all() grow.
 
 const tts = $('tts_pep_voice_over').item;
 if (!tts.binary || !tts.binary.data) {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Four ~15s 1080p beats: full sheet VO, no empty slice, under OmniHuman 30s cap."""
+"""Two ~30s 1080p scenes: spoken VO has no compliance boilerplate."""
 
 from __future__ import annotations
 
@@ -10,57 +10,59 @@ from pathlib import Path
 
 SRC = Path("/workspace/marketing/sheets/150-pb-pep-scenes.csv")
 BANNED = "research language only"
-# ~2.5 words/sec spoken. 1080p OmniHuman hard-cap is 30s.
+SPOKEN_BANNED = [
+    "for laboratory research use only",
+    "not for human use or consumption",
+    "not evaluated by the fda",
+    "research use only",
+    "no treatment claims",
+    "no human-use advice",
+    "everything stays in the research and laboratory space",
+    BANNED,
+]
 MAX_WORDS_1080 = 75
 
 
-def strip_caption_only(vo: str) -> str:
+def strip_spoken(vo: str, disclaimer: str = "") -> str:
     text = re.sub(r"\s+", " ", vo or "").strip()
-    text = re.sub(r"\s*[—–-]\s*research language only\.?", ".", text, flags=re.I)
-    text = re.sub(r"\bresearch language only\.?", "", text, flags=re.I)
+    patterns = [
+        r"research language only\.?",
+        r"for laboratory research use only\.?",
+        r"not for human use or consumption\.?",
+        r"not a drug, dietary supplement, or cosmetic\.?",
+        r"not evaluated by the fda\.?",
+        r"research use only\.?",
+        r"no treatment claims\.?",
+        r"no human-use advice\.?",
+        r"everything stays in the research and laboratory space\.?",
+    ]
+    for p in patterns:
+        text = re.sub(p, " ", text, flags=re.I)
+    if disclaimer.strip():
+        text = re.sub(re.escape(disclaimer.strip()), " ", text, flags=re.I)
     text = re.sub(r"\s{2,}", " ", text)
-    text = re.sub(r"\s+\.", ".", text)
-    return text.strip()
+    text = re.sub(r"\s+\.", ".", text).strip(" .")
+    return text
 
 
 def split_voice(text: str) -> dict[str, str]:
     sentences = [s for s in re.split(r"(?<=[.!?])\s+", text) if s]
-    if len(sentences) >= 4:
-        n = math.ceil(len(sentences) / 4)
+    if len(sentences) >= 2:
+        n = math.ceil(len(sentences) / 2)
         return {
             "a": " ".join(sentences[0:n]).strip(),
-            "b": " ".join(sentences[n : n * 2]).strip(),
-            "c": " ".join(sentences[n * 2 : n * 3]).strip(),
-            "d": " ".join(sentences[n * 3 :]).strip(),
+            "b": " ".join(sentences[n:]).strip(),
         }
     words = [w for w in text.split() if w]
-    n = max(1, math.ceil(len(words) / 4))
+    n = max(1, math.ceil(len(words) / 2))
     return {
         "a": " ".join(words[0:n]).strip(),
-        "b": " ".join(words[n : n * 2]).strip(),
-        "c": " ".join(words[n * 2 : n * 3]).strip(),
-        "d": " ".join(words[n * 3 :]).strip(),
+        "b": " ".join(words[n:]).strip(),
     }
 
 
 def word_count(s: str) -> int:
     return len([w for w in s.split() if w])
-
-
-def pick_unique(ids: list[str], n: int) -> list[str]:
-    assert ids
-    mixed = list(ids)
-    # deterministic uniqueness check: first n unique cycling
-    out = []
-    seen = []
-    for i, item in enumerate(mixed):
-        if item not in seen:
-            seen.append(item)
-        if len(seen) == n:
-            break
-    while len(seen) < n:
-        seen.append(mixed[len(seen) % len(mixed)])
-    return seen[:n]
 
 
 def main() -> None:
@@ -70,29 +72,24 @@ def main() -> None:
 
     for r in rows:
         cid = r["creation_id"]
-        vo = strip_caption_only(r["voice_over"])
-        assert vo, cid
-        assert BANNED not in vo.lower(), cid
-        beats = split_voice(vo)
-        for k in ("a", "b", "c", "d"):
+        spoken = strip_spoken(r["voice_over"], r.get("disclaimer_short") or "")
+        assert spoken, cid
+        low = spoken.lower()
+        for phrase in SPOKEN_BANNED:
+            assert phrase not in low, f"{cid} still speaks {phrase!r}"
+        beats = split_voice(spoken)
+        for k in ("a", "b"):
             assert beats[k], f"{cid} empty beat {k}"
             assert "$('" not in beats[k], cid
-            assert BANNED not in beats[k].lower(), cid
             wc = word_count(beats[k])
-            assert wc <= MAX_WORDS_1080, f"{cid} beat {k} is {wc} words (> {MAX_WORDS_1080}, 1080p 30s cap)"
-        joined = " ".join(beats[v] for v in "abcd")
-        vo_words = word_count(vo)
-        joined_words = word_count(joined)
-        assert joined_words >= vo_words - 2, f"{cid} split dropped words ({joined_words} vs {vo_words})"
-
-    bodies = ["walking", "sitting", "standing", "stopping", "turning"]
-    picked = pick_unique(bodies, 4)
-    assert len(set(picked)) == 4, picked
+            assert wc <= MAX_WORDS_1080, f"{cid} beat {k} is {wc} words"
+        joined = " ".join(beats[v] for v in "ab")
+        assert word_count(joined) >= word_count(spoken) - 2, cid
 
     print("ok rows", len(rows))
-    sample = split_voice(strip_caption_only(rows[0]["voice_over"]))
+    sample = split_voice(strip_spoken(rows[0]["voice_over"], rows[0].get("disclaimer_short") or ""))
     for k, v in sample.items():
-        print(f"PEP-001 {k} words={word_count(v)}: {v[:80]}...")
+        print(f"PEP-001 {k} words={word_count(v)}: {v[:90]}...")
 
 
 if __name__ == "__main__":
