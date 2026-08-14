@@ -37,16 +37,18 @@ Schedule Trigger
 
 Picks the least-used Active row so every execution gets a **unique scene**.
 
-| Parameter | Value |
-|---|---|
-| Node type | Sort |
-| Exact name | `sort_rotation` |
-| Type | Simple |
+| Parameter | fx | Value |
+|---|---|---|
+| Node type | — | Sort |
+| Exact name | — | `sort_rotation` |
+| Type | — | Simple |
 
 | Sort Field | Order |
 |---|---|
 | `times_used` | **Ascending** |
-| `last_used_at` | **Ascending** |
+| `date_used` | **Ascending** |
+
+Empty `date_used` and `times_used` = `0` sort first (unused rows).
 
 Wire: `filter_active` → `sort_rotation` → `Limit`
 
@@ -662,18 +664,27 @@ Do **not** execute: `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sy
 
 ## SHEETS: `sheets_update_creation` (LAST NODE)
 
-| Parameter | Value |
-|---|---|
-| Resource | Sheet Within Document |
-| Operation | Update |
-| Sheet | `150-pb-pep-scenes` |
-| Column to Match On | `creation_id` |
-| Value to Match On | `={{ $('prep_pep_beats').item.json.creation_id \|\| $('Limit').item.json.creation_id }}` |
+Wire: `save_lipsync_video_url` → `sheets_update_creation`
 
-| Column | Value |
-|---|---|
-| `last_used_at` | `={{ $now.toISO() }}` |
-| `times_used` | `={{ Number($('Limit').item.json.times_used \|\| $('Prep_day_variant').item.json.times_used \|\| 0) + 1 }}` |
-| `reel_still_url` | `={{ $('save_still_url').item.json.reel_still_url \|\| $('save_still_url').item.json.data[0].url }}` |
-| `video_url` | `={{ $('save_lipsync_video_url').item.json.lipsync_video_url \|\| $('save_lipsync_video_url').item.json.video_url \|\| $('save_video_url').item.json.video_url }}` |
-| `model_video` | `={{ $('save_lipsync_video_url').item.json.model_video \|\| 'fal-omnihuman-v1.5' }}` |
+Tab `150-pb-pep-scenes` must have columns `times_used` and `date_used` (Sal-named). Empty `date_used` + `times_used` = `0` means unused.
+
+| Parameter | fx | Value |
+|---|---|---|
+| Node type | — | Google Sheets |
+| Exact name | — | `sheets_update_creation` |
+| Credential | — | same Google Sheets account as `get_rows_in_sheet` |
+| Resource | — | Sheet Within Document |
+| Operation | — | Update |
+| Document | — | same document as `get_rows_in_sheet` |
+| Sheet | OFF | `150-pb-pep-scenes` |
+| Mapping Column Mode | — | Map Each Column Manually |
+| Column to Match On | OFF | `creation_id` |
+| Value to Match On | ON | `={{ $('prep_pep_beats').item.json.creation_id \|\| $('Limit').item.json.creation_id }}` |
+
+| Column | Type | fx | Value |
+|---|---|---|---|
+| `date_used` | String | ON | `={{ $now.toISO() }}` |
+| `times_used` | Number | ON | `={{ Number($('Limit').item.json.times_used \|\| $('Prep_day_variant').item.json.times_used \|\| 0) + 1 }}` |
+| `reel_still_url` | String | ON | `={{ $('save_still_url').item.json.reel_still_url \|\| $('save_still_url').item.json.data[0].url }}` |
+| `video_url` | String | ON | `={{ $('save_lipsync_video_url').item.json.lipsync_video_url \|\| $('save_lipsync_video_url').item.json.video_url \|\| $('save_video_url').item.json.video_url }}` |
+| `model_video` | String | ON | `={{ $('save_lipsync_video_url').item.json.model_video \|\| 'fal-omnihuman-v1.5' }}` |

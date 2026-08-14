@@ -60,7 +60,7 @@ TTS public URL = `fal_upload_tts_initiate.file_url`.
 | 1 | `get_rows_in_sheet` | Read tab `150-pb-pep-scenes` |
 | — | `get_blocking_pool` | Read tab `pep-blocking-pool` (side branch from `Schedule Trigger`) |
 | 2 | `filter_active` | Keep Active rows |
-| 3 | `sort_rotation` | Sort `times_used` ASC, then `last_used_at` ASC |
+| 3 | `sort_rotation` | Sort `times_used` ASC, then `date_used` ASC |
 | 4 | `Limit` | One row only |
 | 5 | `Prep_day_variant` | Map row fields + `pep_ref_url` |
 | 6 | `grok_api` | Caption LLM (`POST /v1/chat/completions`) |
@@ -103,7 +103,7 @@ On node **`Prep_day_variant`**, set field:
 
 ## Phase A — Sheet pick (exact names)
 1. `get_rows_in_sheet` → tab **`150-pb-pep-scenes`**
-2. Keep `filter_active` → `sort_rotation` (`times_used` ASC, then `last_used_at` ASC) → `Limit` (=1 unused row)
+2. Keep `filter_active` → `sort_rotation` (`times_used` ASC, then `date_used` ASC) → `Limit` (=1 unused row)
 3. Add **`(get_blocking_pool)`** as a side branch: `Schedule Trigger` → **`(get_blocking_pool)`**. Tab **`pep-blocking-pool`**. Do **not** insert it on the talking path.
 4. On `Prep_day_variant` (Include Other Input Fields = ON), ensure:
 
@@ -125,7 +125,7 @@ On node **`Prep_day_variant`**, set field:
 | `pep_script` | `{{ $json.pep_script }}` |
 | `disclaimer_short` | `{{ $json.disclaimer_short }}` |
 | `times_used` | `{{ $json.times_used }}` |
-| `last_used_at` | `{{ $json.last_used_at }}` |
+| `date_used` | `{{ $json.date_used }}` |
 | `video_prompt` | `{{ $json.video_prompt }}` |
 | `video_motion_prompt` | `{{ $json.video_motion_prompt }}` |
 
@@ -315,7 +315,7 @@ A→B→C→D concat (~60s) waits until Beat A OmniHuman looks right.
 ## Phase F — Writeback (exact name)
 | Exact node | Action |
 |---|---|
-| `sheets_update_creation` | Update tab **`150-pb-pep-scenes`** · match `creation_id` · `last_used_at`, `times_used`, `reel_still_url`, `video_url` |
+| `sheets_update_creation` | Update tab **`150-pb-pep-scenes`** · match `creation_id` · `date_used`, `times_used`, `reel_still_url`, `video_url` |
 
 Mapping helper: `marketing/n8n-pep-sheets-update.txt` (expressions use these exact names).
 
