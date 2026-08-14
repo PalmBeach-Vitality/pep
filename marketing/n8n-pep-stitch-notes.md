@@ -13,8 +13,8 @@ Spoken VO is **intro + product only** on **every** clip. Last sentence always: `
 3. fal OmniHuman v1.5 (`pep_lipsync_fal`) → `lipsync_video_url`
 
 ## Node: `tts_pep_voice_over` (ElevenLabs — preferred)
-**Per-scene text:** the **same** unique-word product sales pitch on all four `(split_pep_beats)` items (~146 words, 55–60s). Last sentence: `Visit us at palmbeach-vitality.store.`
-Do **not** send this into 1080p OmniHuman — use **720p**. Not one word repeats.
+**Per-scene text:** the **same** easy wellness pitch on all four `(split_pep_beats)` items (~146 words, 55–60s). Last sentence: `Visit us at palmbeach-vitality.store.`
+Do **not** send this into 1080p OmniHuman — use **720p**.
 Do **not** speak FDA / not-for-human-use / laboratory-research-use-only / `disclaimer_short`.
 
 ### ElevenLabs TTS (HTTP Request) — locked for Pep

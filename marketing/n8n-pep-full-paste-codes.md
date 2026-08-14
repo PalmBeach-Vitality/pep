@@ -1,6 +1,6 @@
 # Pep n8n — FULL paste codes (no excerpts)
 
-Talking model is **OmniHuman v1.5** on `pep_lipsync_fal` (image + audio). Not sync-3. Not Kling. Resolution **720p** (55–60s audio). Unique scene + same unique-word product pitch every execution.
+Talking model is **OmniHuman v1.5** on `pep_lipsync_fal` (image + audio). Not sync-3. Not Kling. Resolution **720p** (55–60s audio). Unique scene + same easy wellness pitch every execution.
 
 Wire:
 ```text
@@ -390,14 +390,8 @@ JSON Body (fx **ON**). Paste this whole block. Do **not** paste a JSON object wi
   if (!/palm beach pep/i.test(text)) {
     throw new Error('TTS text must start with Pep introducing himself.');
   }
-  const seen = new Set();
-  for (const w of text.split(/\s+/).filter(Boolean)) {
-    const k = w.replace(/[.,!?;:"'()[\]{}]/g, '').replace(/[—–]/g, '').toLowerCase();
-    if (!k) continue;
-    if (seen.has(k)) {
-      throw new Error(`Spoken VO repeats the word "${k}". Not one word may repeat. Re-import 150-pb-pep-scenes.`);
-    }
-    seen.add(k);
+  if (!/studies have shown/i.test(text) || !/beneficial to/i.test(text) || !/recent research studies/i.test(text)) {
+    throw new Error('TTS text must include: Studies have shown X has been beneficial to X in recent research studies. Re-import 150-pb-pep-scenes.');
   }
   const n = text.split(/\s+/).filter(Boolean).length;
   if (n < 142 || n > 150) {
@@ -411,7 +405,7 @@ JSON Body (fx **ON**). Paste this whole block. Do **not** paste a JSON object wi
 })() }}
 ```
 
-`tts_text` is the full unique-word product pitch (~146 words, 55–60s) on every beat. Request preview must show product words, not `$('prep_pep_beats')`, not FDA/disclaimer. Not one word repeats.
+`tts_text` is the full easy wellness pitch (~146 words, 55–60s) on every beat. Request preview must show product words, not `$('prep_pep_beats')`, not FDA/disclaimer.
 
 ---
 

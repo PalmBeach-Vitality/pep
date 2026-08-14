@@ -40,7 +40,7 @@ mustInclude('n8n-pep-prep-beats.js', [
   'beat_items',
   'pickUnique',
   'extractProductPitch',
-  'firstRepeatedWord',
+  'studies have shown',
   'Visit us at palmbeach-vitality.store.',
   "beat_count: 4",
   "const BEAT_IDS = ['a', 'b', 'c', 'd']",
@@ -57,7 +57,7 @@ mustInclude('n8n-pep-split-beats.js', [
   'omnihuman_prompt',
   'Visit us at palmbeach-vitality.store.',
   "packs.length !== 4",
-  'Not one word may repeat',
+  'studies have shown',
   "resolution: '720p'",
 ]);
 mustInclude('n8n-pep-gather-clips.js', [
@@ -106,7 +106,7 @@ const poses = new Set(beat_items.map((b) => b.pose_still));
 if (poses.size !== 4) throw new Error('poses not unique per scene');
 
 mustInclude('n8n-pep-60s-1080-execute.md', [
-  'Not one word repeats',
+  'studies have shown',
   'Need 142–150 words',
   '| 3 | **Resolution** (`resolution`) | OFF | `720p` |',
 ]);

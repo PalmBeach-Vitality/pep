@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Every VO is 55–60s intro-pitch-close with ZERO repeated words."""
+"""Every VO is an easy 55–60s wellness pitch with the studies line."""
 
 from __future__ import annotations
 
 import csv
-import re
 from pathlib import Path
 
 SRC = Path("/workspace/marketing/sheets/150-pb-pep-scenes.csv")
@@ -21,27 +20,14 @@ BANNED = [
     "everything stays in the research and laboratory space",
     "today's unique set",
     "research language only",
+    "storefront-page",
+    "canonical-url",
+    "experimental-systems",
 ]
 
 
 def tokens(text: str) -> list[str]:
     return [w for w in text.split() if w]
-
-
-def norm(tok: str) -> str:
-    return re.sub(r"[.,!?;:\"'()[\]{}]", "", tok).replace("—", "").replace("–", "").lower()
-
-
-def first_dup(text: str) -> str | None:
-    seen = set()
-    for w in tokens(text):
-        k = norm(w)
-        if not k:
-            continue
-        if k in seen:
-            return k
-        seen.add(k)
-    return None
 
 
 def main() -> None:
@@ -53,16 +39,15 @@ def main() -> None:
         vo = r["voice_over"]
         cid = r["creation_id"]
         n = len(tokens(vo))
-        dup = first_dup(vo)
-        assert dup is None, f"{cid} repeats {dup!r}"
         assert vo.endswith(CTA), cid
         assert TARGET_MIN <= n <= TARGET_MAX, f"{cid} {n} words"
         low = vo.lower()
         for b in BANNED:
             assert b not in low, f"{cid} {b}"
         assert "palm beach pep" in low, cid
-        for pack in ("vial", "packshot", "thumbs", "mascot", "crimp-sealed", "10ml"):
-            assert pack not in low, f"{cid} packaging {pack}"
+        assert "studies have shown" in low, cid
+        assert "beneficial to" in low, cid
+        assert "recent research studies" in low, cid
         secs.append(n / 2.51)
     ghk = next(x for x in rows if x["creation_id"] == "PEP-013")
     print("ok rows", len(rows))

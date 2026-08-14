@@ -11,7 +11,7 @@ OmniHuman is **image + audio → talking video**. It does **not** take a Kling `
 
 TTS public URL = `$('fal_upload_tts_initiate').item.json.file_url` (fal CDN). **Catbox is blocked by fal** for audio/video inputs. Master Catbox URL is OK only as Pep still *reference* for Grok EDIT.
 
-Audio must be under **60s at 720p** (1080p caps at 30s). Same unique-word product pitch on every scene cut via `(split_pep_beats)`. Do not speak compliance/disclaimer. Not one word repeats.
+Audio must be under **60s at 720p** (1080p caps at 30s). Same easy wellness pitch on every scene cut via `(split_pep_beats)`. Do not speak compliance/disclaimer.
 
 Canvas steps: `marketing/n8n-pep-60s-1080-execute.md`.
 
@@ -123,14 +123,8 @@ Do **not** also add a `xi-api-key` header on the node. The credential already se
   if (!/palm beach pep/i.test(text)) {
     throw new Error('TTS text must start with Pep introducing himself.');
   }
-  const seen = new Set();
-  for (const w of text.split(/\s+/).filter(Boolean)) {
-    const k = w.replace(/[.,!?;:"'()[\]{}]/g, '').replace(/[—–]/g, '').toLowerCase();
-    if (!k) continue;
-    if (seen.has(k)) {
-      throw new Error(`Spoken VO repeats the word "${k}". Not one word may repeat. Re-import 150-pb-pep-scenes.`);
-    }
-    seen.add(k);
+  if (!/studies have shown/i.test(text) || !/beneficial to/i.test(text) || !/recent research studies/i.test(text)) {
+    throw new Error('TTS text must include: Studies have shown X has been beneficial to X in recent research studies. Re-import 150-pb-pep-scenes.');
   }
   const n = text.split(/\s+/).filter(Boolean).length;
   if (n < 142 || n > 150) {

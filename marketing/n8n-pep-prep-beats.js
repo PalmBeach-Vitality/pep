@@ -5,7 +5,7 @@
 // Mode: Run Once for Each Item
 // Do NOT return [{ json: ... }]
 // Four unique poses. EVERY clip speaks the SAME ~55–60s product pitch.
-// Zero repeated words. Intro + product + Visit us at palmbeach-vitality.store.
+// Easy upbeat wellness pitch. Intro + product + studies line + store CTA.
 // 720p OmniHuman (60s audio). 1080p cannot hold 55–60s.
 
 const row = (() => {
@@ -64,21 +64,6 @@ function wordsOf(text) {
   return String(text || '').split(/\s+/).filter(Boolean);
 }
 
-function normWord(w) {
-  return String(w || '').replace(/[.,!?;:"'()[\]{}]/g, '').replace(/[—–]/g, '').toLowerCase();
-}
-
-function firstRepeatedWord(text) {
-  const seen = new Set();
-  for (const w of wordsOf(text)) {
-    const k = normWord(w);
-    if (!k) continue;
-    if (seen.has(k)) return k;
-    seen.add(k);
-  }
-  return '';
-}
-
 function extractProductPitch(raw, disclaimerText) {
   let t = String(raw || '').replace(/\s+/g, ' ').trim();
   const cuts = [
@@ -116,9 +101,8 @@ function extractProductPitch(raw, disclaimerText) {
   if (!t.endsWith(PITCH_CTA)) {
     throw new Error('Product sales pitch must end with: Visit us at palmbeach-vitality.store.');
   }
-  const dup = firstRepeatedWord(t);
-  if (dup) {
-    throw new Error(`Spoken VO repeats the word "${dup}". Not one word may repeat.`);
+  if (!/studies have shown/i.test(t) || !/beneficial to/i.test(t) || !/recent research studies/i.test(t)) {
+    throw new Error('Product pitch must include: Studies have shown X has been beneficial to X in recent research studies.');
   }
   const n = wordsOf(t).length;
   if (n < 142 || n > 150) {

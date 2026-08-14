@@ -1,6 +1,6 @@
 # 60s 1080p stitch — nodes Sal must add or change
 
-1080p audio cap is **30s**. This pitch is **55–60s**, so `pep_lipsync_fal` Resolution must be **720p**. **4 scene cuts**, unique pose each, **same unique-word product pitch** on all 4. Intro + product + `Visit us at palmbeach-vitality.store.` Not one word repeats. No compliance.
+1080p audio cap is **30s**. This pitch is **55–60s**, so `pep_lipsync_fal` Resolution must be **720p**. **4 scene cuts**, unique pose each, **same easy wellness pitch** on all 4. Intro + product + studies line + `Visit us at palmbeach-vitality.store.` No compliance.
 
 Do **not** duplicate `_b/_c/_d` still/TTS/OmniHuman nodes. `(split_pep_beats)` + `(loop_pep_beats)` run the talking chain **one beat at a time** (fal max 3 concurrent).
 
@@ -117,14 +117,8 @@ JSON Body fx **ON**. Paste this whole block (starts with `={{`). Request preview
   if (!/palm beach pep/i.test(text)) {
     throw new Error('TTS text must start with Pep introducing himself.');
   }
-  const seen = new Set();
-  for (const w of text.split(/\s+/).filter(Boolean)) {
-    const k = w.replace(/[.,!?;:"'()[\]{}]/g, '').replace(/[—–]/g, '').toLowerCase();
-    if (!k) continue;
-    if (seen.has(k)) {
-      throw new Error(`Spoken VO repeats the word "${k}". Not one word may repeat. Re-import 150-pb-pep-scenes.`);
-    }
-    seen.add(k);
+  if (!/studies have shown/i.test(text) || !/beneficial to/i.test(text) || !/recent research studies/i.test(text)) {
+    throw new Error('TTS text must include: Studies have shown X has been beneficial to X in recent research studies. Re-import 150-pb-pep-scenes.');
   }
   const n = text.split(/\s+/).filter(Boolean).length;
   if (n < 142 || n > 150) {
@@ -138,7 +132,7 @@ JSON Body fx **ON**. Paste this whole block (starts with `={{`). Request preview
 })() }}
 ```
 
-Request preview: intro + product + `Visit us at palmbeach-vitality.store.` Same words on items 0–3. **Not one word repeats.** ~146 words.
+Request preview: intro + product + studies line + `Visit us at palmbeach-vitality.store.` Same words on items 0–3. ~146 words. Easy, upbeat, wellness.
 
 ---
 
@@ -279,4 +273,4 @@ If you concat later: **hard cut**. No extra VO track — audio is already in eac
 
 **NEVER PIN:** `grok_imagine_reel_still`, `tts_pep_voice_over`, `pep_lipsync_fal`
 
-One Test workflow = 4 stills + 4 TTS + 4 OmniHuman **720p**. Loop runs 5 times (A, B, C, D, then done). Budget a long wait (four × up to 1200s). Every clip must speak the same unique-word product pitch (~146 words, 55–60s). Not one word repeats.
+One Test workflow = 4 stills + 4 TTS + 4 OmniHuman **720p**. Loop runs 5 times (A, B, C, D, then done). Budget a long wait (four × up to 1200s). Every clip must speak the same easy wellness pitch (~146 words, 55–60s).

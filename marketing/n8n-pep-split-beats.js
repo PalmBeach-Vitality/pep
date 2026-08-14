@@ -32,14 +32,8 @@ return packs.map((pack, i) => {
   if (!tts_text.endsWith(CTA)) {
     throw new Error(`tts_text must end with: ${CTA}`);
   }
-  const seen = new Set();
-  for (const w of tts_text.split(/\s+/).filter(Boolean)) {
-    const k = w.replace(/[.,!?;:"'()[\]{}]/g, '').replace(/[—–]/g, '').toLowerCase();
-    if (!k) continue;
-    if (seen.has(k)) {
-      throw new Error(`tts_text repeats the word "${k}". Not one word may repeat.`);
-    }
-    seen.add(k);
+  if (!/studies have shown/i.test(tts_text) || !/beneficial to/i.test(tts_text) || !/recent research studies/i.test(tts_text)) {
+    throw new Error('tts_text must include the studies-have-shown wellness line.');
   }
   const wc = tts_text.split(/\s+/).filter(Boolean).length;
   if (wc < 142 || wc > 150) {
