@@ -530,16 +530,16 @@ Disconnect `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result
 
 Do **not** hardcode Audio Url. Do **not** send `video_url` (sync-3 / VEED / Kling lipsync / LatentSync).
 
-**Model Parameters** — click **Add Parameter** exactly **4** times. **Parameter Name or ID** is the dropdown (**fx OFF**). Pick **Image**, **Audio**, **Resolution**, **Prompt**. Do not add a fifth row.
+**Model Parameters** — click **Add Parameter** exactly **4** times. **Parameter Name or ID** is the dropdown (**fx OFF**). Pick **Image [string]**, **Audio [string]**, **Resolution**, **Prompt [string]**. Do not add a fifth row.
 
 | # | Parameter Name or ID dropdown (fx OFF) | Value fx | Value |
 |---|---|---|---|
-| 1 | **Image** (`image_url`) | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
-| 2 | **Audio** (`audio_url`) | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
+| 1 | **Image [string]** (`image_url`) | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
+| 2 | **Audio [string]** (`audio_url`) | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
 | 3 | **Resolution** (`resolution`) | OFF | `1080p` |
-| 4 | **Prompt** (`prompt`) | **OFF** | `Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot, talking with the audio. Mouth on the white 10ml label moves with speech. Walk toward camera, slight 3/4, screen-right. Both white gloves in a walk swing at hip height. No thumbs-up. No hat tip. No planted freeze.` |
+| 4 | **Prompt [string]** (`prompt`) | **ON** | `={{ "Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot, talking with the audio. Mouth on the white 10ml label moves with speech. Walk toward camera, slight 3/4, screen-right. Both white gloves in a walk swing at hip height. No thumbs-up. No hat tip. No planted freeze." }}` |
 
-Do **not** use `={{ $json.omnihuman_prompt }}`. That field is often undefined on `pep_lipsync_fal` and fal gets the string `undefined`.
+Prompt Value must be a **string**. Do **not** use `={{ $json.omnihuman_prompt }}` (that is `undefined`). The `={{ "..." }}` wrapper is a JS string.
 
 The dropdown may show `Image Url [string] *` / `Audio Url [string] *` / `Resolution [select]` / `Prompt [string]`. Those are the same four.
 

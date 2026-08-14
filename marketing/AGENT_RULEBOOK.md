@@ -43,7 +43,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - Pep fal + Kling setup: `marketing/n8n-pep-fal-kling-setup.md`
 - Pep lip-sync now: `marketing/n8n-pep-lipsync-setup.md`
 - **One workflow (talking path):** still → `prep_pep_lipsync` → `pep_lipsync_fal` (OmniHuman v1.5) → `save_lipsync_video_url` → sheets. Do **not** rename lipsync. Do **not** wire `kling_video_request`. Canvas has **no** `save_tts_audio_url`; audio is `fal_upload_tts_initiate.file_url`.
-- **Talking recipe (locked):** Talking clip = **`pep_lipsync_fal`** OmniHuman v1.5 (`fal-ai/bytedance/omnihuman/v1.5`): **Image** `={{ $('save_still_url').item.json.reel_still_url }}` + **Audio** `={{ $('fal_upload_tts_initiate').item.json.file_url }}` + **Resolution** `1080p` + **Prompt** as a **fixed** string (fx OFF). Do **not** use `$json.omnihuman_prompt` (it is undefined on that node). Not `video_url`. Max Wait **`1200`**. Do **not** hardcode Audio Url. Do **not** pin `grok_imagine_reel_still`, `tts_pep_voice_over`, or `pep_lipsync_fal` on a unique-scene run.
+- **Talking recipe (locked):** Talking clip = **`pep_lipsync_fal`** OmniHuman v1.5. Dropdown: **Image [string]**, **Audio [string]**, **Resolution**, **Prompt [string]**. Prompt Value fx ON is `={{ "..." }}` (a JS string). Do **not** use `$json.omnihuman_prompt` (undefined). Max Wait **`1200`**.
 
 ## Social / Imagine
 - Aspect ratio for Pep + landscape social workflows: always **9:16**
