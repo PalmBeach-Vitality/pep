@@ -28,7 +28,7 @@ Second Pep tab (blocking / pose pool, Sal-named):
 
 `https://github.com/PalmBeach-Vitality/pep/blob/cursor/palm-beach-pep-scenes-8510/marketing/sheets/pep-blocking-pool.csv`
 
-Spoken Pep lines come **only** from tab `150-pb-pep-scenes` column `voice_over`. Do **not** hardcode VO in n8n. **Never speak** compliance/disclaimer (FDA, not-for-human-use, laboratory-research-use-only, “research language only”). Those stay on captions (`caption_lock` / `grok_api`) only. Next talking run is **two scene cuts** (1080p, under 30s each), not four, not one blended 60s.
+Spoken Pep lines come **only** from tab `150-pb-pep-scenes` column `voice_over`, trimmed to **intro + product** only. **Every** talking clip in the 4-vid run speaks that **same** pitch. Never speak compliance/disclaimer, “Today’s unique set”, or sheet-list copy. Last sentence on every clip: **`Visit us at palmbeach-vitality.store.`** Captions (`caption_lock` / `grok_api`) still carry research-use framing.
 
 Scene rotation columns on that same tab: `times_used`, `last_used_at`. `sort_rotation` is `times_used` ASC then `last_used_at` ASC. `sheets_update_creation` writes both.
 
@@ -56,7 +56,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - Pep video stack: `marketing/n8n-pep-elevenlabs-video.md` (ElevenLabs cartoon intent → fal Kling I2V + ElevenLabs TTS; keep exact node names)
 - Pep fal + Kling setup: `marketing/n8n-pep-fal-kling-setup.md`
 - Pep lip-sync now: `marketing/n8n-pep-lipsync-setup.md`
-- **One workflow (talking path):** still → `prep_pep_lipsync` → `pep_lipsync_fal` (OmniHuman v1.5) → `save_lipsync_video_url` → `(gather_pep_clips)` → sheets. Next run = **two** 1080p scene cuts via `(split_pep_beats)` (unique pose each). Separate scenes, not one blended 60s. Do **not** rename lipsync. Do **not** wire `kling_video_request`. Canvas has **no** `save_tts_audio_url`; audio is `fal_upload_tts_initiate.file_url`. Canvas steps: `marketing/n8n-pep-60s-1080-execute.md`.
+- **One workflow (talking path):** still → `prep_pep_lipsync` → `pep_lipsync_fal` (OmniHuman v1.5) → `save_lipsync_video_url` → `(gather_pep_clips)` → sheets. **4 scene cuts**, unique pose each, **same product sales pitch** on all four. Do **not** rename lipsync. Do **not** wire `kling_video_request`. Canvas has **no** `save_tts_audio_url`; audio is `fal_upload_tts_initiate.file_url`. Canvas steps: `marketing/n8n-pep-60s-1080-execute.md`.
 - **Talking recipe (locked):** Talking clip = **`pep_lipsync_fal`** OmniHuman v1.5. Dropdown: **Image [string]**, **Audio [string]**, **Resolution**, **Prompt [string]**. Prompt Value fx ON is `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}` (a JS string). Do **not** use `$json.omnihuman_prompt` (undefined). Max Wait **`1200`**. Random Pep blocking comes from tab `pep-blocking-pool` via `(get_blocking_pool)` into `prep_pep_beats`.
 
 ## Social / Imagine

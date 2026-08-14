@@ -4,9 +4,9 @@
 // Uses: Prep_day_variant → Limit (EXACT names)
 // Mode: Run Once for Each Item
 // Do NOT return [{ json: ... }]
-// Picks TWO unique body+gesture combos (scene A + scene B).
-// 1080p OmniHuman max 30s audio, so two cuts — not four, not one 60s blend.
-// Spoken VO is product talk only. Compliance / disclaimer is caption-only.
+// Four unique poses. EVERY clip speaks the SAME product sales pitch.
+// Do not slice leftover sheet-list / set-note / FDA copy onto vids 2–4.
+// 1080p OmniHuman max 30s audio. Compliance / disclaimer is caption-only.
 // Thumbs-up is never allowed.
 
 const row = (() => {
@@ -59,10 +59,95 @@ function stripSpokenCompliance(text, disclaimerText) {
 
 const pepScript = String(row.pep_script || '').trim();
 const disclaimer = String(row.disclaimer_short || '').trim();
-const voiceOver = stripSpokenCompliance(voiceOverRaw, disclaimer);
-if (!voiceOver) {
-  throw new Error('Spoken voice_over was empty after stripping caption-only compliance lines.');
+const PITCH_CTA = 'Visit us at palmbeach-vitality.store.';
+
+function escapeRe(s) {
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+function isStopSentence(s) {
+  return /today['’]s unique set|everything stays in the research|no treatment claims|no human-use advice|palm beach vitality focuses on documentation|for laboratory research use only|not for human use|not a drug|not evaluated by the fda|research use only|research language only|peer-reviewed literature|catalog clear|purity verification|that's the rundown|thanks for hanging|keep it curious|simple facts|short story, clear rules/i.test(s);
+}
+
+function isIntroSentence(s) {
+  return /palm beach pep|\bpep here\b|today we're looking at|^hey\b|^quick one|^stay curious|^research desk|^what's |^what’s |i['’]m palm beach pep|pep with /i.test(s);
+}
+
+function productIdentitySentence(s, compoundName) {
+  const first = String(compoundName || '').split('/')[0].trim();
+  const names = [compoundName, first].filter(Boolean);
+  const ok = names.some((n) => new RegExp('^' + escapeRe(n) + '\\s+is\\s+(a|an|the)\\b', 'i').test(String(s || '').trim()));
+  if (!ok) return '';
+  let t = String(s || '').trim();
+  t = t.replace(/\s+(widely studied|examined in|appearing in laboratory|in experimental literature|in laboratory-focused literature|in experimental models|in controlled)\b.*/i, '.');
+  t = t.replace(/\s{2,}/g, ' ').trim();
+  if (t && !/[.!?]$/.test(t)) t += '.';
+  return t;
+}
+
+function extractProductPitch(raw, disclaimerText, compoundName) {
+  let t = String(raw || '').replace(/\s+/g, ' ').trim();
+  const cuts = [
+    /\s*Today['’]s unique set:.*/i,
+    /\s*Everything stays in the research and laboratory space.*/i,
+    /\s*Palm Beach Vitality focuses on documentation.*/i,
+  ];
+  for (const re of cuts) {
+    const idx = t.search(re);
+    if (idx > 20) t = t.slice(0, idx).trim();
+  }
+  t = stripSpokenCompliance(t, disclaimerText);
+  const sentences = t.split(/(?<=[.!?])\s+/).filter(Boolean);
+  const acc = [];
+  for (const s of sentences) {
+    const ident = productIdentitySentence(s, compoundName);
+    if (ident) {
+      acc.push(ident);
+      break;
+    }
+    if (isStopSentence(s)) continue;
+    if (isIntroSentence(s)) {
+      acc.push(s);
+      continue;
+    }
+  }
+  let pitch = acc.join(' ').trim();
+  pitch = pitch.replace(/\s*Visit us at palmbeach-vitality\.store\.?\s*$/i, '').trim();
+  if (pitch && !/[.!?]$/.test(pitch)) pitch += '.';
+  pitch = (pitch + ' ' + PITCH_CTA).replace(/\s+/g, ' ').trim();
+  const low = pitch.toLowerCase();
+  const banned = [
+    "today's unique set",
+    'for laboratory research use only',
+    'not evaluated by the fda',
+    'everything stays in the research',
+    'palm beach vitality focuses on documentation',
+    'not for human use or consumption',
+    'no treatment claims',
+    'research use only',
+  ];
+  for (const b of banned) {
+    if (low.includes(b)) {
+      throw new Error(`Product pitch still contains sheet-list/compliance: ${b}`);
+    }
+  }
+  if (!/today we're looking at/i.test(pitch)) {
+    throw new Error("Product sales pitch missing \"Today we're looking at {compound}\".");
+  }
+  if (!pitch.endsWith(PITCH_CTA)) {
+    throw new Error('Product sales pitch must end with: Visit us at palmbeach-vitality.store.');
+  }
+  const words = pitch.split(/\s+/).filter(Boolean);
+  if (words.length < 12) {
+    throw new Error('Product sales pitch is too short after stripping sheet-list copy.');
+  }
+  if (words.length > 75) {
+    throw new Error(`Product sales pitch is ${words.length} words; 1080p audio must stay under 75.`);
+  }
+  return pitch;
+}
+
+const voiceOver = extractProductPitch(voiceOverRaw, disclaimer, compound);
 
 const PEP_MASTER_DEFAULT = 'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-master.jpg';
 const pepRefUrl = String(row.pep_ref_url || PEP_MASTER_DEFAULT).trim();
@@ -225,13 +310,13 @@ const sheetGestures = rowsFromBlockingPool('gesture');
 const sheetAngles = rowsFromBlockingPool('angle');
 const blockingSource = (sheetBodies.length && sheetGestures.length) ? 'pep-blocking-pool' : 'builtin';
 
-const BEAT_IDS = ['a', 'b'];
-const bodies = pickUnique(sheetBodies.length ? sheetBodies : BODY_ACTIONS, 2);
-const gestures = pickUnique(sheetGestures.length ? sheetGestures : GESTURES, 2);
+const BEAT_IDS = ['a', 'b', 'c', 'd'];
+const bodies = pickUnique(sheetBodies.length ? sheetBodies : BODY_ACTIONS, 4);
+const gestures = pickUnique(sheetGestures.length ? sheetGestures : GESTURES, 4);
 const anglePool = sheetAngles.length
   ? sheetAngles
   : ANGLES.map((label) => ({ id: label, brief: label }));
-const angles = pickUnique(anglePool, 2);
+const angles = pickUnique(anglePool, 4);
 
 const pepLock = [
   'CHARACTER LOCK — use master Pep reference exactly (https://files.catbox.moe/2yfdbi.jpg).',
@@ -267,8 +352,10 @@ const poseStill = packs[0].poseStill;
 const poseMotion = packs[0].poseMotion;
 
 const beatMeta = {
-  a: { name: 'scene_a', window: '0–30s', extra: `${motion}; preserve Pep identity; no thumbs-up; no new text` },
-  b: { name: 'scene_b', window: '30–60s', extra: 'new blocking in the same set; preserve Pep identity; no thumbs-up; no new text' },
+  a: { name: 'scene_a', window: 'cut 1', extra: `${motion}; preserve Pep identity; no thumbs-up; no new text` },
+  b: { name: 'scene_b', window: 'cut 2', extra: 'new blocking in the same set; preserve Pep identity; no thumbs-up; no new text' },
+  c: { name: 'scene_c', window: 'cut 3', extra: 'new blocking in the same set; preserve Pep identity; no thumbs-up; no new text' },
+  d: { name: 'scene_d', window: 'cut 4', extra: 'new blocking in the same set; preserve Pep identity; no thumbs-up; no new text' },
 };
 
 const beats = {};
@@ -284,37 +371,13 @@ for (let i = 0; i < BEAT_IDS.length; i++) {
   };
 }
 
-function splitVoice(text) {
-  const sentences = String(text || '').split(/(?<=[.!?])\s+/).filter(Boolean);
-  if (sentences.length >= 2) {
-    const n = Math.ceil(sentences.length / 2);
-    return {
-      a: sentences.slice(0, n).join(' ').trim(),
-      b: sentences.slice(n).join(' ').trim(),
-    };
-  }
-  const words = String(text || '').split(/\s+/).filter(Boolean);
-  const n = Math.max(1, Math.ceil(words.length / 2));
-  return {
-    a: words.slice(0, n).join(' ').trim(),
-    b: words.slice(n).join(' ').trim(),
-  };
-}
-
-const vo = splitVoice(voiceOver);
-for (const id of BEAT_IDS) {
-  if (!String(vo[id] || '').trim()) {
-    throw new Error(`Empty vo_beat_${id}. Sheet voice_over is too short to split into two 1080p clips.`);
-  }
-}
-
 const omnihuman_prompt = packs[0].omnihuman_prompt;
 
 const beat_items = BEAT_IDS.map((id, i) => {
   const p = packs[i];
   return {
     beat: id,
-    tts_text: vo[id],
+    tts_text: voiceOver,
     pep_body_action: p.body.id,
     pep_hand_gesture: p.gesture.id,
     pep_angle: p.angle,
@@ -338,30 +401,44 @@ return {
   compound_name: compound,
   pep_ref_url: pepRefUrl,
   target_duration_seconds: 60,
-  beat_count: 2,
+  beat_count: 4,
   pep_body_action: body.id,
   pep_hand_gesture: gesture.id,
   pep_angle: angle,
   pep_body_action_a: packs[0].body.id,
   pep_body_action_b: packs[1].body.id,
+  pep_body_action_c: packs[2].body.id,
+  pep_body_action_d: packs[3].body.id,
   pep_hand_gesture_a: packs[0].gesture.id,
   pep_hand_gesture_b: packs[1].gesture.id,
+  pep_hand_gesture_c: packs[2].gesture.id,
+  pep_hand_gesture_d: packs[3].gesture.id,
   blocking_source: blockingSource,
   pose_still: poseStill,
   pose_still_a: packs[0].poseStill,
   pose_still_b: packs[1].poseStill,
+  pose_still_c: packs[2].poseStill,
+  pose_still_d: packs[3].poseStill,
   pose_motion: poseMotion,
   omnihuman_prompt: omnihuman_prompt,
   omnihuman_prompt_a: packs[0].omnihuman_prompt,
   omnihuman_prompt_b: packs[1].omnihuman_prompt,
+  omnihuman_prompt_c: packs[2].omnihuman_prompt,
+  omnihuman_prompt_d: packs[3].omnihuman_prompt,
   beat_items: beat_items,
   beat_a_brief: beats.a.brief,
   beat_b_brief: beats.b.brief,
+  beat_c_brief: beats.c.brief,
+  beat_d_brief: beats.d.brief,
   beat_a_motion: beats.a.motion,
   beat_b_motion: beats.b.motion,
-  vo_beat_a: vo.a,
-  vo_beat_b: vo.b,
-  tts_text: vo.a,
+  beat_c_motion: beats.c.motion,
+  beat_d_motion: beats.d.motion,
+  vo_beat_a: voiceOver,
+  vo_beat_b: voiceOver,
+  vo_beat_c: voiceOver,
+  vo_beat_d: voiceOver,
+  tts_text: voiceOver,
   vo_source: 'sheet',
   voice_over: voiceOver,
   pep_script: pepScript,

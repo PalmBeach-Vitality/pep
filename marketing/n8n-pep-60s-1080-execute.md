@@ -1,6 +1,6 @@
 # 60s 1080p stitch — nodes Sal must add or change
 
-1080p audio cap is **under 30s**. Next run is **2 scene cuts** (~30s each), new pose each cut. Not four clips. Not one blended 60s. Spoken VO is product talk only — no compliance/disclaimer.
+1080p audio cap is **under 30s**. **4 scene cuts**, unique pose each. **Same product sales pitch on all 4.** Intro + product only. No compliance. Last sentence always: `Visit us at palmbeach-vitality.store.`
 
 Do **not** duplicate `_b/_c/_d` still/TTS/OmniHuman nodes. `(split_pep_beats)` + `(loop_pep_beats)` run the talking chain **one beat at a time** (fal max 3 concurrent).
 
@@ -37,7 +37,7 @@ if_complaince (true)
 
 Mode: **Run Once for Each Item**. Replace the JS with `marketing/n8n-pep-prep-beats.js`.
 
-OUTPUT must show `beat_items` (length **2**) and different `pep_body_action_a` / `pep_body_action_b`. Spoken `vo_beat_*` must have **no** FDA / not-for-human-use / laboratory-research lines.
+OUTPUT must show `beat_items` (length **4**), four different `pep_body_action_a`…`_d`, and the **same** `tts_text` on every beat. Last sentence: `Visit us at palmbeach-vitality.store.` No FDA / unique-set / laboratory-research-use-only.
 
 ---
 
@@ -54,7 +54,7 @@ OUTPUT must show `beat_items` (length **2**) and different `pep_body_action_a` /
 
 Paste `marketing/n8n-pep-split-beats.js`.
 
-OUTPUT = **2 items**. Each item has `beat` (`a`/`b`), `tts_text`, `pose_still`, `omnihuman_prompt`.
+OUTPUT = **4 items**. Each item has `beat` (`a`/`b`/`c`/`d`), the **same** `tts_text` (product pitch + store CTA), unique `pose_still`, unique `omnihuman_prompt`.
 
 ---
 
@@ -86,7 +86,7 @@ Do **not** Test until this loop is in. Parallel OmniHuman/fal jobs will 429.
 
 ## 3. CHANGE `tts_pep_voice_over` JSON Body only
 
-JSON Body fx **ON**. Paste this whole block (starts with `={{`). Do **not** keep `$('prep_pep_beats').item.json.tts_text` — that is Beat A twice.
+JSON Body fx **ON**. Paste this whole block (starts with `={{`). Request preview on **every** item must be the same product pitch, ending with `Visit us at palmbeach-vitality.store.`
 
 ```
 ={{ (() => {
@@ -101,6 +101,19 @@ JSON Body fx **ON**. Paste this whole block (starts with `={{`). Do **not** keep
   if (text.includes("$('") || text.includes('={{')) {
     throw new Error('TTS text is an n8n expression, not the sheet VO. JSON Body fx must be ON, paste starting with ={{');
   }
+  const low = text.toLowerCase();
+  if (
+    low.includes("today's unique set") ||
+    low.includes('for laboratory research use only') ||
+    low.includes('not evaluated by the fda') ||
+    low.includes('everything stays in the research') ||
+    low.includes('not for human use')
+  ) {
+    throw new Error('TTS text is sheet-list/compliance, not the product sales pitch. Re-paste prep_pep_beats.');
+  }
+  if (!text.endsWith('Visit us at palmbeach-vitality.store.')) {
+    throw new Error('TTS text must end with: Visit us at palmbeach-vitality.store.');
+  }
   return JSON.stringify({
     text: text,
     model_id: 'eleven_multilingual_v2',
@@ -109,7 +122,7 @@ JSON Body fx **ON**. Paste this whole block (starts with `={{`). Do **not** keep
 })() }}
 ```
 
-Request preview (item 0) should be Beat A product words. Item 1 is Beat B. No disclaimer speech.
+Request preview: intro + product + `Visit us at palmbeach-vitality.store.` Same words on items 0–3.
 
 ---
 
@@ -181,7 +194,7 @@ Paste `marketing/n8n-pep-gather-clips.js`.
 
 Reads every loop run via `$('save_lipsync_video_url').all(0, runIndex)`. A plain `.all()` is only the last scene.
 
-OUTPUT (one item): `lipsync_video_url_a` / `_b` plus `stitch_clip_urls`. Two separate scenes. Sheet still has one `video_url` column (scene A).
+OUTPUT (one item): `lipsync_video_url_a`…`_d` plus `stitch_clip_urls`. Four separate scenes, same pitch. Sheet still has one `video_url` column (scene A).
 
 ---
 
@@ -217,9 +230,9 @@ Do **not** add sheet columns. Copy scene B from `gather_pep_clips` OUTPUT if you
 
 ## After the two URLs exist
 
-These are **two different scene cuts**, not one smooth 60s clip. Do **not** CapCut-morph / dissolve them into one film.
+These are **four different scene cuts**, not one smooth 60s clip. Same pitch on all four. Do **not** CapCut-morph them into one film.
 
-If you concat later: **hard cut** A then B. No extra VO track — audio is already in each mp4.
+If you concat later: **hard cut**. No extra VO track — audio is already in each mp4.
 
 ---
 
@@ -229,4 +242,4 @@ If you concat later: **hard cut** A then B. No extra VO track — audio is alrea
 
 **NEVER PIN:** `grok_imagine_reel_still`, `tts_pep_voice_over`, `pep_lipsync_fal`
 
-One Test workflow = 2 stills + 2 TTS + 2 OmniHuman 1080p. Loop runs 3 times (A, B, then done). Budget a long wait (two × up to 1200s).
+One Test workflow = 4 stills + 4 TTS + 4 OmniHuman 1080p. Loop runs 5 times (A, B, C, D, then done). Budget a long wait (four × up to 1200s). Every clip must speak the same product pitch.

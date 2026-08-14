@@ -5,7 +5,7 @@ For each scene cut: **ElevenLabs VO → OmniHuman talking clip → final MP4**.
 
 One workflow: `(split_pep_beats)` runs the talking chain **twice** (two scene cuts, unique pose each) → `gather_pep_clips`.
 These are **separate scenes**, not one smooth 60s blend. Hard cut if you concat.
-Spoken VO is product talk only — no compliance/disclaimer (that stays on captions).
+Spoken VO is **intro + product only** on **every** clip. Last sentence always: `Visit us at palmbeach-vitality.store.` No compliance/disclaimer.
 
 ## Order (locked)
 1. `tts_pep_voice_over` (ElevenLabs) → fal CDN `file_url` on `fal_upload_tts_initiate`
@@ -13,7 +13,7 @@ Spoken VO is product talk only — no compliance/disclaimer (that stays on capti
 3. fal OmniHuman v1.5 (`pep_lipsync_fal`) → `lipsync_video_url`
 
 ## Node: `tts_pep_voice_over` (ElevenLabs — preferred)
-**Per-scene text (1080p, under 30s):** `{{ $json.tts_text }}` from `(split_pep_beats)` (**two** items).
+**Per-scene text:** the **same** product sales pitch on all four `(split_pep_beats)` items. Last sentence: `Visit us at palmbeach-vitality.store.`
 Do **not** send the full sheet `voice_over` into one 1080p OmniHuman job.
 Do **not** speak FDA / not-for-human-use / laboratory-research-use-only / `disclaimer_short`.
 

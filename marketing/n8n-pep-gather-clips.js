@@ -36,14 +36,14 @@ function stillUrl(j) {
   return String(j.reel_still_url || j.data?.[0]?.url || '').trim();
 }
 
-const ORDER = ['a', 'b'];
+const ORDER = ['a', 'b', 'c', 'd'];
 const incoming = $input.all().map(jsonOf);
 let clips = allRuns('save_lipsync_video_url').filter((j) => clipUrl(j));
-if (clips.length < 2) {
+if (clips.length < 4) {
   const fal = allRuns('pep_lipsync_fal').filter((j) => clipUrl(j));
   if (fal.length > clips.length) clips = fal;
 }
-if (clips.length < 2) {
+if (clips.length < 4) {
   const fromIn = incoming.filter((j) => clipUrl(j));
   if (fromIn.length > clips.length) clips = fromIn;
 }
@@ -51,9 +51,9 @@ if (clips.length < 2) {
 const stills = allRuns('save_still_url');
 const splits = allRuns('split_pep_beats');
 
-if (clips.length < 2) {
+if (clips.length < 4) {
   throw new Error(
-    `Expected 2 OmniHuman clips, got ${clips.length}. Loop ran, but gather only saw the last scene — re-paste gather_pep_clips from marketing/n8n-pep-gather-clips.js.`
+    `Expected 4 OmniHuman clips, got ${clips.length}. Loop ran, but gather only saw the last scene — re-paste gather_pep_clips from marketing/n8n-pep-gather-clips.js.`
   );
 }
 
@@ -90,19 +90,23 @@ return [
   {
     json: {
       creation_id: first.creation_id || clips[0].creation_id || '',
-      beat_count: 2,
+      beat_count: 4,
       resolution: '1080p',
       model_video: 'fal-omnihuman-v1.5',
       reel_still_url: stillUrls[0] || '',
       reel_still_url_a: stillUrls[0] || '',
       reel_still_url_b: stillUrls[1] || '',
+      reel_still_url_c: stillUrls[2] || '',
+      reel_still_url_d: stillUrls[3] || '',
       video_url: urls[0],
       lipsync_video_url: urls[0],
       lipsync_video_url_a: urls[0],
       lipsync_video_url_b: urls[1],
+      lipsync_video_url_c: urls[2],
+      lipsync_video_url_d: urls[3],
       stitch_clip_urls: urls,
       stitch_note:
-        'Two separate scene cuts, not one 60s blend. Hard cut if you concat. No extra VO track — audio is already in each mp4.',
+        'Four separate scene cuts. Same product sales pitch on every clip. Hard cut if you concat. No extra VO track — audio is already in each mp4.',
     },
   },
 ];

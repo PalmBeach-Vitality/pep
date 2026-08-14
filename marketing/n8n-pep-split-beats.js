@@ -1,27 +1,46 @@
 // Node: split_pep_beats (Code)
-// Wire: prep_pep_beats → split_pep_beats → tts_pep_voice_over
+// Wire: prep_pep_beats → split_pep_beats → loop_pep_beats
 // Mode: Run Once for All Items
-// DO return [{ json: ... }, ...] — two items, scenes a/b
-// Each item carries its own tts_text + pose_still + omnihuman_prompt.
-// Downstream TTS / still / OmniHuman run twice on the same talking path.
+// DO return [{ json: ... }, ...] — four items, scenes a/b/c/d
+// Unique pose per item. SAME product sales pitch on every item.
+// Downstream TTS / still / OmniHuman run four times on the same talking path.
 
 const src = $input.first().json || {};
 const packs = Array.isArray(src.beat_items) ? src.beat_items : [];
-if (packs.length !== 2) {
+if (packs.length !== 4) {
   throw new Error(
-    `split_pep_beats expected 2 beat_items from prep_pep_beats, got ${packs.length}. Re-paste marketing/n8n-pep-prep-beats.js.`
+    `split_pep_beats expected 4 beat_items from prep_pep_beats, got ${packs.length}. Re-paste marketing/n8n-pep-prep-beats.js.`
   );
 }
 
-const BEATS = ['a', 'b'];
+const CTA = 'Visit us at palmbeach-vitality.store.';
+const BEATS = ['a', 'b', 'c', 'd'];
+const pitch0 = String(packs[0].tts_text || src.tts_text || '').trim();
+
 return packs.map((pack, i) => {
   const beat = String(pack.beat || BEATS[i] || '').toLowerCase();
-  const tts_text = String(pack.tts_text || src[`vo_beat_${beat}`] || '').trim();
+  const tts_text = String(pack.tts_text || src.tts_text || pitch0 || '').trim();
   if (!tts_text) {
     throw new Error(`Missing tts_text for beat ${beat}.`);
   }
   if (tts_text.includes("$('") || tts_text.includes('={{')) {
     throw new Error(`tts_text for beat ${beat} looks like an n8n expression, not sheet VO.`);
+  }
+  if (tts_text !== pitch0) {
+    throw new Error(`Beat ${beat} tts_text must be the same product pitch as beat a. Do not slice sheet-list copy.`);
+  }
+  if (!tts_text.endsWith(CTA)) {
+    throw new Error(`tts_text must end with: ${CTA}`);
+  }
+  const low = tts_text.toLowerCase();
+  if (
+    low.includes("today's unique set") ||
+    low.includes('for laboratory research use only') ||
+    low.includes('not evaluated by the fda') ||
+    low.includes('everything stays in the research') ||
+    low.includes('not for human use')
+  ) {
+    throw new Error(`Beat ${beat} tts_text still has sheet-list/compliance. Re-paste prep_pep_beats.`);
   }
   const pose_still = String(pack.pose_still || src[`pose_still_${beat}`] || src.pose_still || '').trim();
   const omnihuman_prompt = String(
