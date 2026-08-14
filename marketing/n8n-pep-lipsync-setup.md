@@ -56,27 +56,34 @@ Execute with **Test workflow** (not Execute node) so `$('other_node')` has a pat
 
 ## Node: `tts_pep_voice_over`
 
-| Parameter | Value |
-|---|---|
-| Node type | HTTP Request |
-| Exact name | `tts_pep_voice_over` |
-| Method | `POST` |
-| URL | `https://api.elevenlabs.io/v1/text-to-speech/yl2ZDV1MzN4HbQJbMihG?output_format=mp3_44100_128` |
-| Authentication | None (use header key) |
-| Send Headers | ON |
-| Header 1 Name | `xi-api-key` |
-| Header 1 Value | *(your ElevenLabs API key)* |
-| Header 2 Name | `Accept` |
-| Header 2 Value | `audio/mpeg` |
-| Header 3 Name | `Content-Type` |
-| Header 3 Value | `application/json` |
-| Send Body | ON |
-| Body Content Type | JSON |
-| Specify Body | Using JSON |
-| JSON Body | see block below |
-| Options → Response → Response Format | **File** |
-| Options → Response → Put Output in Field | `data` |
-| Options → Timeout | `120000` |
+Use a **predefined credential**. Do not paste the ElevenLabs key into a header on the node.
+
+| Parameter | fx | Value |
+|---|---|---|
+| Node type | — | HTTP Request |
+| Exact name | — | `tts_pep_voice_over` |
+| Method | OFF | `POST` |
+| URL | OFF | `https://api.elevenlabs.io/v1/text-to-speech/yl2ZDV1MzN4HbQJbMihG?output_format=mp3_44100_128` |
+| Authentication | — | **Predefined Credential Type** |
+| Credential Type | — | **ElevenLabs API** (if that type is installed) **or** Generic Credential Type → **Header Auth** |
+| Credential | — | your ElevenLabs account |
+| Header Auth Name *(only if Header Auth)* | OFF | `xi-api-key` |
+| Header Auth Value *(only if Header Auth)* | OFF | *(stored in the credential, not on the node)* |
+| Send Query Parameters | — | OFF |
+| Send Headers | — | **ON** |
+| Header 1 Name | OFF | `Accept` |
+| Header 1 Value | OFF | `audio/mpeg` |
+| Header 2 Name | OFF | `Content-Type` |
+| Header 2 Value | OFF | `application/json` |
+| Send Body | — | **ON** |
+| Body Content Type | — | JSON |
+| Specify Body | — | Using JSON |
+| JSON Body | ON | see block below |
+| Options → Response → Response Format | — | **File** |
+| Options → Response → Put Output in Field | OFF | `data` |
+| Options → Timeout | OFF | `120000` |
+
+Do **not** also add a `xi-api-key` header on the node. The credential already sends it.
 
 **JSON Body:**
 ```json
