@@ -30,18 +30,14 @@
   },
   prompt: [
     'EDIT THIS IMAGE ONLY.',
-    'CRITICAL #1 PRIORITY: The character in the output MUST be the EXACT SAME character as the input image with ZERO redesign.',
-    'PIXEL-IDENTITY LOCK on Palm Beach Pep from the input: identical face (eyes, eyebrows, rosy cheeks, pink tongue), identical white 10ml label art and 10ml typography, identical white baseball cap with Palm Beach Vitality sunset-and-palm-tree logo (same art, same PALM BEACH VITALITY wordmark), identical silver aluminum crimp seal, identical clear glass vial body and liquid line, identical gray tube limbs, identical white cartoon gloves, identical white sneakers, identical outline weight, identical 3D sticker cartoon style, identical proportions.',
-    'DO NOT: redraw Pep, stylize Pep, cute-ify Pep, change the face, change the hat logo, change the vial shape, add a screw cap, add a black twist cap, add a dropper, add humans, add extra mascots, or invent a new bottle character.',
-    'ALLOWED CHANGES: (1) replace the solid gray background with a new full-environment 9:16 scene, (2) POSE MUST CHANGE from the master planted thumbs-up. Use THIS RUN\'s blocking exactly: ' + String($('prep_pep_beats').item.json.pose_still || '') + ' (3) MOUTH OPEN mid-word — OmniHuman start frame. Visible talking oval / AH-OH on the white 10ml label. Not a closed grin. Not a wide held smile.',
-    'HARD FAIL: thumbs-up. Never copy the master planted thumbs-up. Sitting, standing, walking, stopping, and turning are allowed when pose_still asks for them.',
-    'Background / beat A only: ' + String($('prep_pep_beats').item.json.beat_a_brief || '') + '.',
-    'Surface: ' + String($('prep_pep_beats').item.json.surface || '') + '.',
-    'Lighting on the ENVIRONMENT only: ' + String($('prep_pep_beats').item.json.lighting || '') + '.',
-    'Color grade on ENVIRONMENT only: ' + String($('prep_pep_beats').item.json.color_grade || '') + '.',
-    'Compose Pep mid-ground, full body visible. Not extreme macro. Not void packshot.',
-    'No hospitals, no doctor offices, no clinical rooms, no safety placards, no new on-image text.',
-    'If any conflict: keep Pep identical (face, hat logo, vial, gloves, sneakers) and follow pose_still. Never a thumbs-up.'
+    'CRITICAL #1 — CHARACTER: The mascot must stay the EXACT same Pep as the input. Identical face, 10ml label, PALM BEACH VITALITY hat logo, silver crimp, glass vial, gray limbs, white gloves, white sneakers, 3D sticker style. Do not redraw Pep. No screw cap, no extra mascots, no humans.',
+    'The words Palm Beach on the hat are BRANDING ONLY. They are not the location. Do not default to sand, turquoise surf, or a generic shoreline.',
+    'CRITICAL #2 — SET: Replace the gray background with this exact 9:16 environment and no other: ' + String($('prep_pep_beats').item.json.surface || $('Prep_day_variant').item.json.surface || '') + '. HARD FAIL if the background is a different place. HARD FAIL if you draw a beach unless that surface text is a beach, sand, shore, or ocean. If the surface is a boardwalk, gym, lab, street, park, pool, landmark, or studio, that is what must fill the frame.',
+    'CRITICAL #3 — POSE: Change from the master planted thumbs-up. Use: ' + String($('prep_pep_beats').item.json.pose_still || '') + ' MOUTH OPEN mid-word on the 10ml label (OmniHuman start). HARD FAIL thumbs-up.',
+    'Lighting on the environment only: ' + String($('prep_pep_beats').item.json.lighting || '') + '.',
+    'Color grade on the environment only: ' + String($('prep_pep_beats').item.json.color_grade || '') + '.',
+    'Pep mid-ground, full body visible. No hospitals, no doctor offices, no clinical rooms, no safety placards, no new on-image text.',
+    'If any conflict: keep Pep identical AND keep the set identical to the surface text.'
   ].join(' ')
 }) }}
 
