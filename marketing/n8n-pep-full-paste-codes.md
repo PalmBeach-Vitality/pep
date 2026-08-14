@@ -518,6 +518,15 @@ Disconnect `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result
 
 Do **not** hardcode Audio Url. Do **not** send `video_url` (sync-3 / VEED / Kling lipsync / LatentSync).
 
+**Model Parameters** — click **Add Parameter** exactly **4** times. Parameter Name or ID is the dropdown (**fx OFF**). Do not add `video_url` or `sync_mode`.
+
+| # | Parameter Name or ID (fx OFF) | Value fx | Value |
+|---|---|---|---|
+| 1 | `image_url` | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
+| 2 | `audio_url` | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
+| 3 | `resolution` | OFF | `1080p` |
+| 4 | `prompt` | ON | `={{ $json.omnihuman_prompt }}` |
+
 | Parameter | fx | Value |
 |---|---|---|
 | Node type | — | fal.ai |
@@ -526,14 +535,6 @@ Do **not** hardcode Audio Url. Do **not** send `video_url` (sync-3 / VEED / Klin
 | Resource | — | Model |
 | Operation | — | Generate Media |
 | Model | — | From list · **OmniHuman** / **Omnihuman v1.5** (`fal-ai/bytedance/omnihuman/v1.5`) |
-| Parameter 1 Name | OFF | `image_url` |
-| Parameter 1 Value | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
-| Parameter 2 Name | OFF | `audio_url` |
-| Parameter 2 Value | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
-| Parameter 3 Name | OFF | `resolution` |
-| Parameter 3 Value | OFF | `1080p` |
-| Parameter 4 Name | OFF | `prompt` |
-| Parameter 4 Value | ON | `={{ $json.omnihuman_prompt }}` |
 | Wait for Completion | — | **ON** |
 | Poll Interval (Seconds) | — | `5` |
 | Max Wait Time (Seconds) | — | `900` |
