@@ -4,10 +4,9 @@
 // Uses: Prep_day_variant → Limit (EXACT names)
 // Mode: Run Once for Each Item
 // Do NOT return [{ json: ... }]
-// Four unique poses. EVERY clip speaks the SAME product sales pitch.
-// Do not slice leftover sheet-list / set-note / FDA copy onto vids 2–4.
-// 1080p OmniHuman max 30s audio. Compliance / disclaimer is caption-only.
-// Thumbs-up is never allowed.
+// Four unique poses. EVERY clip speaks the SAME ~55–60s product pitch.
+// Zero repeated words. Intro + product + Visit us at palmbeach-vitality.store.
+// 720p OmniHuman (60s audio). 1080p cannot hold 55–60s.
 
 const row = (() => {
   try { return $('Prep_day_variant').item.json; } catch (e) {}
@@ -61,31 +60,26 @@ const pepScript = String(row.pep_script || '').trim();
 const disclaimer = String(row.disclaimer_short || '').trim();
 const PITCH_CTA = 'Visit us at palmbeach-vitality.store.';
 
-function escapeRe(s) {
-  return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function wordsOf(text) {
+  return String(text || '').split(/\s+/).filter(Boolean);
 }
 
-function isStopSentence(s) {
-  return /today['’]s unique set|everything stays in the research|no treatment claims|no human-use advice|palm beach vitality focuses on documentation|for laboratory research use only|not for human use|not a drug|not evaluated by the fda|research use only|research language only|peer-reviewed literature|catalog clear|purity verification|that's the rundown|thanks for hanging|keep it curious|simple facts|short story, clear rules/i.test(s);
+function normWord(w) {
+  return String(w || '').replace(/[.,!?;:"'()[\]{}]/g, '').replace(/[—–]/g, '').toLowerCase();
 }
 
-function isIntroSentence(s) {
-  return /palm beach pep|\bpep here\b|today we're looking at|^hey\b|^quick one|^stay curious|^research desk|^what's |^what’s |i['’]m palm beach pep|pep with /i.test(s);
+function firstRepeatedWord(text) {
+  const seen = new Set();
+  for (const w of wordsOf(text)) {
+    const k = normWord(w);
+    if (!k) continue;
+    if (seen.has(k)) return k;
+    seen.add(k);
+  }
+  return '';
 }
 
-function productIdentitySentence(s, compoundName) {
-  const first = String(compoundName || '').split('/')[0].trim();
-  const names = [compoundName, first].filter(Boolean);
-  const ok = names.some((n) => new RegExp('^' + escapeRe(n) + '\\s+is\\s+(a|an|the)\\b', 'i').test(String(s || '').trim()));
-  if (!ok) return '';
-  let t = String(s || '').trim();
-  t = t.replace(/\s+(widely studied|examined in|appearing in laboratory|in experimental literature|in laboratory-focused literature|in experimental models|in controlled)\b.*/i, '.');
-  t = t.replace(/\s{2,}/g, ' ').trim();
-  if (t && !/[.!?]$/.test(t)) t += '.';
-  return t;
-}
-
-function extractProductPitch(raw, disclaimerText, compoundName) {
+function extractProductPitch(raw, disclaimerText) {
   let t = String(raw || '').replace(/\s+/g, ' ').trim();
   const cuts = [
     /\s*Today['’]s unique set:.*/i,
@@ -97,25 +91,10 @@ function extractProductPitch(raw, disclaimerText, compoundName) {
     if (idx > 20) t = t.slice(0, idx).trim();
   }
   t = stripSpokenCompliance(t, disclaimerText);
-  const sentences = t.split(/(?<=[.!?])\s+/).filter(Boolean);
-  const acc = [];
-  for (const s of sentences) {
-    const ident = productIdentitySentence(s, compoundName);
-    if (ident) {
-      acc.push(ident);
-      break;
-    }
-    if (isStopSentence(s)) continue;
-    if (isIntroSentence(s)) {
-      acc.push(s);
-      continue;
-    }
-  }
-  let pitch = acc.join(' ').trim();
-  pitch = pitch.replace(/\s*Visit us at palmbeach-vitality\.store\.?\s*$/i, '').trim();
-  if (pitch && !/[.!?]$/.test(pitch)) pitch += '.';
-  pitch = (pitch + ' ' + PITCH_CTA).replace(/\s+/g, ' ').trim();
-  const low = pitch.toLowerCase();
+  t = t.replace(/\s*Visit us at palmbeach-vitality\.store\.?\s*$/i, '').trim();
+  if (t && !/[.!?]$/.test(t)) t += '.';
+  t = (t + ' ' + PITCH_CTA).replace(/\s+/g, ' ').trim();
+  const low = t.toLowerCase();
   const banned = [
     "today's unique set",
     'for laboratory research use only',
@@ -131,23 +110,24 @@ function extractProductPitch(raw, disclaimerText, compoundName) {
       throw new Error(`Product pitch still contains sheet-list/compliance: ${b}`);
     }
   }
-  if (!/today we're looking at/i.test(pitch)) {
-    throw new Error("Product sales pitch missing \"Today we're looking at {compound}\".");
+  if (!/palm beach pep/i.test(t)) {
+    throw new Error('Product sales pitch must start with Pep introducing himself.');
   }
-  if (!pitch.endsWith(PITCH_CTA)) {
+  if (!t.endsWith(PITCH_CTA)) {
     throw new Error('Product sales pitch must end with: Visit us at palmbeach-vitality.store.');
   }
-  const words = pitch.split(/\s+/).filter(Boolean);
-  if (words.length < 12) {
-    throw new Error('Product sales pitch is too short after stripping sheet-list copy.');
+  const dup = firstRepeatedWord(t);
+  if (dup) {
+    throw new Error(`Spoken VO repeats the word "${dup}". Not one word may repeat.`);
   }
-  if (words.length > 75) {
-    throw new Error(`Product sales pitch is ${words.length} words; 1080p audio must stay under 75.`);
+  const n = wordsOf(t).length;
+  if (n < 142 || n > 150) {
+    throw new Error(`Spoken VO is ${n} words (~${(n / 2.51).toFixed(1)}s). Need 142–150 words (55–60s at Pep TTS rate). Re-import 150-pb-pep-scenes.`);
   }
-  return pitch;
+  return t;
 }
 
-const voiceOver = extractProductPitch(voiceOverRaw, disclaimer, compound);
+const voiceOver = extractProductPitch(voiceOverRaw, disclaimer);
 
 const PEP_MASTER_DEFAULT = 'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-master.jpg';
 const pepRefUrl = String(row.pep_ref_url || PEP_MASTER_DEFAULT).trim();
@@ -444,7 +424,7 @@ return {
   pep_script: pepScript,
   disclaimer_short: disclaimer,
   aspect_ratio: '9:16',
-  resolution: '1080p',
+  resolution: '720p',
   model_still: 'grok-imagine-image',
   model_video: 'fal-omnihuman-v1.5',
 };

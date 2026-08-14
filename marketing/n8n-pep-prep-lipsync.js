@@ -68,6 +68,6 @@ return {
   reel_still_url: imageUrl,
   tts_audio_url: audioUrl,
   omnihuman_prompt: omniPrompt,
-  omnihuman_resolution: '1080p',
+  omnihuman_resolution: '720p',
   fal_lipsync_endpoint: 'fal-ai/bytedance/omnihuman/v1.5',
 };

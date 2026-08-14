@@ -40,14 +40,15 @@ mustInclude('n8n-pep-prep-beats.js', [
   'beat_items',
   'pickUnique',
   'extractProductPitch',
+  'firstRepeatedWord',
   'Visit us at palmbeach-vitality.store.',
   "beat_count: 4",
   "const BEAT_IDS = ['a', 'b', 'c', 'd']",
-  'vo_beat_d',
+  "resolution: '720p'",
 ]);
 mustNotInclude('n8n-pep-prep-beats.js', [
   'function splitVoice',
-  'vo[id] = `${vo[id]} ${disclaimer}',
+  '1080p audio must stay under 75',
 ]);
 mustInclude('n8n-pep-split-beats.js', [
   'Run Once for All Items',
@@ -56,12 +57,15 @@ mustInclude('n8n-pep-split-beats.js', [
   'omnihuman_prompt',
   'Visit us at palmbeach-vitality.store.',
   "packs.length !== 4",
+  'Not one word may repeat',
+  "resolution: '720p'",
 ]);
 mustInclude('n8n-pep-gather-clips.js', [
   'Expected 4 OmniHuman clips',
   'lipsync_video_url_d',
   'stitch_clip_urls',
   '.all(0, run)',
+  "resolution: '720p'",
 ]);
 mustInclude('n8n-pep-merge-tts-binary.js', [
   "Run Once for Each Item",
@@ -71,6 +75,7 @@ mustInclude('n8n-pep-merge-tts-binary.js', [
 mustInclude('n8n-pep-prep-lipsync.js', [
   "fromNode('split_pep_beats', ['beat'])",
   "fromNode('split_pep_beats', ['omnihuman_prompt'])",
+  "omnihuman_resolution: '720p'",
 ]);
 
 const merge = fs.readFileSync(path.join(root, 'n8n-pep-merge-tts-binary.js'), 'utf8');
@@ -99,5 +104,14 @@ if (![...texts][0].endsWith('Visit us at palmbeach-vitality.store.')) {
 }
 const poses = new Set(beat_items.map((b) => b.pose_still));
 if (poses.size !== 4) throw new Error('poses not unique per scene');
+
+mustInclude('n8n-pep-60s-1080-execute.md', [
+  'Not one word repeats',
+  'Need 142–150 words',
+  '| 3 | **Resolution** (`resolution`) | OFF | `720p` |',
+]);
+mustNotInclude('n8n-pep-60s-1080-execute.md', [
+  'still 1080p',
+]);
 
 console.log('ok 4-scene same-pitch node contracts');

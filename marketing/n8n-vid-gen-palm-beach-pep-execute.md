@@ -78,7 +78,7 @@ TTS public URL = `fal_upload_tts_initiate.file_url`.
 | 14 | `grok_imagine_reel_still` | Pep still — URL must be `/v1/images/edits` + master, not `/generations` |
 | 15 | `save_still_url` | Save `reel_still_url` |
 | 16 | `prep_pep_lipsync` | OmniHuman inputs from `save_still_url.reel_still_url` + `fal_upload_tts_initiate.file_url` |
-| 17 | `pep_lipsync_fal` | fal OmniHuman v1.5 — `image_url` + `audio_url` + `resolution` `1080p`. Wait for Completion ON. Max wait `1200` |
+| 17 | `pep_lipsync_fal` | fal OmniHuman v1.5 — `image_url` + `audio_url` + `resolution` `720p`. Wait for Completion ON. Max wait `1200` |
 | 18 | `save_lipsync_video_url` | Save `lipsync_video_url` from `$json.video.url` · Include Other Input Fields **OFF** · `beat` from `split_pep_beats` |
 | — | `gather_pep_clips` | Collapse 2 scene clips → URLs + one sheet writeback |
 | 19 | `sheets_update_creation` | Sheet writeback once |

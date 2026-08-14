@@ -91,7 +91,7 @@ return [
     json: {
       creation_id: first.creation_id || clips[0].creation_id || '',
       beat_count: 4,
-      resolution: '1080p',
+      resolution: '720p',
       model_video: 'fal-omnihuman-v1.5',
       reel_still_url: stillUrls[0] || '',
       reel_still_url_a: stillUrls[0] || '',

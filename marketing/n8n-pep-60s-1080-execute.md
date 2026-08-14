@@ -1,6 +1,6 @@
 # 60s 1080p stitch — nodes Sal must add or change
 
-1080p audio cap is **under 30s**. **4 scene cuts**, unique pose each. **Same product sales pitch on all 4.** Intro + product only. No compliance. Last sentence always: `Visit us at palmbeach-vitality.store.`
+1080p audio cap is **30s**. This pitch is **55–60s**, so `pep_lipsync_fal` Resolution must be **720p**. **4 scene cuts**, unique pose each, **same unique-word product pitch** on all 4. Intro + product + `Visit us at palmbeach-vitality.store.` Not one word repeats. No compliance.
 
 Do **not** duplicate `_b/_c/_d` still/TTS/OmniHuman nodes. `(split_pep_beats)` + `(loop_pep_beats)` run the talking chain **one beat at a time** (fal max 3 concurrent).
 
@@ -29,7 +29,7 @@ if_complaince (true)
             → sheets_update_creation
 ```
 
-`pep_lipsync_fal` stays **1080p**. Leave Kling disconnected.
+`pep_lipsync_fal` stays **720p**. Leave Kling disconnected.
 
 ---
 
@@ -114,6 +114,22 @@ JSON Body fx **ON**. Paste this whole block (starts with `={{`). Request preview
   if (!text.endsWith('Visit us at palmbeach-vitality.store.')) {
     throw new Error('TTS text must end with: Visit us at palmbeach-vitality.store.');
   }
+  if (!/palm beach pep/i.test(text)) {
+    throw new Error('TTS text must start with Pep introducing himself.');
+  }
+  const seen = new Set();
+  for (const w of text.split(/\s+/).filter(Boolean)) {
+    const k = w.replace(/[.,!?;:"'()[\]{}]/g, '').replace(/[—–]/g, '').toLowerCase();
+    if (!k) continue;
+    if (seen.has(k)) {
+      throw new Error(`Spoken VO repeats the word "${k}". Not one word may repeat. Re-import 150-pb-pep-scenes.`);
+    }
+    seen.add(k);
+  }
+  const n = text.split(/\s+/).filter(Boolean).length;
+  if (n < 142 || n > 150) {
+    throw new Error(`Spoken VO is ${n} words (~${(n / 2.51).toFixed(1)}s). Need 142–150 words (55–60s). Re-import 150-pb-pep-scenes.`);
+  }
   return JSON.stringify({
     text: text,
     model_id: 'eleven_multilingual_v2',
@@ -122,7 +138,7 @@ JSON Body fx **ON**. Paste this whole block (starts with `={{`). Request preview
 })() }}
 ```
 
-Request preview: intro + product + `Visit us at palmbeach-vitality.store.` Same words on items 0–3.
+Request preview: intro + product + `Visit us at palmbeach-vitality.store.` Same words on items 0–3. **Not one word repeats.** ~146 words.
 
 ---
 
@@ -220,9 +236,30 @@ Do **not** add sheet columns. Copy scene B from `gather_pep_clips` OUTPUT if you
 
 ---
 
-## Leave alone
+## 11. CHANGE `pep_lipsync_fal` Resolution to `720p`
 
-`pep_lipsync_fal` — still 1080p, Max Wait `1200`, Image/Audio/Prompt as they are. Two loop passes reuse the same node.
+1080p audio max is **30s**. This VO is **55–60s**. Resolution **must** be **720p** or fal 422s.
+
+| # | Parameter Name or ID dropdown (fx OFF) | Value fx | Value |
+|---|---|---|---|
+| 1 | **Image [string]** (`image_url`) | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
+| 2 | **Audio [string]** (`audio_url`) | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
+| 3 | **Resolution** (`resolution`) | OFF | `720p` |
+| 4 | **Prompt [string]** (`prompt`) | **ON** | `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}` |
+
+| Parameter | fx | Value |
+|---|---|---|
+| Node type | — | fal.ai |
+| Exact name | — | `pep_lipsync_fal` |
+| Credential | — | fal.ai account |
+| Resource | — | Model |
+| Operation | — | Generate Media |
+| Model | — | From list · **OmniHuman** / **Omnihuman v1.5** (`fal-ai/bytedance/omnihuman/v1.5`) |
+| Wait for Completion | — | **ON** |
+| Poll Interval (Seconds) | — | `5` |
+| Max Wait Time (Seconds) | — | `1200` |
+
+Do **not** add a fifth parameter. Prompt Value must be a **string**.
 
 `(get_blocking_pool)` stays a dead-end side branch.
 
@@ -242,4 +279,4 @@ If you concat later: **hard cut**. No extra VO track — audio is already in eac
 
 **NEVER PIN:** `grok_imagine_reel_still`, `tts_pep_voice_over`, `pep_lipsync_fal`
 
-One Test workflow = 4 stills + 4 TTS + 4 OmniHuman 1080p. Loop runs 5 times (A, B, C, D, then done). Budget a long wait (four × up to 1200s). Every clip must speak the same product pitch.
+One Test workflow = 4 stills + 4 TTS + 4 OmniHuman **720p**. Loop runs 5 times (A, B, C, D, then done). Budget a long wait (four × up to 1200s). Every clip must speak the same unique-word product pitch (~146 words, 55–60s). Not one word repeats.

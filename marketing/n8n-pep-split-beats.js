@@ -32,6 +32,19 @@ return packs.map((pack, i) => {
   if (!tts_text.endsWith(CTA)) {
     throw new Error(`tts_text must end with: ${CTA}`);
   }
+  const seen = new Set();
+  for (const w of tts_text.split(/\s+/).filter(Boolean)) {
+    const k = w.replace(/[.,!?;:"'()[\]{}]/g, '').replace(/[—–]/g, '').toLowerCase();
+    if (!k) continue;
+    if (seen.has(k)) {
+      throw new Error(`tts_text repeats the word "${k}". Not one word may repeat.`);
+    }
+    seen.add(k);
+  }
+  const wc = tts_text.split(/\s+/).filter(Boolean).length;
+  if (wc < 142 || wc > 150) {
+    throw new Error(`tts_text is ${wc} words. Need 142–150 for 55–60s.`);
+  }
   const low = tts_text.toLowerCase();
   if (
     low.includes("today's unique set") ||
@@ -65,8 +78,8 @@ return packs.map((pack, i) => {
       omnihuman_prompt: omnihuman_prompt,
       beat_brief: pack.beat_brief || src[`beat_${beat}_brief`],
       beat_motion: pack.beat_motion || src[`beat_${beat}_motion`],
-      target_duration_seconds: 30,
-      resolution: '1080p',
+      target_duration_seconds: 60,
+      resolution: '720p',
     },
   };
 });

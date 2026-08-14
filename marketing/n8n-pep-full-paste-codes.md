@@ -1,6 +1,6 @@
 # Pep n8n — FULL paste codes (no excerpts)
 
-Talking model is **OmniHuman v1.5** on `pep_lipsync_fal` (image + audio). Not sync-3. Not Kling. Resolution **1080p**. Unique scene + unique VO every execution.
+Talking model is **OmniHuman v1.5** on `pep_lipsync_fal` (image + audio). Not sync-3. Not Kling. Resolution **720p** (55–60s audio). Unique scene + same unique-word product pitch every execution.
 
 Wire:
 ```text
@@ -374,6 +374,35 @@ JSON Body (fx **ON**). Paste this whole block. Do **not** paste a JSON object wi
   if (text.includes("$('") || text.includes('={{')) {
     throw new Error('TTS text is an n8n expression, not the sheet VO. JSON Body fx must be ON, paste starting with ={{');
   }
+  const low = text.toLowerCase();
+  if (
+    low.includes("today's unique set") ||
+    low.includes('for laboratory research use only') ||
+    low.includes('not evaluated by the fda') ||
+    low.includes('everything stays in the research') ||
+    low.includes('not for human use')
+  ) {
+    throw new Error('TTS text is sheet-list/compliance, not the product sales pitch. Re-paste prep_pep_beats.');
+  }
+  if (!text.endsWith('Visit us at palmbeach-vitality.store.')) {
+    throw new Error('TTS text must end with: Visit us at palmbeach-vitality.store.');
+  }
+  if (!/palm beach pep/i.test(text)) {
+    throw new Error('TTS text must start with Pep introducing himself.');
+  }
+  const seen = new Set();
+  for (const w of text.split(/\s+/).filter(Boolean)) {
+    const k = w.replace(/[.,!?;:"'()[\]{}]/g, '').replace(/[—–]/g, '').toLowerCase();
+    if (!k) continue;
+    if (seen.has(k)) {
+      throw new Error(`Spoken VO repeats the word "${k}". Not one word may repeat. Re-import 150-pb-pep-scenes.`);
+    }
+    seen.add(k);
+  }
+  const n = text.split(/\s+/).filter(Boolean).length;
+  if (n < 142 || n > 150) {
+    throw new Error(`Spoken VO is ${n} words (~${(n / 2.51).toFixed(1)}s). Need 142–150 words (55–60s). Re-import 150-pb-pep-scenes.`);
+  }
   return JSON.stringify({
     text: text,
     model_id: 'eleven_multilingual_v2',
@@ -382,7 +411,7 @@ JSON Body (fx **ON**). Paste this whole block. Do **not** paste a JSON object wi
 })() }}
 ```
 
-`tts_text` is that scene’s ~30s slice of the row’s `voice_over` on tab `150-pb-pep-scenes` after stripping caption-only compliance. Request preview must show product words, not `$('prep_pep_beats')`, not FDA/disclaimer.
+`tts_text` is the full unique-word product pitch (~146 words, 55–60s) on every beat. Request preview must show product words, not `$('prep_pep_beats')`, not FDA/disclaimer. Not one word repeats.
 
 ---
 
@@ -570,7 +599,7 @@ Do **not** hardcode Audio Url. Do **not** send `video_url` (sync-3 / VEED / Klin
 |---|---|---|---|
 | 1 | **Image [string]** (`image_url`) | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
 | 2 | **Audio [string]** (`audio_url`) | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
-| 3 | **Resolution** (`resolution`) | OFF | `1080p` |
+| 3 | **Resolution** (`resolution`) | OFF | `720p` |
 | 4 | **Prompt [string]** (`prompt`) | **ON** | `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}` |
 
 Prompt Value must be a **string**. `String(...)` keeps it a string. Do **not** use `={{ $json.omnihuman_prompt }}` (that is `undefined` on this fal node). Confirm `prep_pep_lipsync` OUTPUT has `omnihuman_prompt` before Test workflow.
@@ -589,7 +618,7 @@ The dropdown may show `Image Url [string] *` / `Audio Url [string] *` / `Resolut
 | Poll Interval (Seconds) | — | `5` |
 | Max Wait Time (Seconds) | — | `1200` |
 
-1080p can take longer than 10 min. **600 is too short** (n8n default). Use **1200**.
+720p 55–60s jobs can take longer than 10 min. **600 is too short** (n8n default). Use **1200**.
 
 If n8n errors `[ERROR: No path back to node]` on `$('save_still_url')`, use `$json.lipsync_image_in` / `$json.lipsync_audio_in` from `prep_pep_lipsync` instead (same URLs).
 
