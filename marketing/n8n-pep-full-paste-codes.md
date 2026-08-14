@@ -400,8 +400,8 @@ JSON Body (fx **ON**). Paste this whole block. Do **not** paste a JSON object wi
 ={{ (() => {
   const text = String(
     $('prep_pep_beats').item.json.tts_text ||
-    $('prep_pep_beats').item.json.vo_beat_a ||
     $('Prep_day_variant').item.json.voice_over ||
+    $('Limit').item.json.voice_over ||
     ''
   ).trim();
   if (!text) {

@@ -94,8 +94,8 @@ Do **not** also add a `xi-api-key` header on the node. The credential already se
 ={{ (() => {
   const text = String(
     $('prep_pep_beats').item.json.tts_text ||
-    $('prep_pep_beats').item.json.vo_beat_a ||
     $('Prep_day_variant').item.json.voice_over ||
+    $('Limit').item.json.voice_over ||
     ''
   ).trim();
   if (!text) {
@@ -112,7 +112,7 @@ Do **not** also add a `xi-api-key` header on the node. The credential already se
 })() }}
 ```
 
-**Request preview must show real sheet words** (e.g. `Quick one from Pep` / `Today we're looking at BPC-157`). If preview shows `$('prep_pep_beats')` or `vo_beat_a`, fx is off or the old JSON blob is still pasted.
+**Request preview must show real sheet `voice_over` words** (e.g. `Quick one from Pep. Today we're looking at BPC-157.`). If preview shows `$('prep_pep_beats')` or `vo_beat_a`, fx is off or the old JSON blob is still pasted. Do **not** hardcode a spoken line.
 
 **Expect output:** Binary property named `data` (audio/mpeg).
 

@@ -28,8 +28,8 @@ Full A→B→C→D stitch can wait until Beat A OmniHuman looks right. See `mark
 ={{ (() => {
   const text = String(
     $('prep_pep_beats').item.json.tts_text ||
-    $('prep_pep_beats').item.json.vo_beat_a ||
     $('Prep_day_variant').item.json.voice_over ||
+    $('Limit').item.json.voice_over ||
     ''
   ).trim();
   if (!text) {

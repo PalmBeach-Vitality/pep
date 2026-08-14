@@ -500,7 +500,7 @@ OPENERS = [
     "Hey friends — Palm Beach Pep, keeping it simple.",
     "Research desk with Pep — let's look at the molecule.",
     "Palm Beach Pep rolling through with catalog facts.",
-    "Quick one from Pep — research language only.",
+    "Quick one from Pep.",
     "Hey what's good — Pep with another research snapshot.",
     "Stay curious — Palm Beach Pep on a research note.",
     "Pep here. Short story, clear rules, research focus.",

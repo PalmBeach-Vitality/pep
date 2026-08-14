@@ -23,6 +23,8 @@ Second Pep tab (blocking / pose pool, Sal-named):
 
 `https://github.com/PalmBeach-Vitality/pep/blob/cursor/palm-beach-pep-scenes-8510/marketing/sheets/pep-blocking-pool.csv`
 
+Spoken Pep lines come **only** from tab `150-pb-pep-scenes` column `voice_over`. Do **not** hardcode VO in n8n. The phrase **research language only** is caption-only (`caption_lock` / `grok_api`), never spoken.
+
 ## Always send hard links after file updates
 Whenever you update a file Sal needs to download, import, or open, **immediately include the hard link** in the same reply.
 

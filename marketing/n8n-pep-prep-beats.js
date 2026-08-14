@@ -5,8 +5,8 @@
 // Do NOT return [{ json: ... }]
 // Each run picks a random body action + hand gesture so Pep is not
 // the same mid-stride walk every video. Thumbs-up is never allowed.
-// Optional second sheet tab pep-blocking-pool via node get_blocking_pool
-// (side branch from Schedule Trigger). If that node is missing, builtin pools.
+// Spoken lines come from tab 150-pb-pep-scenes column voice_over only.
+// Do not hardcode VO. "research language only" is caption-only.
 
 const row = (() => {
   try { return $('Prep_day_variant').item.json; } catch (e) {}
@@ -22,10 +22,25 @@ const lighting = row.lighting || 'bright clean key';
 const grade = row.color_grade || 'clean controlled grade';
 const hero = row.hero_style || `Palm Beach Pep featuring ${compound}`;
 const motion = row.video_motion_prompt || row.camera_move || 'slow push-in';
-const voiceOver = row.voice_over || '';
-const pepScript = row.pep_script || '';
-const disclaimer = row.disclaimer_short ||
-  'For laboratory research use only. Not for human use or consumption. Not a drug, dietary supplement, or cosmetic. Not evaluated by the FDA.';
+const voiceOverRaw = String(row.voice_over || '').replace(/\s+/g, ' ').trim();
+if (!voiceOverRaw) {
+  throw new Error(
+    'Missing voice_over from the sheet row. TTS must use tab 150-pb-pep-scenes column voice_over. Check Prep_day_variant.voice_over.'
+  );
+}
+if (voiceOverRaw.includes("$('") || voiceOverRaw.includes('={{')) {
+  throw new Error('voice_over looks like an n8n expression, not sheet text.');
+}
+
+// Caption-only phrase. Never speak it. Source of truth is the sheet column after re-import.
+const voiceOver = voiceOverRaw
+  .replace(/\s*[—–-]\s*research language only\.?/gi, '.')
+  .replace(/\bresearch language only\.?/gi, '')
+  .replace(/\s{2,}/g, ' ')
+  .replace(/\s+\./g, '.')
+  .trim();
+const pepScript = String(row.pep_script || '').trim();
+const disclaimer = String(row.disclaimer_short || '').trim();
 
 const PEP_MASTER_DEFAULT = 'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-master.jpg';
 const pepRefUrl = String(row.pep_ref_url || PEP_MASTER_DEFAULT).trim();
@@ -199,32 +214,22 @@ const beats = {
   },
 };
 
-function firstBeatVoice(vo) {
-  const text = String(vo || '').replace(/\s+/g, ' ').trim();
-  if (!text) {
-    throw new Error(
-      'Missing voice_over from the sheet row. Check Prep_day_variant.voice_over / tab 150-pb-pep-scenes.'
-    );
-  }
-  if (text.includes("$('") || text.includes('={{')) {
-    throw new Error('voice_over looks like an n8n expression, not sheet text.');
-  }
-  const sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+function clipSheetVoice(text, maxWords) {
+  const sentences = String(text || '').split(/(?<=[.!?])\s+/).filter(Boolean);
   const out = [];
   let words = 0;
   for (const s of sentences) {
     const n = s.split(/\s+/).filter(Boolean).length;
-    if (out.length && words + n > 42) break;
+    if (out.length && words + n > maxWords) break;
     out.push(s);
     words += n;
-    if (words >= 32) break;
+    if (words >= Math.max(24, maxWords - 10)) break;
   }
-  return (out.join(' ') || text.split(/\s+/).slice(0, 40).join(' ')).trim();
+  return (out.join(' ') || String(text).split(/\s+/).slice(0, maxWords).join(' ')).trim();
 }
 
-function splitVoice(vo) {
-  const text = String(vo || '').replace(/\s+/g, ' ').trim();
-  const a = firstBeatVoice(text);
+function splitVoice(text) {
+  const a = clipSheetVoice(text, 42);
   const rest = text.startsWith(a) ? text.slice(a.length).trim() : text;
   const parts = rest.split(/(?<=\.)\s+/).filter(Boolean);
   if (parts.length >= 3) {
@@ -246,7 +251,7 @@ function splitVoice(vo) {
 }
 
 const vo = splitVoice(voiceOver);
-if (!String(vo.d).includes('laboratory research use only')) {
+if (disclaimer && !String(vo.d).includes('laboratory research use only')) {
   vo.d = `${vo.d} ${disclaimer}`.trim();
 }
 
