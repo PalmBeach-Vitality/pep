@@ -54,6 +54,7 @@ mustInclude('n8n-pep-gather-clips.js', [
   'Expected 4 OmniHuman clips',
   'lipsync_video_url_d',
   'stitch_clip_urls',
+  '.all(0, run)',
 ]);
 
 const merge = fs.readFileSync(path.join(root, 'n8n-pep-merge-tts-binary.js'), 'utf8');

@@ -179,6 +179,8 @@ Include Other Input Fields stays **OFF**.
 
 Paste `marketing/n8n-pep-gather-clips.js`.
 
+Reads every loop run via `$('save_lipsync_video_url').all(0, runIndex)`. A plain `.all()` is only Beat D.
+
 OUTPUT (one item): `lipsync_video_url_a`…`_d` plus `stitch_clip_urls`. That is the CapCut source. Sheet still has one `video_url` column (Beat A).
 
 ---
