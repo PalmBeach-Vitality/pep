@@ -23,7 +23,7 @@ Keep **exact canvas node names** (`prep_pep_lipsync`, `pep_lipsync_fal`, `save_l
 - `audio_url` = `fal_upload_tts_initiate.file_url`
 - `resolution` = `1080p`
 - Wait for Completion ON
-- Max Wait Time = `900`
+- Max Wait Time = `1200`
 - Full params: `marketing/n8n-pep-lipsync-setup.md`
 
 ## Optional Kling walk B-roll

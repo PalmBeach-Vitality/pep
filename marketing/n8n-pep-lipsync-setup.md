@@ -215,7 +215,9 @@ This is the official fal.ai community node (`@fal-ai/n8n-nodes-fal`), not HTTP R
 | 1 | **Image** (`image_url`) | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
 | 2 | **Audio** (`audio_url`) | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
 | 3 | **Resolution** (`resolution`) | OFF | `1080p` |
-| 4 | **Prompt** (`prompt`) | ON | `={{ $json.omnihuman_prompt }}` |
+| 4 | **Prompt** (`prompt`) | **OFF** | `Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot, talking with the audio. Mouth on the white 10ml label moves with speech. Walk toward camera, slight 3/4, screen-right. Both white gloves in a walk swing at hip height. No thumbs-up. No hat tip. No planted freeze.` |
+
+Do **not** use `={{ $json.omnihuman_prompt }}`. That field is often undefined on `pep_lipsync_fal` and fal gets the string `undefined`.
 
 The dropdown may show `Image Url [string] *` / `Audio Url [string] *` / `Resolution [select]` / `Prompt [string]`. Those are the same four.
 
@@ -229,7 +231,7 @@ The dropdown may show `Image Url [string] *` / `Audio Url [string] *` / `Resolut
 | Model | — | From list · **OmniHuman** / **Omnihuman v1.5** (`fal-ai/bytedance/omnihuman/v1.5`) |
 | Wait for Completion | — | **ON** |
 | Poll Interval (Seconds) | — | `5` |
-| Max Wait Time (Seconds) | — | `900` |
+| Max Wait Time (Seconds) | — | `1200` |
 
 Do **not** send `video_url`. That is sync-3 / VEED / Kling lipsync / LatentSync. Do **not** hardcode Audio Url.
 
@@ -277,7 +279,7 @@ Leave disconnected: `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sy
 
 Confirm `fal_upload_tts_initiate.file_url` is a fal CDN URL (not Catbox). Confirm `save_still_url.reel_still_url` is an xAI still (not Catbox). Mouth on the still is open mid-word.
 
-Then **Test workflow** once. Wait up to ~900s. QC: unique scene, unique VO, mouth moves with speech, no thumbs-up.
+Then **Test workflow** once. Wait up to ~1200s. QC: unique scene, unique VO, mouth moves with speech, no thumbs-up.
 
 ---
 
@@ -291,7 +293,7 @@ Then **Test workflow** once. Wait up to ~900s. QC: unique scene, unique VO, mout
 - [ ] `image_url` = `={{ $('save_still_url').item.json.reel_still_url }}`
 - [ ] `audio_url` = `={{ $('fal_upload_tts_initiate').item.json.file_url }}` — **not hardcoded**
 - [ ] `resolution` = `1080p`
-- [ ] Wait for Completion **ON**, Max Wait Time = `900`
+- [ ] Wait for Completion **ON**, Max Wait Time = `1200`
 - [ ] `prep_pep_lipsync` Mode = Run Once for Each Item, returns a plain object
 - [ ] `save_lipsync_video_url` Include Other Input Fields **OFF**
 - [ ] `creation_id` fx **ON**

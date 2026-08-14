@@ -38,5 +38,5 @@ https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-s
 - `image_url` = `={{ $('save_still_url').item.json.reel_still_url }}`
 - `audio_url` = `={{ $('fal_upload_tts_initiate').item.json.file_url }}`
 - `resolution` = `1080p` (audio must be under 30s)
-- Max Wait Time = `900` (1080p took ~10 min)
+- Max Wait Time = `1200` (1080p can exceed 10 min; 600 is the n8n default and too short)
 - Do **not** hardcode Audio Url. Do **not** pin `grok_imagine_reel_still`, `tts_pep_voice_over`, or `pep_lipsync_fal` on a unique-scene run.

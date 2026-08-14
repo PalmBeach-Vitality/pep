@@ -537,7 +537,9 @@ Do **not** hardcode Audio Url. Do **not** send `video_url` (sync-3 / VEED / Klin
 | 1 | **Image** (`image_url`) | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
 | 2 | **Audio** (`audio_url`) | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
 | 3 | **Resolution** (`resolution`) | OFF | `1080p` |
-| 4 | **Prompt** (`prompt`) | ON | `={{ $json.omnihuman_prompt }}` |
+| 4 | **Prompt** (`prompt`) | **OFF** | `Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot, talking with the audio. Mouth on the white 10ml label moves with speech. Walk toward camera, slight 3/4, screen-right. Both white gloves in a walk swing at hip height. No thumbs-up. No hat tip. No planted freeze.` |
+
+Do **not** use `={{ $json.omnihuman_prompt }}`. That field is often undefined on `pep_lipsync_fal` and fal gets the string `undefined`.
 
 The dropdown may show `Image Url [string] *` / `Audio Url [string] *` / `Resolution [select]` / `Prompt [string]`. Those are the same four.
 
@@ -551,9 +553,9 @@ The dropdown may show `Image Url [string] *` / `Audio Url [string] *` / `Resolut
 | Model | — | From list · **OmniHuman** / **Omnihuman v1.5** (`fal-ai/bytedance/omnihuman/v1.5`) |
 | Wait for Completion | — | **ON** |
 | Poll Interval (Seconds) | — | `5` |
-| Max Wait Time (Seconds) | — | `900` |
+| Max Wait Time (Seconds) | — | `1200` |
 
-1080p took ~10 min. Audio must be under 30s at 1080p (`vo_beat_a` is the 15s slice).
+1080p can take longer than 10 min. **600 is too short** (n8n default). Use **1200**.
 
 If n8n errors `[ERROR: No path back to node]` on `$('save_still_url')`, use `$json.lipsync_image_in` / `$json.lipsync_audio_in` from `prep_pep_lipsync` instead (same URLs).
 

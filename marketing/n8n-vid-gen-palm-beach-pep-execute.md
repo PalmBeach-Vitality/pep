@@ -70,7 +70,7 @@ TTS public URL = `fal_upload_tts_initiate.file_url`.
 | 14 | `grok_imagine_reel_still` | Pep still — URL must be `/v1/images/edits` + master, not `/generations` |
 | 15 | `save_still_url` | Save `reel_still_url` |
 | 16 | `prep_pep_lipsync` | OmniHuman inputs from `save_still_url.reel_still_url` + `fal_upload_tts_initiate.file_url` |
-| 17 | `pep_lipsync_fal` | fal OmniHuman v1.5 — `image_url` + `audio_url` + `resolution` `1080p`. Wait for Completion ON. Max wait `900` |
+| 17 | `pep_lipsync_fal` | fal OmniHuman v1.5 — `image_url` + `audio_url` + `resolution` `1080p`. Wait for Completion ON. Max wait `1200` |
 | 18 | `save_lipsync_video_url` | Save `lipsync_video_url` from `$json.video.url` · Include Other Input Fields **OFF** |
 | 19 | `sheets_update_creation` | Sheet writeback |
 | — | `prep_grok_video_start` | Optional Kling walk B-roll — keep disconnected from talking path |
@@ -171,7 +171,7 @@ On node **`Prep_day_variant`**, set field:
 | Exact node | Action |
 |---|---|
 | `prep_pep_lipsync` | Paste `marketing/n8n-pep-prep-lipsync.js`. Each Item. Outputs `lipsync_image_in` + `lipsync_audio_in` |
-| `pep_lipsync_fal` | fal community node · Model **OmniHuman / Omnihuman v1.5** · `image_url` `={{ $('save_still_url').item.json.reel_still_url }}` · `audio_url` `={{ $('fal_upload_tts_initiate').item.json.file_url }}` · `resolution` `1080p` · Wait for Completion ON · Max Wait `900` |
+| `pep_lipsync_fal` | fal community node · Model **OmniHuman / Omnihuman v1.5** · Image + Audio + Resolution `1080p` + fixed Prompt · Wait for Completion ON · Max Wait `1200` |
 | `save_lipsync_video_url` | `lipsync_video_url` `={{ $json.video.url }}` · Include Other Input Fields **OFF** · `model_video` = `fal-omnihuman-v1.5` |
 
 Kling I2V stays on canvas as **optional walk B-roll only**. Do **not** wire it into the talking path. Do **not** wire `kling_video_request`.
@@ -246,7 +246,7 @@ Leave disconnected: `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sy
 
 Do **not** hardcode Audio Url. `pep_lipsync_fal` `audio_url` stays `={{ $('fal_upload_tts_initiate').item.json.file_url }}`.
 
-Then **Test workflow** once. Wait up to ~900s.
+Then **Test workflow** once. Wait up to ~1200s.
 
 ---
 
