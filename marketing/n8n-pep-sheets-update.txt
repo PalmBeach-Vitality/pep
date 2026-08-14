@@ -11,7 +11,7 @@
 #
 # Columns to update:
 
-date_used   = {{ $now.toISO() }}
+last_used_at   = {{ $now.toISO() }}
 times_used     = {{ Number($('Limit').item.json.times_used || $('Prep_day_variant').item.json.times_used || 0) + 1 }}
 reel_still_url = {{ $('save_still_url').item.json.reel_still_url || $('save_still_url').item.json.data[0].url }}
 video_url      = {{ $('save_lipsync_video_url').item.json.lipsync_video_url || $('save_lipsync_video_url').item.json.video_url || $('save_video_url').item.json.video_url }}

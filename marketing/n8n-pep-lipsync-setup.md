@@ -302,7 +302,7 @@ Then **Test workflow** once. Wait up to ~1200s. QC: unique scene, unique VO, mou
 
 ## Checklist before Test workflow
 
-- [ ] `sort_rotation` sorts `times_used` ASC then `date_used` ASC
+- [ ] `sort_rotation` sorts `times_used` ASC then `last_used_at` ASC
 - [ ] `Limit` Max Items = `1`
 - [ ] `tts_pep_voice_over` JSON Body fx **ON**, paste starts with `={{ (() => {` — request preview is sheet VO, **not** `$('prep_pep_beats')`
 - [ ] `fal_upload_tts_initiate` `file_name` is unique (`pep-{{creation_id}}-{{timestamp}}.mp3`), not `pep-beat-a.mp3`
@@ -317,7 +317,7 @@ Then **Test workflow** once. Wait up to ~1200s. QC: unique scene, unique VO, mou
 - [ ] `(get_blocking_pool)` is a side branch from `Schedule Trigger`, tab `pep-blocking-pool`
 - [ ] `save_lipsync_video_url` Include Other Input Fields **OFF**
 - [ ] `creation_id` fx **ON**
-- [ ] `sheets_update_creation` writes `date_used` + `times_used`
+- [ ] `sheets_update_creation` writes `last_used_at` + `times_used`
 - [ ] Kling chain is pinned / disconnected so it does not bill
 - [ ] Disconnected: `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sync_result`
 - [ ] Do **not** pin `grok_imagine_reel_still`, `tts_pep_voice_over`, or `pep_lipsync_fal`

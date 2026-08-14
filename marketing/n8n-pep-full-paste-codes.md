@@ -46,9 +46,9 @@ Picks the least-used Active row so every execution gets a **unique scene**.
 | Sort Field | Order |
 |---|---|
 | `times_used` | **Ascending** |
-| `date_used` | **Ascending** |
+| `last_used_at` | **Ascending** |
 
-Empty `date_used` and `times_used` = `0` sort first (unused rows).
+Empty `last_used_at` and `times_used` = `0` sort first (unused rows).
 
 Wire: `filter_active` → `sort_rotation` → `Limit`
 
@@ -666,7 +666,7 @@ Do **not** execute: `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sy
 
 Wire: `save_lipsync_video_url` → `sheets_update_creation`
 
-Tab `150-pb-pep-scenes` must have columns `times_used` and `date_used` (Sal-named). Empty `date_used` + `times_used` = `0` means unused.
+Tab `150-pb-pep-scenes` must have columns `times_used` and `last_used_at`. Empty `last_used_at` + `times_used` = `0` means unused.
 
 | Parameter | fx | Value |
 |---|---|---|
@@ -683,7 +683,7 @@ Tab `150-pb-pep-scenes` must have columns `times_used` and `date_used` (Sal-name
 
 | Column | Type | fx | Value |
 |---|---|---|---|
-| `date_used` | String | ON | `={{ $now.toISO() }}` |
+| `last_used_at` | String | ON | `={{ $now.toISO() }}` |
 | `times_used` | Number | ON | `={{ Number($('Limit').item.json.times_used \|\| $('Prep_day_variant').item.json.times_used \|\| 0) + 1 }}` |
 | `reel_still_url` | String | ON | `={{ $('save_still_url').item.json.reel_still_url \|\| $('save_still_url').item.json.data[0].url }}` |
 | `video_url` | String | ON | `={{ $('save_lipsync_video_url').item.json.lipsync_video_url \|\| $('save_lipsync_video_url').item.json.video_url \|\| $('save_video_url').item.json.video_url }}` |

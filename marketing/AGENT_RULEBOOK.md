@@ -25,7 +25,7 @@ Second Pep tab (blocking / pose pool, Sal-named):
 
 Spoken Pep lines come **only** from tab `150-pb-pep-scenes` column `voice_over`. Do **not** hardcode VO in n8n. The phrase **research language only** is caption-only (`caption_lock` / `grok_api`), never spoken.
 
-Scene rotation columns on that same tab (Sal-named): `times_used`, `date_used`. `sort_rotation` is `times_used` ASC then `date_used` ASC. `sheets_update_creation` writes both.
+Scene rotation columns on that same tab: `times_used`, `last_used_at`. `sort_rotation` is `times_used` ASC then `last_used_at` ASC. `sheets_update_creation` writes both.
 
 ## Always send hard links after file updates
 Whenever you update a file Sal needs to download, import, or open, **immediately include the hard link** in the same reply.
