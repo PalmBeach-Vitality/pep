@@ -24,12 +24,26 @@ Full A→B→C→D stitch can wait until Beat A OmniHuman looks right. See `mark
 - Header: `Accept` = `audio/mpeg`
 - Body JSON example:
 
-```json
-{
-  "text": "={{ $('prep_pep_beats').item.json.vo_beat_a || $('prep_pep_beats').item.json.voice_over }}",
-  "model_id": "eleven_multilingual_v2",
-  "voice_settings": { "stability": 0.45, "similarity_boost": 0.8 }
-}
+```
+={{ (() => {
+  const text = String(
+    $('prep_pep_beats').item.json.tts_text ||
+    $('prep_pep_beats').item.json.vo_beat_a ||
+    $('Prep_day_variant').item.json.voice_over ||
+    ''
+  ).trim();
+  if (!text) {
+    throw new Error('Missing sheet voice_over. Check prep_pep_beats.tts_text / Prep_day_variant.voice_over.');
+  }
+  if (text.includes("$('") || text.includes('={{')) {
+    throw new Error('TTS text is an n8n expression, not the sheet VO.');
+  }
+  return JSON.stringify({
+    text: text,
+    model_id: 'eleven_multilingual_v2',
+    voice_settings: { stability: 0.45, similarity_boost: 0.8 }
+  });
+})() }}
 ```
 
 - Binary MP3 → upload to public host → `tts_audio_url`

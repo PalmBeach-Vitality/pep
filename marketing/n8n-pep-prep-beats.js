@@ -199,32 +199,49 @@ const beats = {
   },
 };
 
-function splitVoice(vo) {
+function firstBeatVoice(vo) {
   const text = String(vo || '').replace(/\s+/g, ' ').trim();
   if (!text) {
+    throw new Error(
+      'Missing voice_over from the sheet row. Check Prep_day_variant.voice_over / tab 150-pb-pep-scenes.'
+    );
+  }
+  if (text.includes("$('") || text.includes('={{')) {
+    throw new Error('voice_over looks like an n8n expression, not sheet text.');
+  }
+  const sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+  const out = [];
+  let words = 0;
+  for (const s of sentences) {
+    const n = s.split(/\s+/).filter(Boolean).length;
+    if (out.length && words + n > 42) break;
+    out.push(s);
+    words += n;
+    if (words >= 32) break;
+  }
+  return (out.join(' ') || text.split(/\s+/).slice(0, 40).join(' ')).trim();
+}
+
+function splitVoice(vo) {
+  const text = String(vo || '').replace(/\s+/g, ' ').trim();
+  const a = firstBeatVoice(text);
+  const rest = text.startsWith(a) ? text.slice(a.length).trim() : text;
+  const parts = rest.split(/(?<=\.)\s+/).filter(Boolean);
+  if (parts.length >= 3) {
+    const n = Math.ceil(parts.length / 3);
     return {
-      a: `Hey, I'm Palm Beach Pep. Today we're looking at ${compound}.`,
-      b: `${compound} is laboratory research material. Clear vial, clear label.`,
-      c: `Everything stays in the research space. No treatment claims.`,
-      d: `${pepScript || 'Catalog clear from Pep.'} ${disclaimer}`,
+      a,
+      b: parts.slice(0, n).join(' '),
+      c: parts.slice(n, n * 2).join(' '),
+      d: parts.slice(n * 2).join(' '),
     };
   }
-  const parts = text.split(/(?<=\.)\s+/).filter(Boolean);
-  if (parts.length >= 4) {
-    const n = Math.ceil(parts.length / 4);
-    return {
-      a: parts.slice(0, n).join(' '),
-      b: parts.slice(n, n * 2).join(' '),
-      c: parts.slice(n * 2, n * 3).join(' '),
-      d: parts.slice(n * 3).join(' '),
-    };
-  }
-  const chunk = Math.ceil(text.length / 4);
+  const chunk = Math.max(1, Math.ceil(rest.length / 3));
   return {
-    a: text.slice(0, chunk).trim(),
-    b: text.slice(chunk, chunk * 2).trim(),
-    c: text.slice(chunk * 2, chunk * 3).trim(),
-    d: text.slice(chunk * 3).trim(),
+    a,
+    b: rest.slice(0, chunk).trim(),
+    c: rest.slice(chunk, chunk * 2).trim(),
+    d: rest.slice(chunk * 2).trim(),
   };
 }
 
@@ -269,6 +286,8 @@ return {
   vo_beat_b: vo.b,
   vo_beat_c: vo.c,
   vo_beat_d: vo.d,
+  tts_text: vo.a,
+  vo_source: 'sheet',
   voice_over: voiceOver,
   pep_script: pepScript,
   disclaimer_short: disclaimer,

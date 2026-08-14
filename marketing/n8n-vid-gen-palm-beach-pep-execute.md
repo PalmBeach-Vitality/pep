@@ -150,7 +150,7 @@ On node **`Prep_day_variant`**, set field:
    - Mode = **Run Once for Each Item**
    - Reads `$('Prep_day_variant')` then `$('Limit')`
    - Reads `$('get_blocking_pool').all()` when that node exists; otherwise builtin pools
-   - OUTPUT: `pep_body_action`, `pep_hand_gesture`, `pep_angle`, `pose_still`, `omnihuman_prompt`, `blocking_source`
+   - OUTPUT: `pep_body_action`, `pep_hand_gesture`, `pep_angle`, `pose_still`, `omnihuman_prompt`, `blocking_source`, `tts_text`, `vo_source` (`sheet`)
 2. `grok_imagine_reel_still`
    - URL → **`https://api.x.ai/v1/images/edits`** (never `/generations`)
    - Body → **`marketing/n8n-pep-grok-still-body-lock.txt`** (EDIT `<IMAGE_0>` only)
@@ -178,8 +178,9 @@ On node **`Prep_day_variant`**, set field:
 
 | Exact node | Action |
 |---|---|
+| `tts_pep_voice_over` | JSON Body fx **ON**. Paste the `={{ (() => { ... JSON.stringify({ text }) })() }}` block from `marketing/n8n-pep-lipsync-setup.md`. Request preview must be sheet `voice_over` words, **not** `$('prep_pep_beats')`. |
 | `prep_pep_lipsync` | Paste `marketing/n8n-pep-prep-lipsync.js`. Each Item. Outputs `lipsync_image_in` + `lipsync_audio_in` |
-| `pep_lipsync_fal` | fal community node · Model **OmniHuman / Omnihuman v1.5** · Image + Audio + Resolution `1080p` + fixed Prompt · Wait for Completion ON · Max Wait `1200` |
+| `pep_lipsync_fal` | fal community node · Model **OmniHuman / Omnihuman v1.5** · Image + Audio + Resolution `1080p` + Prompt from `prep_pep_lipsync.omnihuman_prompt` · Wait for Completion ON · Max Wait `1200` |
 | `save_lipsync_video_url` | `lipsync_video_url` `={{ $json.video.url }}` · Include Other Input Fields **OFF** · `model_video` = `fal-omnihuman-v1.5` |
 
 Kling I2V stays on canvas as **optional walk B-roll only**. Do **not** wire it into the talking path. Do **not** wire `kling_video_request`.

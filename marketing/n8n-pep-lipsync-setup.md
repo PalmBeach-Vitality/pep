@@ -81,24 +81,38 @@ Use a **predefined credential**. Do not paste the ElevenLabs key into a header o
 | Send Body | — | **ON** |
 | Body Content Type | — | JSON |
 | Specify Body | — | Using JSON |
-| JSON Body | ON | see block below |
+| JSON Body | **ON** | paste the expression below — must start with `={{` |
 | Options → Response → Response Format | — | **File** |
 | Options → Response → Put Output in Field | OFF | `data` |
 | Options → Timeout | OFF | `120000` |
 
 Do **not** also add a `xi-api-key` header on the node. The credential already sends it.
 
-**JSON Body:**
-```json
-{
-  "text": "={{ $('prep_pep_beats').item.json.vo_beat_a || $('prep_pep_beats').item.json.voice_over }}",
-  "model_id": "eleven_multilingual_v2",
-  "voice_settings": {
-    "stability": 0.45,
-    "similarity_boost": 0.8
-  }
-}
+**JSON Body (fx ON).** Paste this whole block. Do **not** paste a JSON object with `"text": "={{ ... }}"` inside it — ElevenLabs will **speak the expression** (`prep_pep_beats item json vo beat a`) instead of the sheet VO.
+
 ```
+={{ (() => {
+  const text = String(
+    $('prep_pep_beats').item.json.tts_text ||
+    $('prep_pep_beats').item.json.vo_beat_a ||
+    $('Prep_day_variant').item.json.voice_over ||
+    ''
+  ).trim();
+  if (!text) {
+    throw new Error('Missing sheet voice_over. Check prep_pep_beats.tts_text / Prep_day_variant.voice_over / tab 150-pb-pep-scenes.');
+  }
+  if (text.includes("$('") || text.includes('={{')) {
+    throw new Error('TTS text is an n8n expression, not the sheet VO. JSON Body fx must be ON, paste starting with ={{');
+  }
+  return JSON.stringify({
+    text: text,
+    model_id: 'eleven_multilingual_v2',
+    voice_settings: { stability: 0.45, similarity_boost: 0.8 }
+  });
+})() }}
+```
+
+**Request preview must show real sheet words** (e.g. `Quick one from Pep` / `Today we're looking at BPC-157`). If preview shows `$('prep_pep_beats')` or `vo_beat_a`, fx is off or the old JSON blob is still pasted.
 
 **Expect output:** Binary property named `data` (audio/mpeg).
 
@@ -290,7 +304,7 @@ Then **Test workflow** once. Wait up to ~1200s. QC: unique scene, unique VO, mou
 
 - [ ] `sort_rotation` sorts `times_used` ASC then `last_used_at` ASC
 - [ ] `Limit` Max Items = `1`
-- [ ] `tts_pep_voice_over` text = `={{ $('prep_pep_beats').item.json.vo_beat_a || $('prep_pep_beats').item.json.voice_over }}` (not a pasted URL)
+- [ ] `tts_pep_voice_over` JSON Body fx **ON**, paste starts with `={{ (() => {` — request preview is sheet VO, **not** `$('prep_pep_beats')`
 - [ ] `fal_upload_tts_initiate` `file_name` is unique (`pep-{{creation_id}}-{{timestamp}}.mp3`), not `pep-beat-a.mp3`
 - [ ] `pep_lipsync_fal` Model = **OmniHuman / Omnihuman v1.5** (not sync-3 / VEED / Kling lipsync / LatentSync)
 - [ ] `image_url` = `={{ $('save_still_url').item.json.reel_still_url }}`

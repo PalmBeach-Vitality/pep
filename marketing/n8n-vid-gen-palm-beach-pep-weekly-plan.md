@@ -51,7 +51,7 @@ Do **not** rename these. Add Beat B–D only as suffixed duplicates (`*_b`, `*_c
 | C | World | 30–45s |
 | D | Close + disclaimer energy | 45–60s |
 
-Each still is a starting image of Pep for that beat → animated with **fal Kling v3 Pro I2V** → stitched + ElevenLabs VO.
+Each still is a starting image of Pep for that beat → **ElevenLabs speaks that row’s sheet `voice_over`** (via `prep_pep_beats.tts_text`) → OmniHuman talks to that audio.
 
 ---
 
