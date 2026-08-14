@@ -3,6 +3,8 @@
 ## Least actions
 Always pick the **fewest steps that still work**. One sheet column or one node paste beats five remaps. Do not invent extra n8n changes, extra tabs, extra pins, or extra Test workflow runs. Full node params only for the node(s) Sal actually has to touch.
 
+Time is limited. Treat Sal’s time as the scarce resource: shorter replies, fewer clicks, no optional busywork. If a step does not change the outcome, skip it.
+
 ## Spreadsheets
 - Do **not** create, rename, overwrite, or modify any spreadsheet unless Sal names it by its **exact name** in that request.
 - Reference-only mentions do **not** grant permission.
