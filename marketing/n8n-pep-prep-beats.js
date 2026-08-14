@@ -2,7 +2,11 @@
 // After: if_complaince (true)  — EXACT canvas name
 // Uses: Prep_day_variant → Limit (EXACT names)
 // Mode: Run Once for Each Item
-// Builds 4 beat briefs for ~60s Pep breakdown (A hook, B product, C world, D close)
+// Do NOT return [{ json: ... }]
+// Each run picks a random body action + hand gesture so Pep is not
+// the same mid-stride walk every video. Thumbs-up is never allowed.
+// Optional second sheet tab pep-blocking-pool via node get_blocking_pool
+// (side branch from Schedule Trigger). If that node is missing, builtin pools.
 
 const row = (() => {
   try { return $('Prep_day_variant').item.json; } catch (e) {}
@@ -23,12 +27,140 @@ const pepScript = row.pep_script || '';
 const disclaimer = row.disclaimer_short ||
   'For laboratory research use only. Not for human use or consumption. Not a drug, dietary supplement, or cosmetic. Not evaluated by the FDA.';
 
-// Canonical Pep master — default locked URL (override via Prep_day_variant.pep_ref_url if needed)
 const PEP_MASTER_DEFAULT = 'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-master.jpg';
 const pepRefUrl = String(row.pep_ref_url || PEP_MASTER_DEFAULT).trim();
 if (!pepRefUrl) {
   throw new Error('Missing pep_ref_url. Canonical Pep master URL is required.');
 }
+
+function pick(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function isActive(v) {
+  const s = String(v == null ? 'TRUE' : v).trim().toUpperCase();
+  return s !== 'FALSE' && s !== '0' && s !== 'NO' && s !== '';
+}
+
+function rowsFromBlockingPool(type) {
+  let items = [];
+  try {
+    items = $('get_blocking_pool').all();
+  } catch (e) {
+    return [];
+  }
+  const out = [];
+  for (const it of items) {
+    const j = it.json || {};
+    if (!isActive(j.active)) continue;
+    if (String(j.type || '').toLowerCase() !== type) continue;
+    const id = String(j.id || '').trim();
+    const still = String(j.still || '').trim();
+    const motion = String(j.motion || '').trim();
+    if (!id || !still) continue;
+    out.push({
+      id,
+      still,
+      motion,
+      brief: String(j.brief || id.replace(/_/g, ' ')).trim(),
+      omni: String(j.omni || motion).trim(),
+    });
+  }
+  return out;
+}
+
+const BODY_ACTIONS = [
+  {
+    id: 'walking',
+    still: 'POSE: mid-stride WALKING toward camera, slight 3/4. One sneaker forward, one sneaker back. This is a walk, not the master planted pose.',
+    motion: 'walk toward camera slight 3/4, continuous stride, talking the whole time',
+    brief: 'walking mid-stride toward camera',
+  },
+  {
+    id: 'sitting',
+    still: 'POSE: SITTING on a set-appropriate perch in this environment (bench, rock, dock edge, stool). Full body visible. Talking. Not the master planted thumbs-up.',
+    motion: 'stay seated, shift weight, talk, small upper-body motion',
+    brief: 'sitting in the set, talking',
+  },
+  {
+    id: 'standing',
+    still: 'POSE: STANDING at ease, weight on both white sneakers, slight 3/4 toward camera. Talking. Not frozen. Not the master thumbs-up.',
+    motion: 'stand in place, sway slightly, talk, shift weight sneaker to sneaker',
+    brief: 'standing and talking',
+  },
+  {
+    id: 'stopping',
+    still: 'POSE: STOPPING mid-walk — one sneaker still forward, body coming to a halt, looking to camera, talking. Not a planted thumbs-up freeze.',
+    motion: 'take two steps then stop, hold the stop while talking, maybe start a step again',
+    brief: 'stopping mid-walk to talk',
+  },
+  {
+    id: 'turning',
+    still: 'POSE: TURNING toward camera from a 3/4, one sneaker pivoting, talking. Not the master thumbs-up.',
+    motion: 'turn toward camera, settle, talk, small pivot',
+    brief: 'turning toward camera while talking',
+  },
+];
+
+const GESTURES = [
+  {
+    id: 'present_label',
+    still: 'HANDS: one white glove open-palm presents the 10ml label at chest height. Other glove relaxed at hip. NO thumbs-up.',
+    motion: 'open-palm present the 10ml label, then lower the glove',
+  },
+  {
+    id: 'point_10ml',
+    still: 'HANDS: one white glove points at the 10ml typography. Other glove at hip. Point stays below the brim. NO thumbs-up. NO raised salute.',
+    motion: 'point at the 10ml text, then drop the point',
+  },
+  {
+    id: 'walk_swing',
+    still: 'HANDS: both white gloves in a natural walk swing at hip height. Neither hand raised. NO thumbs-up.',
+    motion: 'both gloves swing at hip height while talking',
+  },
+  {
+    id: 'hip_rest',
+    still: 'HANDS: one white glove rests on a hip, the other hangs relaxed. NO thumbs-up.',
+    motion: 'one glove on hip, other glove punctuates speech',
+  },
+  {
+    id: 'count_fingers',
+    still: 'HANDS: counting 1-2-3 with white gloves at chest height. NO thumbs-up.',
+    motion: 'count on glove fingers while talking, then relax',
+  },
+  {
+    id: 'low_wave',
+    still: 'HANDS: a small side wave, glove below the shoulder, not a high wave. NO thumbs-up. NO hat tip.',
+    motion: 'small low wave, then gloves back to sides',
+  },
+  {
+    id: 'palms_out',
+    still: 'HANDS: both palms out at waist, “here it is” present of the vial body. NO thumbs-up.',
+    motion: 'palms-out present, then relax',
+  },
+  {
+    id: 'label_glance',
+    still: 'HANDS: one glove taps or frames the 10ml label. Other glove down. NO thumbs-up.',
+    motion: 'glance at the 10ml label and tap it once, keep talking',
+  },
+];
+
+const ANGLES = [
+  'slight 3/4 screen-right',
+  'slight 3/4 screen-left',
+  'eye-level front 3/4',
+  'eye-level almost front',
+];
+
+const sheetBodies = rowsFromBlockingPool('body');
+const sheetGestures = rowsFromBlockingPool('gesture');
+const sheetAngles = rowsFromBlockingPool('angle');
+const blockingSource = (sheetBodies.length && sheetGestures.length) ? 'pep-blocking-pool' : 'builtin';
+
+const body = pick(sheetBodies.length ? sheetBodies : BODY_ACTIONS);
+const gesture = pick(sheetGestures.length ? sheetGestures : GESTURES);
+const angleRow = sheetAngles.length ? pick(sheetAngles) : null;
+const angle = angleRow ? String(angleRow.id || angleRow.brief || ANGLES[0]) : pick(ANGLES);
 
 const pepLock = [
   'CHARACTER LOCK — use master Pep reference exactly (https://files.catbox.moe/2yfdbi.jpg).',
@@ -37,34 +169,36 @@ const pepLock = [
   'white mid-body label with cheerful cartoon face and bold 10ml text,',
   'white baseball cap with Palm Beach Vitality sunset + palm-tree logo,',
   'gray tube limbs, white cartoon gloves, rounded white sneakers,',
-  'mid-stride walking pose toward camera slight 3/4 screen-right, mouth open mid-word, no thumbs-up, clean 3D-cartoon / sticker style with bold outlines.',
-  'No humans. No doctor offices. No hospitals.',
+  'mouth open mid-word, clean 3D-cartoon / sticker style with bold outlines.',
+  'HARD FAIL: thumbs-up. No hat-tip freeze. No extra mascots. No humans. No doctor offices. No hospitals.',
 ].join(' ');
+
+const poseStill = [body.still, gesture.still, `ANGLE: ${angle}.`, 'MOUTH OPEN mid-word (OmniHuman start frame).'].join(' ');
+const poseMotion = `${body.motion}; ${gesture.motion}; ${angle}; talking mouth the whole clip`;
 
 const beats = {
   a: {
     name: 'hook',
-    brief: `Beat A HOOK: Palm Beach Pep mid-ground in this unique set: ${surface}. Walking and talking the whole beat — mid-stride in and out for dissolve to Beat B. ${pepLock} Product lock: ${compound} (${compoundId}). Lighting: ${lighting}. Grade: ${grade}. Full environment, not void packshot.`,
-    motion: `continuous walking + talking 0–15s; toward camera slight 3/4 screen-right; mid-stride first and last frame; no thumbs-up; no hat tip; no smile hold; camera tracks; ${motion}; preserve Pep identity`,
+    brief: `Beat A HOOK: Palm Beach Pep mid-ground in this unique set: ${surface}. Blocking this run: ${body.brief}, ${gesture.id.replace(/_/g, ' ')}. ${poseStill} ${pepLock} Product lock: ${compound} (${compoundId}). Lighting: ${lighting}. Grade: ${grade}. Full environment, not void packshot.`,
+    motion: `${poseMotion}; 0–15s; ${motion}; preserve Pep identity; no thumbs-up; no new text`,
   },
   b: {
     name: 'product',
-    brief: `Beat B PRODUCT: Same set (${surface}). Keep walking and talking — slightly closer on the 10ml label while full scene stays. Mid-stride in from Beat A, mid-stride out to Beat C. No smile hold. ${pepLock} Product lock: ${compound} (${compoundId}). Hero: ${hero}.`,
-    motion: 'continue same walk toward camera slight 3/4 screen-right + talking mouth; mid-stride in/out; slow track; preserve Pep identity; no new text',
+    brief: `Beat B PRODUCT: Same set (${surface}). Keep ${body.brief} and talking — slightly closer on the 10ml label while full scene stays. ${pepLock} Product lock: ${compound} (${compoundId}). Hero: ${hero}.`,
+    motion: `continue ${poseMotion}; slow track in on label; preserve Pep identity; no thumbs-up; no new text`,
   },
   c: {
     name: 'world',
-    brief: `Beat C WORLD: Same set (${surface}). Keep walking and talking. Stronger environment motion (breeze, light sweep) while Pep stays mid-ground. Mid-stride in from Beat B, mid-stride out to Beat D. ${pepLock} Product lock: ${compound} (${compoundId}). Source scene: ${String(sceneBrief).slice(0, 500)}`,
-    motion: 'continue same walk toward camera slight 3/4 screen-right + talking mouth; mid-stride in/out; environment drift; preserve identity',
+    brief: `Beat C WORLD: Same set (${surface}). Keep ${body.brief} and talking. Stronger environment motion while Pep stays mid-ground. ${pepLock} Product lock: ${compound} (${compoundId}). Source scene: ${String(sceneBrief).slice(0, 400)}`,
+    motion: `continue ${poseMotion}; environment drift; preserve identity; no thumbs-up`,
   },
   d: {
     name: 'close',
-    brief: `Beat D CLOSE: Same set (${surface}). Keep walking and talking. Mid-stride in from Beat C. Last second can ease the walk but mouth keeps moving. No thumbs-up freeze. ${pepLock} Product lock: ${compound} (${compoundId}). No new on-screen text.`,
-    motion: 'continue same walk toward camera slight 3/4 screen-right + talking mouth; mid-stride in; ease last 1s without planting; preserve Pep identity; no new text',
+    brief: `Beat D CLOSE: Same set (${surface}). Keep ${body.brief} and talking. Mouth keeps moving. ${pepLock} Product lock: ${compound} (${compoundId}). No new on-screen text.`,
+    motion: `continue ${poseMotion}; ease last 1s; preserve Pep identity; no thumbs-up; no new text`,
   },
 };
 
-// Simple VO split into 4 segments (single-line sheet scripts)
 function splitVoice(vo) {
   const text = String(vo || '').replace(/\s+/g, ' ').trim();
   if (!text) {
@@ -72,7 +206,7 @@ function splitVoice(vo) {
       a: `Hey, I'm Palm Beach Pep. Today we're looking at ${compound}.`,
       b: `${compound} is laboratory research material. Clear vial, clear label.`,
       c: `Everything stays in the research space. No treatment claims.`,
-      d: `${pepScript || 'Thumbs up from Pep.'} ${disclaimer}`,
+      d: `${pepScript || 'Catalog clear from Pep.'} ${disclaimer}`,
     };
   }
   const parts = text.split(/(?<=\.)\s+/).filter(Boolean);
@@ -99,35 +233,47 @@ if (!String(vo.d).includes('laboratory research use only')) {
   vo.d = `${vo.d} ${disclaimer}`.trim();
 }
 
-return [{
-  json: {
-    ...row,
-    creation_id: row.creation_id || '',
-    compound_id: compoundId,
-    compound_name: compound,
-    pep_ref_url: pepRefUrl,
-    target_duration_seconds: 60,
-    beat_count: 4,
-    beat_a_brief: beats.a.brief,
-    beat_b_brief: beats.b.brief,
-    beat_c_brief: beats.c.brief,
-    beat_d_brief: beats.d.brief,
-    beat_a_motion: beats.a.motion,
-    beat_b_motion: beats.b.motion,
-    beat_c_motion: beats.c.motion,
-    beat_d_motion: beats.d.motion,
-    vo_beat_a: vo.a,
-    vo_beat_b: vo.b,
-    vo_beat_c: vo.c,
-    vo_beat_d: vo.d,
-    voice_over: voiceOver,
-    pep_script: pepScript,
-    disclaimer_short: disclaimer,
-    aspect_ratio: '9:16',
-    resolution: '1080p',
-    model_still: 'grok-imagine-image',
-    // Cartoon I2V via fal Kling (ElevenLabs-style models; Flows API not public yet)
-    model_video: 'fal-omnihuman-v1.5',
-  }
-}];
+const omnihuman_prompt = [
+  'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot,',
+  'talking with the audio. Mouth on the white 10ml label moves with speech.',
+  (body.omni || body.motion) + '.',
+  (gesture.omni || gesture.motion) + '.',
+  angle + '.',
+  'No thumbs-up. No hat-tip freeze.',
+].join(' ');
 
+return {
+  ...row,
+  creation_id: row.creation_id || '',
+  compound_id: compoundId,
+  compound_name: compound,
+  pep_ref_url: pepRefUrl,
+  target_duration_seconds: 15,
+  beat_count: 4,
+  pep_body_action: body.id,
+  pep_hand_gesture: gesture.id,
+  pep_angle: angle,
+  blocking_source: blockingSource,
+  pose_still: poseStill,
+  pose_motion: poseMotion,
+  omnihuman_prompt: omnihuman_prompt,
+  beat_a_brief: beats.a.brief,
+  beat_b_brief: beats.b.brief,
+  beat_c_brief: beats.c.brief,
+  beat_d_brief: beats.d.brief,
+  beat_a_motion: beats.a.motion,
+  beat_b_motion: beats.b.motion,
+  beat_c_motion: beats.c.motion,
+  beat_d_motion: beats.d.motion,
+  vo_beat_a: vo.a,
+  vo_beat_b: vo.b,
+  vo_beat_c: vo.c,
+  vo_beat_d: vo.d,
+  voice_over: voiceOver,
+  pep_script: pepScript,
+  disclaimer_short: disclaimer,
+  aspect_ratio: '9:16',
+  resolution: '1080p',
+  model_still: 'grok-imagine-image',
+  model_video: 'fal-omnihuman-v1.5',
+};

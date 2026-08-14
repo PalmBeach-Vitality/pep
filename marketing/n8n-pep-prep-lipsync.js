@@ -39,17 +39,20 @@ if (/catbox\.moe/i.test(imageUrl)) {
 }
 
 let creation_id = '';
+let omniFromBeats = '';
 try {
-  creation_id = String($('prep_pep_beats').item.json.creation_id || '');
+  const beats = $('prep_pep_beats').item.json;
+  creation_id = String(beats.creation_id || '');
+  omniFromBeats = String(beats.omnihuman_prompt || beats.pose_motion || '');
 } catch (e) {
   creation_id = '';
 }
 
-const omniPrompt = [
+const omniPrompt = omniFromBeats || [
   'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot,',
   'talking with the audio. Mouth on the white 10ml label moves with speech.',
-  'Walk toward camera, slight 3/4, screen-right. Both white gloves in a walk swing at hip height.',
-  'No thumbs-up. No hat tip. No planted freeze.',
+  'Natural body motion with the audio — walk, sit, stand, or stop as the still shows.',
+  'No thumbs-up. No hat-tip freeze.',
 ].join(' ');
 
 return {

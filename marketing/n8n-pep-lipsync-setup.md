@@ -40,6 +40,9 @@ Schedule Trigger
   → pep_lipsync_fal
   → save_lipsync_video_url
   → sheets_update_creation
+
+Schedule Trigger
+  → get_blocking_pool    (side branch only — do NOT insert on the talking path)
 ```
 
 Kling walk chain still exists — **leave it, do not delete**, keep it **disconnected** from this talking path:
@@ -215,9 +218,9 @@ This is the official fal.ai community node (`@fal-ai/n8n-nodes-fal`), not HTTP R
 | 1 | **Image [string]** (`image_url`) | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
 | 2 | **Audio [string]** (`audio_url`) | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
 | 3 | **Resolution** (`resolution`) | OFF | `1080p` |
-| 4 | **Prompt [string]** (`prompt`) | **ON** | `={{ "Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot, talking with the audio. Mouth on the white 10ml label moves with speech. Walk toward camera, slight 3/4, screen-right. Both white gloves in a walk swing at hip height. No thumbs-up. No hat tip. No planted freeze." }}` |
+| 4 | **Prompt [string]** (`prompt`) | **ON** | `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}` |
 
-Prompt Value must be a **string**. Do **not** use `={{ $json.omnihuman_prompt }}` (that is `undefined`). The `={{ "..." }}` wrapper is a JS string.
+Prompt Value must be a **string**. `String(...)` keeps it a string. Do **not** use `={{ $json.omnihuman_prompt }}` (that is `undefined` on this fal node). Confirm `prep_pep_lipsync` OUTPUT has `omnihuman_prompt` before Test workflow.
 
 The dropdown may show `Image Url [string] *` / `Audio Url [string] *` / `Resolution [select]` / `Prompt [string]`. Those are the same four.
 
@@ -271,7 +274,7 @@ Each execution must pick a **new unused sheet row** and generate a **new still +
 
 **NEVER PIN:** `grok_imagine_reel_still`, `tts_pep_voice_over`, `pep_lipsync_fal`
 
-**UNPIN (unique scene + unique VO):** `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `prep_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url`, `sheets_update_creation`
+**UNPIN (unique scene + unique VO):** `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `get_blocking_pool`, `prep_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url`, `sheets_update_creation`
 
 **PIN (skip Kling bill):** `prep_grok_video_start`, `ai_vid_generator`, `Wait2`, `Wait`, `grok_video_poll`, `kling_video_result`, `save_video_url`
 
@@ -294,7 +297,10 @@ Then **Test workflow** once. Wait up to ~1200s. QC: unique scene, unique VO, mou
 - [ ] `audio_url` = `={{ $('fal_upload_tts_initiate').item.json.file_url }}` — **not hardcoded**
 - [ ] `resolution` = `1080p`
 - [ ] Wait for Completion **ON**, Max Wait Time = `1200`
-- [ ] `prep_pep_lipsync` Mode = Run Once for Each Item, returns a plain object
+- [ ] `pep_lipsync_fal` Prompt Value fx ON = `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}`
+- [ ] `prep_pep_beats` Mode = Run Once for Each Item, returns a plain object
+- [ ] `prep_pep_beats` OUTPUT shows `pep_body_action`, `pep_hand_gesture`, `pose_still` (not the same walk every run)
+- [ ] `(get_blocking_pool)` is a side branch from `Schedule Trigger`, tab `pep-blocking-pool`
 - [ ] `save_lipsync_video_url` Include Other Input Fields **OFF**
 - [ ] `creation_id` fx **ON**
 - [ ] `sheets_update_creation` writes `last_used_at` + `times_used`

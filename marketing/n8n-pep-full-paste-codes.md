@@ -24,7 +24,12 @@ Schedule Trigger
   → pep_lipsync_fal
   → save_lipsync_video_url
   → sheets_update_creation
+
+Schedule Trigger
+  → get_blocking_pool    (side branch only — do NOT insert on the talking path)
 ```
+
+`prep_pep_beats` reads `$('get_blocking_pool').all()` and picks a random body + gesture + angle. If `(get_blocking_pool)` is not on the canvas yet, builtin pools still randomize.
 
 ---
 
@@ -55,6 +60,55 @@ Wire: `filter_active` → `sort_rotation` → `Limit`
 | Exact name | `Limit` |
 | Max Items | `1` |
 | Keep | First Items |
+
+---
+
+## SHEETS: `(get_blocking_pool)` (ADD)
+
+Second tab **`pep-blocking-pool`**. This is pose / gesture / angle only. Scene + compound stay on `150-pb-pep-scenes`.
+
+Wire as a **side branch** from `Schedule Trigger`. Do **not** insert this node between `Limit` and `Prep_day_variant` or anywhere on the talking path — Get Many would replace the scene item with 17 blocking rows.
+
+`Schedule Trigger` → **`(get_blocking_pool)`** (dead-end side branch)
+
+`prep_pep_beats` reads `$('get_blocking_pool').all()`. Use **Test workflow**, not Execute node, so that `$('get_blocking_pool')` has run.
+
+| Parameter | fx | Value |
+|---|---|---|
+| Node type | — | Google Sheets |
+| Exact name | — | `get_blocking_pool` |
+| Credential | — | same Google Sheets account as `get_rows_in_sheet` |
+| Resource | — | Sheet Within Document |
+| Operation | — | Get Row(s) |
+| Document | — | same document as `get_rows_in_sheet` |
+| Sheet | OFF | `pep-blocking-pool` |
+| Filters | — | none (return every row) |
+| Combine Filters | — | AND |
+| Return All / Output all matching rows | — | **ON** |
+| Options → Data Location on Sheet → Header Row | OFF | `1` |
+| Options → Data Location on Sheet → First Data Row | OFF | `2` |
+| Options → Output Formatting | — | Formatted |
+
+Import CSV: `marketing/sheets/pep-blocking-pool.csv` into a new tab named exactly **`pep-blocking-pool`**. Set `active` to `FALSE` to drop a pose without deleting it.
+
+---
+
+## CODE NODE: `prep_pep_beats`
+
+| Parameter | fx | Value |
+|---|---|---|
+| Node type | — | Code |
+| Exact name | — | `prep_pep_beats` |
+| Mode | — | **Run Once for Each Item** |
+| Language | — | JavaScript |
+
+Do **not** use Run Once for All Items. Do **not** `return [{ json: ... }]`.
+
+Wire: `if_complaince` (true) → `prep_pep_beats` → `tts_pep_voice_over`
+
+Paste the full file `marketing/n8n-pep-prep-beats.js`.
+
+Each Test workflow picks a random `pep_body_action` (walking / sitting / standing / stopping / turning) + `pep_hand_gesture` + `pep_angle`. OUTPUT must show `blocking_source` = `pep-blocking-pool` after `(get_blocking_pool)` is live, or `builtin` until that node exists. `pose_still` feeds `grok_imagine_reel_still`. `omnihuman_prompt` feeds `prep_pep_lipsync`.
 
 ---
 
@@ -278,17 +332,20 @@ if (/catbox\.moe/i.test(imageUrl)) {
 }
 
 let creation_id = '';
+let omniFromBeats = '';
 try {
-  creation_id = String($('prep_pep_beats').item.json.creation_id || '');
+  const beats = $('prep_pep_beats').item.json;
+  creation_id = String(beats.creation_id || '');
+  omniFromBeats = String(beats.omnihuman_prompt || beats.pose_motion || '');
 } catch (e) {
   creation_id = '';
 }
 
-const omniPrompt = [
+const omniPrompt = omniFromBeats || [
   'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot,',
   'talking with the audio. Mouth on the white 10ml label moves with speech.',
-  'Walk toward camera, slight 3/4, screen-right. Both white gloves in a walk swing at hip height.',
-  'No thumbs-up. No hat tip. No planted freeze.',
+  'Natural body motion with the audio — walk, sit, stand, or stop as the still shows.',
+  'No thumbs-up. No hat-tip freeze.',
 ].join(' ');
 
 return {
@@ -537,9 +594,9 @@ Do **not** hardcode Audio Url. Do **not** send `video_url` (sync-3 / VEED / Klin
 | 1 | **Image [string]** (`image_url`) | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
 | 2 | **Audio [string]** (`audio_url`) | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
 | 3 | **Resolution** (`resolution`) | OFF | `1080p` |
-| 4 | **Prompt [string]** (`prompt`) | **ON** | `={{ "Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot, talking with the audio. Mouth on the white 10ml label moves with speech. Walk toward camera, slight 3/4, screen-right. Both white gloves in a walk swing at hip height. No thumbs-up. No hat tip. No planted freeze." }}` |
+| 4 | **Prompt [string]** (`prompt`) | **ON** | `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}` |
 
-Prompt Value must be a **string**. Do **not** use `={{ $json.omnihuman_prompt }}` (that is `undefined`). The `={{ "..." }}` wrapper is a JS string.
+Prompt Value must be a **string**. `String(...)` keeps it a string. Do **not** use `={{ $json.omnihuman_prompt }}` (that is `undefined` on this fal node). Confirm `prep_pep_lipsync` OUTPUT has `omnihuman_prompt` before Test workflow.
 
 The dropdown may show `Image Url [string] *` / `Audio Url [string] *` / `Resolution [select]` / `Prompt [string]`. Those are the same four.
 

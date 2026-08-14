@@ -19,6 +19,10 @@ Example (current Pep scenes sheet):
 
 `https://github.com/PalmBeach-Vitality/pep/blob/cursor/palm-beach-pep-scenes-8510/marketing/sheets/150-pb-pep-scenes.csv`
 
+Second Pep tab (blocking / pose pool, Sal-named):
+
+`https://github.com/PalmBeach-Vitality/pep/blob/cursor/palm-beach-pep-scenes-8510/marketing/sheets/pep-blocking-pool.csv`
+
 ## Always send hard links after file updates
 Whenever you update a file Sal needs to download, import, or open, **immediately include the hard link** in the same reply.
 
@@ -43,7 +47,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - Pep fal + Kling setup: `marketing/n8n-pep-fal-kling-setup.md`
 - Pep lip-sync now: `marketing/n8n-pep-lipsync-setup.md`
 - **One workflow (talking path):** still → `prep_pep_lipsync` → `pep_lipsync_fal` (OmniHuman v1.5) → `save_lipsync_video_url` → sheets. Do **not** rename lipsync. Do **not** wire `kling_video_request`. Canvas has **no** `save_tts_audio_url`; audio is `fal_upload_tts_initiate.file_url`.
-- **Talking recipe (locked):** Talking clip = **`pep_lipsync_fal`** OmniHuman v1.5. Dropdown: **Image [string]**, **Audio [string]**, **Resolution**, **Prompt [string]**. Prompt Value fx ON is `={{ "..." }}` (a JS string). Do **not** use `$json.omnihuman_prompt` (undefined). Max Wait **`1200`**.
+- **Talking recipe (locked):** Talking clip = **`pep_lipsync_fal`** OmniHuman v1.5. Dropdown: **Image [string]**, **Audio [string]**, **Resolution**, **Prompt [string]**. Prompt Value fx ON is `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}` (a JS string). Do **not** use `$json.omnihuman_prompt` (undefined). Max Wait **`1200`**. Random Pep blocking comes from tab `pep-blocking-pool` via `(get_blocking_pool)` into `prep_pep_beats`.
 
 ## Social / Imagine
 - Aspect ratio for Pep + landscape social workflows: always **9:16**

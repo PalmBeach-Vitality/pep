@@ -2,7 +2,7 @@
 
 **Status:** BUILD IN PROGRESS — use **EXACT** canvas node names below  
 **Length:** ~60s (4× ~15s) + ElevenLabs TTS  
-**Sheet:** `150-pb-pep-scenes`  
+**Sheet:** `150-pb-pep-scenes` (compound + unique set). Second tab **`pep-blocking-pool`** (random walk / sit / stand / stop / turn + glove gestures).  
 **Character lock:** `marketing/n8n-pep-character-lock.md`  
 **Video stack:** `marketing/n8n-pep-elevenlabs-video.md` (fal OmniHuman talking clip + ElevenLabs TTS; Kling optional walk B-roll)  
 **Pep master:** `https://files.catbox.moe/2yfdbi.jpg`
@@ -37,6 +37,9 @@ Schedule Trigger
                  → pep_lipsync_fal
                  → save_lipsync_video_url
                  → sheets_update_creation
+
+Schedule Trigger
+  → get_blocking_pool    (side branch only — do NOT insert on the talking path)
 ```
 
 Kling walk chain still exists — **leave it, do not delete**, keep it **disconnected** from the talking path:
@@ -55,6 +58,7 @@ TTS public URL = `fal_upload_tts_initiate.file_url`.
 |---|---|---|
 | — | `Schedule Trigger` | Starts the run |
 | 1 | `get_rows_in_sheet` | Read tab `150-pb-pep-scenes` |
+| — | `get_blocking_pool` | Read tab `pep-blocking-pool` (side branch from `Schedule Trigger`) |
 | 2 | `filter_active` | Keep Active rows |
 | 3 | `sort_rotation` | Sort `times_used` ASC, then `last_used_at` ASC |
 | 4 | `Limit` | One row only |
@@ -62,7 +66,7 @@ TTS public URL = `fal_upload_tts_initiate.file_url`.
 | 6 | `grok_api` | Caption LLM (`POST /v1/chat/completions`) |
 | 7 | `parse_grok` | Parse caption JSON |
 | 8 | `if_complaince` | Compliance gate (`complaince` spelling is on purpose) |
-| 9 | `prep_pep_beats` | Beat briefs + `vo_beat_a` |
+| 9 | `prep_pep_beats` | Beat briefs + `vo_beat_a` + random `pose_still` / `omnihuman_prompt` |
 | 10 | `tts_pep_voice_over` | ElevenLabs TTS binary MP3 |
 | 11 | `fal_upload_tts_initiate` | fal upload initiate → `file_url` + `upload_url` |
 | 12 | `merge_tts_binary` | Attach TTS binary onto initiate item |
@@ -100,7 +104,8 @@ On node **`Prep_day_variant`**, set field:
 ## Phase A — Sheet pick (exact names)
 1. `get_rows_in_sheet` → tab **`150-pb-pep-scenes`**
 2. Keep `filter_active` → `sort_rotation` (`times_used` ASC, then `last_used_at` ASC) → `Limit` (=1 unused row)
-3. On `Prep_day_variant` (Include Other Input Fields = ON), ensure:
+3. Add **`(get_blocking_pool)`** as a side branch: `Schedule Trigger` → **`(get_blocking_pool)`**. Tab **`pep-blocking-pool`**. Do **not** insert it on the talking path.
+4. On `Prep_day_variant` (Include Other Input Fields = ON), ensure:
 
 | Name | Value |
 |---|---|
@@ -142,13 +147,16 @@ On node **`Prep_day_variant`**, set field:
 **Pep must match master exactly.** Master: `https://files.catbox.moe/2yfdbi.jpg`
 
 1. `prep_pep_beats` — paste `marketing/n8n-pep-prep-beats.js`  
+   - Mode = **Run Once for Each Item**
    - Reads `$('Prep_day_variant')` then `$('Limit')`
+   - Reads `$('get_blocking_pool').all()` when that node exists; otherwise builtin pools
+   - OUTPUT: `pep_body_action`, `pep_hand_gesture`, `pep_angle`, `pose_still`, `omnihuman_prompt`, `blocking_source`
 2. `grok_imagine_reel_still`
    - URL → **`https://api.x.ai/v1/images/edits`** (never `/generations`)
    - Body → **`marketing/n8n-pep-grok-still-body-lock.txt`** (EDIT `<IMAGE_0>` only)
    - Confirm request preview: `images[0].url` = master
 3. `save_still_url` — save `reel_still_url` / `data[0].url`
-4. **QC gate:** still vs master side-by-side. Face / hat logo / crimp / gloves / sneakers must match. Pose must be mid-stride walking (not master thumbs-up). **Mouth OPEN mid-word** (OmniHuman start frame). Drift or planted thumbs-up → reroll. Do not send a thumbs-up still into OmniHuman.
+4. **QC gate:** still vs master side-by-side. Face / hat logo / crimp / gloves / sneakers must match. Pose must match this run’s `pep_body_action` (walking / sitting / standing / stopping / turning) plus `pep_hand_gesture` — **not** the master thumbs-up, and **not** the same mid-stride walk every video. **Mouth OPEN mid-word** (OmniHuman start frame). Drift or planted thumbs-up → reroll. Do not send a thumbs-up still into OmniHuman.
 
 **Then duplicate for 4 stills** (keep original names for A):
 
@@ -238,7 +246,7 @@ Each Test workflow must pick a new unused sheet row (`sort_rotation` + `Limit` =
 
 **NEVER PIN:** `grok_imagine_reel_still`, `tts_pep_voice_over`, `pep_lipsync_fal`
 
-**UNPIN:** `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `prep_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url`, `sheets_update_creation`
+**UNPIN:** `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `get_blocking_pool`, `prep_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url`, `sheets_update_creation`
 
 **PIN (skip Kling bill):** `prep_grok_video_start`, `ai_vid_generator`, `Wait2`, `Wait`, `grok_video_poll`, `kling_video_result`, `save_video_url`
 
@@ -316,6 +324,7 @@ Mapping helper: `marketing/n8n-pep-sheets-update.txt` (expressions use these exa
 
 ```text
 $('get_rows_in_sheet')
+$('get_blocking_pool')
 $('filter_active')
 $('sort_rotation')
 $('Limit')
@@ -348,6 +357,8 @@ $('save_video_url')
 |---|---|
 | `marketing/n8n-pep-elevenlabs-video.md` | ElevenLabs TTS + OmniHuman talking clip (Kling optional B-roll) |
 | `marketing/n8n-pep-prep-beats.js` | Code for `prep_pep_beats` |
+| `marketing/sheets/150-pb-pep-scenes.csv` | Scene + compound rotation tab |
+| `marketing/sheets/pep-blocking-pool.csv` | Pose / gesture / angle pool for `prep_pep_beats` |
 | `marketing/n8n-pep-grok-still-body.txt` | Body for `grok_imagine_reel_still` (+ _b/_c/_d) |
 | `marketing/n8n-pep-prep-video-beat.js` | Template for fal Kling video prep (set BEAT) |
 | `marketing/n8n-pep-save-outputs.txt` | Optional expanded save fields |

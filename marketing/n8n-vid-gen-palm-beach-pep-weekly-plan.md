@@ -72,6 +72,6 @@ Support files:
 ## Hard rules
 - Separate from `vid_gen_landscape_scenes` and original spotlight
 - Node names: `lower_case_with_underscores`
-- Spreadsheet: only touch tab Sal names exactly (`150-pb-pep-scenes`)
+- Spreadsheet: only touch tabs Sal names exactly (`150-pb-pep-scenes`, `pep-blocking-pool`)
 - After CSV updates: always send hard GitHub link
 - Aspect **9:16** · research-use disclaimer exact in VO + captions
