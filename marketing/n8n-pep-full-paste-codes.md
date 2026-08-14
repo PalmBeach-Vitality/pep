@@ -14,6 +14,7 @@ Schedule Trigger
   → parse_grok
   → if_complaince
   → prep_pep_beats
+  → split_pep_beats
   → tts_pep_voice_over
   → fal_upload_tts_initiate
   → merge_tts_binary
@@ -23,13 +24,14 @@ Schedule Trigger
   → prep_pep_lipsync
   → pep_lipsync_fal
   → save_lipsync_video_url
+  → gather_pep_clips
   → sheets_update_creation
 
 Schedule Trigger
   → get_blocking_pool    (side branch only — do NOT insert on the talking path)
 ```
 
-`prep_pep_beats` reads `$('get_blocking_pool').all()` and picks a random body + gesture + angle. If `(get_blocking_pool)` is not on the canvas yet, builtin pools still randomize.
+`prep_pep_beats` reads `$('get_blocking_pool').all()` and picks **four unique** body + gesture combos (one per beat). If `(get_blocking_pool)` is not on the canvas yet, builtin pools still randomize.
 
 ---
 
@@ -106,11 +108,13 @@ Import CSV: `marketing/sheets/pep-blocking-pool.csv` into a new tab named exactl
 
 Do **not** use Run Once for All Items. Do **not** `return [{ json: ... }]`.
 
-Wire: `if_complaince` (true) → `prep_pep_beats` → `tts_pep_voice_over`
+Wire: `if_complaince` (true) → `prep_pep_beats` → **`(split_pep_beats)`** → `tts_pep_voice_over`
 
 Paste the full file `marketing/n8n-pep-prep-beats.js`.
 
-Each Test workflow picks a random `pep_body_action` (walking / sitting / standing / stopping / turning) + `pep_hand_gesture` + `pep_angle`. OUTPUT must show `blocking_source` = `pep-blocking-pool` after `(get_blocking_pool)` is live, or `builtin` until that node exists. `pose_still` feeds `grok_imagine_reel_still`. `omnihuman_prompt` feeds `prep_pep_lipsync`.
+OUTPUT must show `beat_items` (4) and different `pep_body_action_a`…`_d`. `pose_still` on each split item feeds `grok_imagine_reel_still`. `omnihuman_prompt` on each split item feeds `prep_pep_lipsync`.
+
+60s canvas list: `marketing/n8n-pep-60s-1080-execute.md`.
 
 ---
 
@@ -124,19 +128,39 @@ Each Test workflow picks a random `pep_body_action` (walking / sitting / standin
 | Language | JavaScript |
 
 ```javascript
-const initiate = $input.first();
-const tts = $('tts_pep_voice_over').first();
-
-if (!tts.binary || !tts.binary.data) {
-  throw new Error('No binary data on tts_pep_voice_over — re-run TTS first');
+const initiates = $input.all();
+const ttsItems = $('tts_pep_voice_over').all();
+let splits = [];
+try {
+  splits = $('split_pep_beats').all();
+} catch (e) {
+  splits = [];
 }
 
-return [
-  {
-    json: initiate.json,
+if (initiates.length !== ttsItems.length) {
+  throw new Error(
+    `TTS/initiate count mismatch: ${ttsItems.length} TTS vs ${initiates.length} initiate`
+  );
+}
+
+return initiates.map((initiate, i) => {
+  const tts = ttsItems[i];
+  const split = splits[i] || { json: {} };
+  if (!tts.binary || !tts.binary.data) {
+    throw new Error(
+      `No binary data on tts_pep_voice_over item ${i} (beat ${split.json?.beat || '?'})`
+    );
+  }
+  return {
+    json: {
+      ...(split.json || {}),
+      ...(initiate.json || {}),
+      beat: split.json?.beat || initiate.json?.beat || 'a',
+      creation_id: split.json?.creation_id || initiate.json?.creation_id,
+    },
     binary: tts.binary,
-  },
-];
+  };
+});
 ```
 
 ---
@@ -299,69 +323,7 @@ return {
 
 Do **not** use Run Once for All Items. Do **not** `return [{ json: ... }]`.
 
-```javascript
-function fromNode(name, keys) {
-  try {
-    const j = $(name).item.json;
-    for (const k of keys) {
-      const v = j?.[k];
-      if (v) return String(v);
-    }
-  } catch (e) {}
-  return '';
-}
-
-const imageUrl =
-  fromNode('save_still_url', ['reel_still_url', 'reel_still_url_a']) ||
-  fromNode('grok_imagine_reel_still', ['reel_still_url']) ||
-  String($json.reel_still_url || $json.data?.[0]?.url || '');
-
-const audioUrl =
-  fromNode('fal_upload_tts_initiate', ['file_url', 'tts_audio_url']) ||
-  String($json.tts_audio_url || $json.file_url || '');
-
-if (!imageUrl) {
-  throw new Error('Missing Pep still URL. Expected save_still_url.reel_still_url');
-}
-if (!audioUrl) {
-  throw new Error('Missing TTS audio URL. Expected fal_upload_tts_initiate.file_url');
-}
-if (/catbox\.moe/i.test(audioUrl)) {
-  throw new Error('TTS audio is Catbox — fal cannot fetch files.catbox.moe.');
-}
-if (/catbox\.moe/i.test(imageUrl)) {
-  throw new Error('Still is Catbox — fal OmniHuman may not fetch files.catbox.moe. Use the xAI still URL.');
-}
-
-let creation_id = '';
-let omniFromBeats = '';
-try {
-  const beats = $('prep_pep_beats').item.json;
-  creation_id = String(beats.creation_id || '');
-  omniFromBeats = String(beats.omnihuman_prompt || beats.pose_motion || '');
-} catch (e) {
-  creation_id = '';
-}
-
-const omniPrompt = omniFromBeats || [
-  'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot,',
-  'talking with the audio. Mouth on the white 10ml label moves with speech.',
-  'Natural body motion with the audio — walk, sit, stand, or stop as the still shows.',
-  'No thumbs-up. No hat-tip freeze.',
-].join(' ');
-
-return {
-  creation_id: creation_id,
-  beat: 'a',
-  lipsync_image_in: imageUrl,
-  lipsync_audio_in: audioUrl,
-  reel_still_url: imageUrl,
-  tts_audio_url: audioUrl,
-  omnihuman_prompt: omniPrompt,
-  omnihuman_resolution: '1080p',
-  fal_lipsync_endpoint: 'fal-ai/bytedance/omnihuman/v1.5',
-};
-```
+Paste the full file `marketing/n8n-pep-prep-lipsync.js`. OUTPUT `beat` is `a`/`b`/`c`/`d` from `(split_pep_beats)`, not hardcoded `a`.
 
 ---
 
@@ -401,13 +363,12 @@ JSON Body (fx **ON**). Paste this whole block. Do **not** paste a JSON object wi
 ```
 ={{ (() => {
   const text = String(
-    $('prep_pep_beats').item.json.tts_text ||
-    $('Prep_day_variant').item.json.voice_over ||
-    $('Limit').item.json.voice_over ||
+    $json.tts_text ||
+    $('split_pep_beats').item.json.tts_text ||
     ''
   ).trim();
   if (!text) {
-    throw new Error('Missing sheet voice_over. Check prep_pep_beats.tts_text / Prep_day_variant.voice_over / tab 150-pb-pep-scenes.');
+    throw new Error('Missing beat tts_text. Check split_pep_beats OUTPUT.');
   }
   if (text.includes("$('") || text.includes('={{')) {
     throw new Error('TTS text is an n8n expression, not the sheet VO. JSON Body fx must be ON, paste starting with ={{');
@@ -420,7 +381,7 @@ JSON Body (fx **ON**). Paste this whole block. Do **not** paste a JSON object wi
 })() }}
 ```
 
-`tts_text` / `vo_beat_a` is the first ~15s of that row’s `voice_over` on tab `150-pb-pep-scenes`. Request preview must show those sheet words, not `$('prep_pep_beats')`.
+`tts_text` is that beat’s ~15s slice of the row’s `voice_over` on tab `150-pb-pep-scenes`. Request preview must show those sheet words, not `$('prep_pep_beats')`.
 
 ---
 
@@ -442,7 +403,7 @@ JSON Body:
 ```json
 {
   "content_type": "audio/mpeg",
-  "file_name": "={{ 'pep-' + String($('prep_pep_beats').item.json.creation_id || $('Limit').item.json.creation_id || 'run') + '-' + String($now.toMillis()) + '.mp3' }}"
+  "file_name": "={{ 'pep-' + String($('split_pep_beats').item.json.creation_id || $('prep_pep_beats').item.json.creation_id || 'run') + '-' + String($('split_pep_beats').item.json.beat || 'a') + '-' + String($now.toMillis()) + '.mp3' }}"
 }
 ```
 
@@ -656,17 +617,19 @@ Do **not** execute: `fal_lipsync_call`, `Wait3`, `pep_lipsync_poll`, `pep_lip_sy
 | `lipsync_video_url` | String | `={{ $json.video.url }}` |
 | `video_url` | String | `={{ $json.video.url }}` |
 | `tts_audio_url` | String | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
-| `creation_id` | String | `={{ $('prep_pep_beats').item.json.creation_id }}` |
-| `beat` | String | `a` |
+| `creation_id` | String | `={{ $('split_pep_beats').item.json.creation_id \|\| $('prep_pep_beats').item.json.creation_id }}` |
+| `beat` | String | `={{ $('split_pep_beats').item.json.beat }}` |
 | `model_video` | String | `fal-omnihuman-v1.5` |
 
 ---
 
 ## SHEETS: `sheets_update_creation` (LAST NODE)
 
-Wire: `save_lipsync_video_url` → `sheets_update_creation`
+Wire: `save_lipsync_video_url` → **`(gather_pep_clips)`** → `sheets_update_creation`
 
 Tab `150-pb-pep-scenes` must have columns `times_used` and `last_used_at`. Empty `last_used_at` + `times_used` = `0` means unused.
+
+Paste `marketing/n8n-pep-gather-clips.js` into `(gather_pep_clips)` (All Items). Sheet `video_url` is Beat A. CapCut uses `gather_pep_clips.stitch_clip_urls`.
 
 | Parameter | fx | Value |
 |---|---|---|
@@ -679,12 +642,12 @@ Tab `150-pb-pep-scenes` must have columns `times_used` and `last_used_at`. Empty
 | Sheet | OFF | `150-pb-pep-scenes` |
 | Mapping Column Mode | — | Map Each Column Manually |
 | Column to Match On | OFF | `creation_id` |
-| Value to Match On | ON | `={{ $('prep_pep_beats').item.json.creation_id \|\| $('Limit').item.json.creation_id }}` |
+| Value to Match On | ON | `={{ $('gather_pep_clips').item.json.creation_id \|\| $('prep_pep_beats').item.json.creation_id \|\| $('Limit').item.json.creation_id }}` |
 
 | Column | Type | fx | Value |
 |---|---|---|---|
 | `last_used_at` | String | ON | `={{ $now.toISO() }}` |
 | `times_used` | Number | ON | `={{ Number($('Limit').item.json.times_used \|\| $('Prep_day_variant').item.json.times_used \|\| 0) + 1 }}` |
-| `reel_still_url` | String | ON | `={{ $('save_still_url').item.json.reel_still_url \|\| $('save_still_url').item.json.data[0].url }}` |
-| `video_url` | String | ON | `={{ $('save_lipsync_video_url').item.json.lipsync_video_url \|\| $('save_lipsync_video_url').item.json.video_url \|\| $('save_video_url').item.json.video_url }}` |
-| `model_video` | String | ON | `={{ $('save_lipsync_video_url').item.json.model_video \|\| 'fal-omnihuman-v1.5' }}` |
+| `reel_still_url` | String | ON | `={{ $('gather_pep_clips').item.json.reel_still_url }}` |
+| `video_url` | String | ON | `={{ $('gather_pep_clips').item.json.video_url }}` |
+| `model_video` | String | ON | `={{ $('gather_pep_clips').item.json.model_video \|\| 'fal-omnihuman-v1.5' }}` |

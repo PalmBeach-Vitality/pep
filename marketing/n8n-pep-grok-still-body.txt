@@ -11,9 +11,10 @@
 # (or https://files.catbox.moe/2yfdbi.jpg)
 #
 # Working shape: singular image + type image_url, model grok-imagine-image, 1k
-# Canonical paste file (expression only): n8n-pep-grok-still-body-lock.txt
+# Canonical paste: n8n-pep-grok-still-body-lock.txt
+# 60s path: pose comes from split_pep_beats (unique per beat). Do not duplicate grok_imagine_reel_still_b/_c/_d.
 
-# === BEAT A — expression only (copy from lock file) ===
+# === expression only (copy from lock file) ===
 
 ={{ JSON.stringify({
   model: 'grok-imagine-image',
@@ -22,6 +23,7 @@
   resolution: '1k',
   image: {
     url: String(
+      $('split_pep_beats').item.json.pep_ref_url ||
       $('prep_pep_beats').item.json.pep_ref_url ||
       $('Prep_day_variant').item.json.pep_ref_url ||
       'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-master.jpg'
@@ -32,10 +34,10 @@
     'EDIT THIS IMAGE ONLY.',
     'CRITICAL #1 — CHARACTER: The mascot must stay the EXACT same Pep as the input. Identical face, 10ml label, PALM BEACH VITALITY hat logo, silver crimp, glass vial, gray limbs, white gloves, white sneakers, 3D sticker style. Do not redraw Pep. No screw cap, no extra mascots, no humans.',
     'The words Palm Beach on the hat are BRANDING ONLY. They are not the location. Do not default to sand, turquoise surf, or a generic shoreline.',
-    'CRITICAL #2 — SET: Replace the gray background with this exact 9:16 environment and no other: ' + String($('prep_pep_beats').item.json.surface || $('Prep_day_variant').item.json.surface || '') + '. HARD FAIL if the background is a different place. HARD FAIL if you draw a beach unless that surface text is a beach, sand, shore, or ocean. If the surface is a boardwalk, gym, lab, street, park, pool, landmark, or studio, that is what must fill the frame.',
-    'CRITICAL #3 — POSE: Change from the master planted thumbs-up. Use: ' + String($('prep_pep_beats').item.json.pose_still || '') + ' MOUTH OPEN mid-word on the 10ml label (OmniHuman start). HARD FAIL thumbs-up.',
-    'Lighting on the environment only: ' + String($('prep_pep_beats').item.json.lighting || '') + '.',
-    'Color grade on the environment only: ' + String($('prep_pep_beats').item.json.color_grade || '') + '.',
+    'CRITICAL #2 — SET: Replace the gray background with this exact 9:16 environment and no other: ' + String($('split_pep_beats').item.json.surface || $('prep_pep_beats').item.json.surface || $('Prep_day_variant').item.json.surface || '') + '. HARD FAIL if the background is a different place. HARD FAIL if you draw a beach unless that surface text is a beach, sand, shore, or ocean. If the surface is a boardwalk, gym, lab, street, park, pool, landmark, or studio, that is what must fill the frame.',
+    'CRITICAL #3 — POSE: Change from the master planted thumbs-up. Use: ' + String($('split_pep_beats').item.json.pose_still || $('prep_pep_beats').item.json.pose_still || '') + ' MOUTH OPEN mid-word on the 10ml label (OmniHuman start). HARD FAIL thumbs-up.',
+    'Lighting on the environment only: ' + String($('split_pep_beats').item.json.lighting || $('prep_pep_beats').item.json.lighting || '') + '.',
+    'Color grade on the environment only: ' + String($('split_pep_beats').item.json.color_grade || $('prep_pep_beats').item.json.color_grade || '') + '.',
     'Pep mid-ground, full body visible. No hospitals, no doctor offices, no clinical rooms, no safety placards, no new on-image text.',
     'If any conflict: keep Pep identical AND keep the set identical to the surface text.'
   ].join(' ')

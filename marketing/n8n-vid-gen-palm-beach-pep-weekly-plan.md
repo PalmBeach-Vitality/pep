@@ -30,15 +30,18 @@ get_rows_in_sheet
   → Parse_Grok
   → if_complaince
        true → prep_pep_beats
+              → split_pep_beats
+              → tts_pep_voice_over
               → grok_imagine_reel_still
               → save_still_url
               → prep_pep_lipsync
               → pep_lipsync_fal
               → save_lipsync_video_url
+              → gather_pep_clips
               → sheets_update_creation
 ```
 
-Do **not** rename these. Add Beat B–D only as suffixed duplicates (`*_b`, `*_c`, `*_d`).
+Do **not** rename these. Do **not** duplicate `_b/_c/_d` still nodes. `(split_pep_beats)` runs the talking chain four times.
 
 ---
 
@@ -51,7 +54,7 @@ Do **not** rename these. Add Beat B–D only as suffixed duplicates (`*_b`, `*_c
 | C | World | 30–45s |
 | D | Close + disclaimer energy | 45–60s |
 
-Each still is a starting image of Pep for that beat → **ElevenLabs speaks that row’s sheet `voice_over`** (via `prep_pep_beats.tts_text`) → OmniHuman talks to that audio.
+Each still is a starting image of Pep for that beat → **ElevenLabs speaks that beat’s slice of the row’s sheet `voice_over`** (`split_pep_beats.tts_text`) → OmniHuman talks to that audio. Four unique poses so Pep does not drift.
 
 ---
 

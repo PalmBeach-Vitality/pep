@@ -11,7 +11,9 @@ OmniHuman is **image + audio → talking video**. It does **not** take a Kling `
 
 TTS public URL = `$('fal_upload_tts_initiate').item.json.file_url` (fal CDN). **Catbox is blocked by fal** for audio/video inputs. Master Catbox URL is OK only as Pep still *reference* for Grok EDIT.
 
-Audio must be under **30s at 1080p**. Use `vo_beat_a` (the 15s slice of that row’s unique `voice_over`), not the full 60s script.
+Audio must be under **30s at 1080p**. Split the row’s unique `voice_over` into four ~15s beats via `(split_pep_beats)`. Do not send the full 60s script into one 1080p job.
+
+Canvas steps for the 60s stitch: `marketing/n8n-pep-60s-1080-execute.md`.
 
 Keeper QC: `marketing/n8n-pep-omnihuman-keeper.txt`
 
@@ -30,6 +32,7 @@ Schedule Trigger
   → parse_grok
   → if_complaince
   → prep_pep_beats
+  → split_pep_beats
   → tts_pep_voice_over
   → fal_upload_tts_initiate
   → merge_tts_binary
@@ -39,6 +42,7 @@ Schedule Trigger
   → prep_pep_lipsync
   → pep_lipsync_fal
   → save_lipsync_video_url
+  → gather_pep_clips
   → sheets_update_creation
 
 Schedule Trigger
@@ -93,13 +97,12 @@ Do **not** also add a `xi-api-key` header on the node. The credential already se
 ```
 ={{ (() => {
   const text = String(
-    $('prep_pep_beats').item.json.tts_text ||
-    $('Prep_day_variant').item.json.voice_over ||
-    $('Limit').item.json.voice_over ||
+    $json.tts_text ||
+    $('split_pep_beats').item.json.tts_text ||
     ''
   ).trim();
   if (!text) {
-    throw new Error('Missing sheet voice_over. Check prep_pep_beats.tts_text / Prep_day_variant.voice_over / tab 150-pb-pep-scenes.');
+    throw new Error('Missing beat tts_text. Check split_pep_beats OUTPUT.');
   }
   if (text.includes("$('") || text.includes('={{')) {
     throw new Error('TTS text is an n8n expression, not the sheet VO. JSON Body fx must be ON, paste starting with ={{');
@@ -112,7 +115,7 @@ Do **not** also add a `xi-api-key` header on the node. The credential already se
 })() }}
 ```
 
-**Request preview must show real sheet `voice_over` words** (e.g. `Quick one from Pep. Today we're looking at BPC-157.`). If preview shows `$('prep_pep_beats')` or `vo_beat_a`, fx is off or the old JSON blob is still pasted. Do **not** hardcode a spoken line.
+**Request preview must show real sheet `voice_over` words for that beat.** Item 0 is Beat A. If preview shows `$('prep_pep_beats')` or `tts_text`, fx is off or the old JSON blob is still pasted. Do **not** hardcode a spoken line.
 
 **Expect output:** Binary property named `data` (audio/mpeg).
 
@@ -144,7 +147,7 @@ Do **not** also add a `xi-api-key` header on the node. The credential already se
 ```json
 {
   "content_type": "audio/mpeg",
-  "file_name": "={{ 'pep-' + String($('prep_pep_beats').item.json.creation_id || $('Limit').item.json.creation_id || 'run') + '-' + String($now.toMillis()) + '.mp3' }}"
+  "file_name": "={{ 'pep-' + String($('split_pep_beats').item.json.creation_id || $('prep_pep_beats').item.json.creation_id || 'run') + '-' + String($('split_pep_beats').item.json.beat || 'a') + '-' + String($now.toMillis()) + '.mp3' }}"
 }
 ```
 
@@ -164,20 +167,42 @@ Do **not** also add a `xi-api-key` header on the node. The credential already se
 | Language | JavaScript |
 
 ```javascript
-const initiate = $input.first();
-const tts = $('tts_pep_voice_over').first();
-
-if (!tts.binary || !tts.binary.data) {
-  throw new Error('No binary data on tts_pep_voice_over — re-run TTS first');
+const initiates = $input.all();
+const ttsItems = $('tts_pep_voice_over').all();
+let splits = [];
+try {
+  splits = $('split_pep_beats').all();
+} catch (e) {
+  splits = [];
 }
 
-return [
-  {
-    json: initiate.json,
+if (initiates.length !== ttsItems.length) {
+  throw new Error(
+    `TTS/initiate count mismatch: ${ttsItems.length} TTS vs ${initiates.length} initiate`
+  );
+}
+
+return initiates.map((initiate, i) => {
+  const tts = ttsItems[i];
+  const split = splits[i] || { json: {} };
+  if (!tts.binary || !tts.binary.data) {
+    throw new Error(
+      `No binary data on tts_pep_voice_over item ${i} (beat ${split.json?.beat || '?'})`
+    );
+  }
+  return {
+    json: {
+      ...(split.json || {}),
+      ...(initiate.json || {}),
+      beat: split.json?.beat || initiate.json?.beat || 'a',
+      creation_id: split.json?.creation_id || initiate.json?.creation_id,
+    },
     binary: tts.binary,
-  },
-];
+  };
+});
 ```
+
+Canonical file: `marketing/n8n-pep-merge-tts-binary.js`. Do **not** use `.first()` — that glues Beat A audio onto every clip.
 
 ---
 
@@ -272,11 +297,13 @@ If n8n errors `[ERROR: No path back to node]` on `$('save_still_url')`, fall bac
 | `lipsync_video_url` | String | ON | `={{ $json.video.url }}` |
 | `video_url` | String | ON | `={{ $json.video.url }}` |
 | `tts_audio_url` | String | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
-| `creation_id` | String | ON | `={{ $('prep_pep_beats').item.json.creation_id }}` |
-| `beat` | String | OFF | `a` |
+| `creation_id` | String | ON | `={{ $('split_pep_beats').item.json.creation_id \|\| $('prep_pep_beats').item.json.creation_id }}` |
+| `beat` | String | ON | `={{ $('split_pep_beats').item.json.beat }}` |
 | `model_video` | String | OFF | `fal-omnihuman-v1.5` |
 
-**Wire next:** `save_lipsync_video_url` → `sheets_update_creation`
+**Wire next:** `save_lipsync_video_url` → **`(gather_pep_clips)`** → `sheets_update_creation`
+
+Paste `marketing/n8n-pep-gather-clips.js` into `(gather_pep_clips)` (All Items). Full 60s canvas list: `marketing/n8n-pep-60s-1080-execute.md`.
 
 ---
 
@@ -288,7 +315,7 @@ Each execution must pick a **new unused sheet row** and generate a **new still +
 
 **NEVER PIN:** `grok_imagine_reel_still`, `tts_pep_voice_over`, `pep_lipsync_fal`
 
-**UNPIN (unique scene + unique VO):** `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `get_blocking_pool`, `prep_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url`, `sheets_update_creation`
+**UNPIN (unique scene + unique VO):** `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `get_blocking_pool`, `prep_pep_beats`, `split_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url`, `gather_pep_clips`, `sheets_update_creation`
 
 **PIN (skip Kling bill):** `prep_grok_video_start`, `ai_vid_generator`, `Wait2`, `Wait`, `grok_video_poll`, `kling_video_result`, `save_video_url`
 
@@ -304,8 +331,10 @@ Then **Test workflow** once. Wait up to ~1200s. QC: unique scene, unique VO, mou
 
 - [ ] `sort_rotation` sorts `times_used` ASC then `last_used_at` ASC
 - [ ] `Limit` Max Items = `1`
-- [ ] `tts_pep_voice_over` JSON Body fx **ON**, paste starts with `={{ (() => {` — request preview is sheet VO, **not** `$('prep_pep_beats')`
-- [ ] `fal_upload_tts_initiate` `file_name` is unique (`pep-{{creation_id}}-{{timestamp}}.mp3`), not `pep-beat-a.mp3`
+- [ ] `tts_pep_voice_over` JSON Body fx **ON**, paste starts with `={{ (() => {` — request preview is that beat’s sheet VO, **not** `$('prep_pep_beats')`
+- [ ] `fal_upload_tts_initiate` `file_name` includes `creation_id` **and** `beat` (`pep-{{creation_id}}-{{beat}}-{{timestamp}}.mp3`)
+- [ ] `(split_pep_beats)` OUTPUT is 4 items with unique `pep_body_action`
+- [ ] `(gather_pep_clips)` is after `save_lipsync_video_url` so sheets write once
 - [ ] `pep_lipsync_fal` Model = **OmniHuman / Omnihuman v1.5** (not sync-3 / VEED / Kling lipsync / LatentSync)
 - [ ] `image_url` = `={{ $('save_still_url').item.json.reel_still_url }}`
 - [ ] `audio_url` = `={{ $('fal_upload_tts_initiate').item.json.file_url }}` — **not hardcoded**

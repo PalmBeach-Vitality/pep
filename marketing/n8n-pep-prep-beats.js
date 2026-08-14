@@ -1,10 +1,11 @@
 // Node: prep_pep_beats (Code)
 // After: if_complaince (true)  — EXACT canvas name
+// Next: split_pep_beats
 // Uses: Prep_day_variant → Limit (EXACT names)
 // Mode: Run Once for Each Item
 // Do NOT return [{ json: ... }]
-// Each run picks a random body action + hand gesture so Pep is not
-// the same mid-stride walk every video. Thumbs-up is never allowed.
+// Picks FOUR unique body+gesture combos (beats A–D) so a 60s 1080p
+// stitch does not drift on one pose. Thumbs-up is never allowed.
 // Spoken lines come from tab 150-pb-pep-scenes column voice_over only.
 // Do not hardcode VO. "research language only" is caption-only.
 
@@ -50,6 +51,37 @@ if (!pepRefUrl) {
 
 function pick(list) {
   return list[Math.floor(Math.random() * list.length)];
+}
+
+function shuffle(list) {
+  const out = list.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = out[i];
+    out[i] = out[j];
+    out[j] = tmp;
+  }
+  return out;
+}
+
+function pickUnique(list, n) {
+  if (!list.length) {
+    throw new Error('Cannot pick blocking — empty pool.');
+  }
+  const mixed = shuffle(list);
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    out.push(mixed[i % mixed.length]);
+  }
+  return out;
+}
+
+function angleText(rowOrString) {
+  const fallback = 'slight 3/4 screen-right';
+  if (rowOrString && typeof rowOrString === 'object') {
+    return String(rowOrString.id || rowOrString.brief || fallback);
+  }
+  return String(rowOrString || fallback);
 }
 
 function isActive(v) {
@@ -172,10 +204,13 @@ const sheetGestures = rowsFromBlockingPool('gesture');
 const sheetAngles = rowsFromBlockingPool('angle');
 const blockingSource = (sheetBodies.length && sheetGestures.length) ? 'pep-blocking-pool' : 'builtin';
 
-const body = pick(sheetBodies.length ? sheetBodies : BODY_ACTIONS);
-const gesture = pick(sheetGestures.length ? sheetGestures : GESTURES);
-const angleRow = sheetAngles.length ? pick(sheetAngles) : null;
-const angle = angleRow ? String(angleRow.id || angleRow.brief || ANGLES[0]) : pick(ANGLES);
+const BEAT_IDS = ['a', 'b', 'c', 'd'];
+const bodies = pickUnique(sheetBodies.length ? sheetBodies : BODY_ACTIONS, 4);
+const gestures = pickUnique(sheetGestures.length ? sheetGestures : GESTURES, 4);
+const anglePool = sheetAngles.length
+  ? sheetAngles
+  : ANGLES.map((label) => ({ id: label, brief: label }));
+const angles = pickUnique(anglePool, 4);
 
 const pepLock = [
   'CHARACTER LOCK — use master Pep reference exactly (https://files.catbox.moe/2yfdbi.jpg).',
@@ -188,65 +223,66 @@ const pepLock = [
   'HARD FAIL: thumbs-up. No hat-tip freeze. No extra mascots. No humans. No doctor offices. No hospitals.',
 ].join(' ');
 
-const poseStill = [body.still, gesture.still, `ANGLE: ${angle}.`, 'MOUTH OPEN mid-word (OmniHuman start frame).'].join(' ');
-const poseMotion = `${body.motion}; ${gesture.motion}; ${angle}; talking mouth the whole clip`;
+function packBlocking(body, gesture, angleRow) {
+  const angle = angleText(angleRow);
+  const poseStill = [body.still, gesture.still, `ANGLE: ${angle}.`, 'MOUTH OPEN mid-word (OmniHuman start frame).'].join(' ');
+  const poseMotion = `${body.motion}; ${gesture.motion}; ${angle}; talking mouth the whole clip`;
+  const omnihuman_prompt = [
+    'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot,',
+    'talking with the audio. Mouth on the white 10ml label moves with speech.',
+    (body.omni || body.motion) + '.',
+    (gesture.omni || gesture.motion) + '.',
+    angle + '.',
+    'No thumbs-up. No hat-tip freeze.',
+  ].join(' ');
+  return { body, gesture, angle, poseStill, poseMotion, omnihuman_prompt };
+}
 
-const beats = {
-  a: {
-    name: 'hook',
-    brief: `Beat A HOOK: Palm Beach Pep mid-ground in this unique set: ${surface}. Blocking this run: ${body.brief}, ${gesture.id.replace(/_/g, ' ')}. ${poseStill} ${pepLock} Product lock: ${compound} (${compoundId}). Lighting: ${lighting}. Grade: ${grade}. Full environment, not void packshot.`,
-    motion: `${poseMotion}; 0–15s; ${motion}; preserve Pep identity; no thumbs-up; no new text`,
-  },
-  b: {
-    name: 'product',
-    brief: `Beat B PRODUCT: Same set (${surface}). Keep ${body.brief} and talking — slightly closer on the 10ml label while full scene stays. ${pepLock} Product lock: ${compound} (${compoundId}). Hero: ${hero}.`,
-    motion: `continue ${poseMotion}; slow track in on label; preserve Pep identity; no thumbs-up; no new text`,
-  },
-  c: {
-    name: 'world',
-    brief: `Beat C WORLD: Same set (${surface}). Keep ${body.brief} and talking. Stronger environment motion while Pep stays mid-ground. ${pepLock} Product lock: ${compound} (${compoundId}). Source scene: ${String(sceneBrief).slice(0, 400)}`,
-    motion: `continue ${poseMotion}; environment drift; preserve identity; no thumbs-up`,
-  },
-  d: {
-    name: 'close',
-    brief: `Beat D CLOSE: Same set (${surface}). Keep ${body.brief} and talking. Mouth keeps moving. ${pepLock} Product lock: ${compound} (${compoundId}). No new on-screen text.`,
-    motion: `continue ${poseMotion}; ease last 1s; preserve Pep identity; no thumbs-up; no new text`,
-  },
+const packs = BEAT_IDS.map((id, i) => packBlocking(bodies[i], gestures[i], angles[i]));
+const body = packs[0].body;
+const gesture = packs[0].gesture;
+const angle = packs[0].angle;
+const poseStill = packs[0].poseStill;
+const poseMotion = packs[0].poseMotion;
+
+const beatMeta = {
+  a: { name: 'hook', window: '0–15s', extra: `${motion}; preserve Pep identity; no thumbs-up; no new text` },
+  b: { name: 'product', window: '15–30s', extra: 'slightly closer on the 10ml label while full scene stays; preserve Pep identity; no thumbs-up; no new text' },
+  c: { name: 'world', window: '30–45s', extra: 'stronger environment motion while Pep stays mid-ground; preserve identity; no thumbs-up' },
+  d: { name: 'close', window: '45–60s', extra: 'ease last 1s; preserve Pep identity; no thumbs-up; no new text' },
 };
 
-function clipSheetVoice(text, maxWords) {
-  const sentences = String(text || '').split(/(?<=[.!?])\s+/).filter(Boolean);
-  const out = [];
-  let words = 0;
-  for (const s of sentences) {
-    const n = s.split(/\s+/).filter(Boolean).length;
-    if (out.length && words + n > maxWords) break;
-    out.push(s);
-    words += n;
-    if (words >= Math.max(24, maxWords - 10)) break;
-  }
-  return (out.join(' ') || String(text).split(/\s+/).slice(0, maxWords).join(' ')).trim();
+const beats = {};
+for (let i = 0; i < BEAT_IDS.length; i++) {
+  const id = BEAT_IDS[i];
+  const p = packs[i];
+  const meta = beatMeta[id];
+  const gestureLabel = String(p.gesture.id || '').replace(/_/g, ' ');
+  beats[id] = {
+    name: meta.name,
+    brief: `Beat ${id.toUpperCase()} ${meta.name.toUpperCase()}: Palm Beach Pep mid-ground in this unique set: ${surface}. Blocking this beat: ${p.body.brief}, ${gestureLabel}. ${p.poseStill} ${pepLock} Product lock: ${compound} (${compoundId}). Lighting: ${lighting}. Grade: ${grade}. Hero: ${hero}. ${id === 'c' ? 'Source scene: ' + String(sceneBrief).slice(0, 400) : 'Full environment, not void packshot.'}`,
+    motion: `${p.poseMotion}; ${meta.window}; ${meta.extra}`,
+  };
 }
 
 function splitVoice(text) {
-  const a = clipSheetVoice(text, 42);
-  const rest = text.startsWith(a) ? text.slice(a.length).trim() : text;
-  const parts = rest.split(/(?<=\.)\s+/).filter(Boolean);
-  if (parts.length >= 3) {
-    const n = Math.ceil(parts.length / 3);
+  const sentences = String(text || '').split(/(?<=[.!?])\s+/).filter(Boolean);
+  if (sentences.length >= 4) {
+    const n = Math.ceil(sentences.length / 4);
     return {
-      a,
-      b: parts.slice(0, n).join(' '),
-      c: parts.slice(n, n * 2).join(' '),
-      d: parts.slice(n * 2).join(' '),
+      a: sentences.slice(0, n).join(' ').trim(),
+      b: sentences.slice(n, n * 2).join(' ').trim(),
+      c: sentences.slice(n * 2, n * 3).join(' ').trim(),
+      d: sentences.slice(n * 3).join(' ').trim(),
     };
   }
-  const chunk = Math.max(1, Math.ceil(rest.length / 3));
+  const words = String(text || '').split(/\s+/).filter(Boolean);
+  const n = Math.max(1, Math.ceil(words.length / 4));
   return {
-    a,
-    b: rest.slice(0, chunk).trim(),
-    c: rest.slice(chunk, chunk * 2).trim(),
-    d: rest.slice(chunk * 2).trim(),
+    a: words.slice(0, n).join(' ').trim(),
+    b: words.slice(n, n * 2).join(' ').trim(),
+    c: words.slice(n * 2, n * 3).join(' ').trim(),
+    d: words.slice(n * 3).join(' ').trim(),
   };
 }
 
@@ -254,15 +290,34 @@ const vo = splitVoice(voiceOver);
 if (disclaimer && !String(vo.d).includes('laboratory research use only')) {
   vo.d = `${vo.d} ${disclaimer}`.trim();
 }
+for (const id of BEAT_IDS) {
+  if (!String(vo[id] || '').trim()) {
+    throw new Error(`Empty vo_beat_${id}. Sheet voice_over is too short to split into four 1080p clips.`);
+  }
+}
 
-const omnihuman_prompt = [
-  'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot,',
-  'talking with the audio. Mouth on the white 10ml label moves with speech.',
-  (body.omni || body.motion) + '.',
-  (gesture.omni || gesture.motion) + '.',
-  angle + '.',
-  'No thumbs-up. No hat-tip freeze.',
-].join(' ');
+const omnihuman_prompt = packs[0].omnihuman_prompt;
+
+const beat_items = BEAT_IDS.map((id, i) => {
+  const p = packs[i];
+  return {
+    beat: id,
+    tts_text: vo[id],
+    pep_body_action: p.body.id,
+    pep_hand_gesture: p.gesture.id,
+    pep_angle: p.angle,
+    pose_still: p.poseStill,
+    pose_motion: p.poseMotion,
+    omnihuman_prompt: p.omnihuman_prompt,
+    beat_brief: beats[id].brief,
+    beat_motion: beats[id].motion,
+  };
+});
+
+const uniqueBodies = new Set(beat_items.map((b) => b.pep_body_action));
+if (uniqueBodies.size < 2) {
+  throw new Error('Need at least two different body actions across beats so Pep does not drift on one pose.');
+}
 
 return {
   ...row,
@@ -270,15 +325,32 @@ return {
   compound_id: compoundId,
   compound_name: compound,
   pep_ref_url: pepRefUrl,
-  target_duration_seconds: 15,
+  target_duration_seconds: 60,
   beat_count: 4,
   pep_body_action: body.id,
   pep_hand_gesture: gesture.id,
   pep_angle: angle,
+  pep_body_action_a: packs[0].body.id,
+  pep_body_action_b: packs[1].body.id,
+  pep_body_action_c: packs[2].body.id,
+  pep_body_action_d: packs[3].body.id,
+  pep_hand_gesture_a: packs[0].gesture.id,
+  pep_hand_gesture_b: packs[1].gesture.id,
+  pep_hand_gesture_c: packs[2].gesture.id,
+  pep_hand_gesture_d: packs[3].gesture.id,
   blocking_source: blockingSource,
   pose_still: poseStill,
+  pose_still_a: packs[0].poseStill,
+  pose_still_b: packs[1].poseStill,
+  pose_still_c: packs[2].poseStill,
+  pose_still_d: packs[3].poseStill,
   pose_motion: poseMotion,
   omnihuman_prompt: omnihuman_prompt,
+  omnihuman_prompt_a: packs[0].omnihuman_prompt,
+  omnihuman_prompt_b: packs[1].omnihuman_prompt,
+  omnihuman_prompt_c: packs[2].omnihuman_prompt,
+  omnihuman_prompt_d: packs[3].omnihuman_prompt,
+  beat_items: beat_items,
   beat_a_brief: beats.a.brief,
   beat_b_brief: beats.b.brief,
   beat_c_brief: beats.c.brief,

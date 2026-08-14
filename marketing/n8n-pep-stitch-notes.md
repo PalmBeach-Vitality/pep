@@ -3,9 +3,10 @@
 ## Goal
 For each beat (or the master cut): **ElevenLabs VO → OmniHuman talking clip → final MP4**.
 
-One workflow: Pep still + TTS fal URL → `prep_pep_lipsync` → `pep_lipsync_fal` (OmniHuman v1.5) → `save_lipsync_video_url`.  
+One workflow: `(split_pep_beats)` runs the talking chain four times (unique pose + ~15s VO each) → `gather_pep_clips` → CapCut.  
+1080p stays locked (audio under 30s per clip). Do not use 720p for a single 60s take — Pep drifts.  
 Kling I2V is optional walk B-roll only — keep it disconnected from the talking path.  
-Full A→B→C→D stitch can wait until Beat A OmniHuman looks right. See `marketing/n8n-pep-lipsync-setup.md`.
+Canvas steps: `marketing/n8n-pep-60s-1080-execute.md`.
 
 ## Order (locked)
 1. `tts_pep_voice_over` (ElevenLabs) → fal CDN `file_url` on `fal_upload_tts_initiate`
@@ -14,8 +15,8 @@ Full A→B→C→D stitch can wait until Beat A OmniHuman looks right. See `mark
 4. Later: concat talking beats / or stitch then one VO
 
 ## Node: `tts_pep_voice_over` (ElevenLabs — preferred)
-**Beat A smoke text:** `{{ $('prep_pep_beats').item.json.vo_beat_a }}`  
-**Full cut text:** `{{ $('prep_pep_beats').item.json.voice_over }}`
+**Per-beat text (60s 1080p):** `{{ $json.tts_text }}` from `(split_pep_beats)` (four items).  
+Do **not** send the full sheet `voice_over` into one 1080p OmniHuman job.
 
 ### ElevenLabs TTS (HTTP Request) — locked for Pep
 - Voice ID (Sal locked): `yl2ZDV1MzN4HbQJbMihG`
@@ -27,13 +28,12 @@ Full A→B→C→D stitch can wait until Beat A OmniHuman looks right. See `mark
 ```
 ={{ (() => {
   const text = String(
-    $('prep_pep_beats').item.json.tts_text ||
-    $('Prep_day_variant').item.json.voice_over ||
-    $('Limit').item.json.voice_over ||
+    $json.tts_text ||
+    $('split_pep_beats').item.json.tts_text ||
     ''
   ).trim();
   if (!text) {
-    throw new Error('Missing sheet voice_over. Check prep_pep_beats.tts_text / Prep_day_variant.voice_over.');
+    throw new Error('Missing beat tts_text. Check split_pep_beats OUTPUT.');
   }
   if (text.includes("$('") || text.includes('={{')) {
     throw new Error('TTS text is an n8n expression, not the sheet VO.');
@@ -79,11 +79,11 @@ ffmpeg -y -i a.mp4 -i b.mp4 -i c.mp4 -i d.mp4 -filter_complex \
 Offset math: clip length 15 minus dissolve 0.4. Three dissolves → ~58.8s.
 
 ### Fallback — no ffmpeg yet
-1. Ship Beat A OmniHuman first  
+1. Copy `lipsync_video_url_a`…`_d` from `gather_pep_clips` OUTPUT  
 2. Manual stitch in CapCut with the dissolves above  
-3. Add `stitch_pep_master` later  
+3. Add `stitch_pep_master` later if we want ffmpeg on canvas  
 
 ## Timing
-- Beat A smoke: ~15s video + `vo_beat_a`  
-- Full: 4 × 15s with short dissolves ≈ **58–60s** + VO / disclaimer at end
-- Walk direction is locked (toward camera, slight 3/4, screen-right) so dissolves hide the remaining pose mismatch.
+- Full: 4 × ~15s 1080p OmniHuman with unique blocking per beat  
+- Short dissolves ≈ **58–60s**
+- Dissolves hide remaining pose mismatch between beats.

@@ -4,6 +4,7 @@
 // Audio: fal_upload_tts_initiate.file_url (no save_tts_audio_url on canvas)
 // Mode: Run Once for Each Item
 // Do NOT return [{ json: ... }] — newer n8n errors "A 'json' property isn't an object"
+// After split_pep_beats this runs four times. Use paired split item, not hardcoded beat a.
 
 function fromNode(name, keys) {
   try {
@@ -17,9 +18,9 @@ function fromNode(name, keys) {
 }
 
 const imageUrl =
+  String($json.reel_still_url || $json.data?.[0]?.url || '') ||
   fromNode('save_still_url', ['reel_still_url', 'reel_still_url_a']) ||
-  fromNode('grok_imagine_reel_still', ['reel_still_url']) ||
-  String($json.reel_still_url || $json.data?.[0]?.url || '');
+  fromNode('grok_imagine_reel_still', ['reel_still_url']);
 
 const audioUrl =
   fromNode('fal_upload_tts_initiate', ['file_url', 'tts_audio_url']) ||
@@ -38,15 +39,19 @@ if (/catbox\.moe/i.test(imageUrl)) {
   throw new Error('Still is Catbox — fal OmniHuman may not fetch files.catbox.moe. Use the xAI still URL.');
 }
 
-let creation_id = '';
-let omniFromBeats = '';
-try {
-  const beats = $('prep_pep_beats').item.json;
-  creation_id = String(beats.creation_id || '');
-  omniFromBeats = String(beats.omnihuman_prompt || beats.pose_motion || '');
-} catch (e) {
-  creation_id = '';
-}
+const beat =
+  fromNode('split_pep_beats', ['beat']) ||
+  String($json.beat || '') ||
+  'a';
+
+const creation_id =
+  fromNode('split_pep_beats', ['creation_id']) ||
+  fromNode('prep_pep_beats', ['creation_id']) ||
+  String($json.creation_id || '');
+
+const omniFromBeats =
+  fromNode('split_pep_beats', ['omnihuman_prompt']) ||
+  fromNode('prep_pep_beats', ['omnihuman_prompt']);
 
 const omniPrompt = omniFromBeats || [
   'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot,',
@@ -57,7 +62,7 @@ const omniPrompt = omniFromBeats || [
 
 return {
   creation_id: creation_id,
-  beat: 'a',
+  beat: beat,
   lipsync_image_in: imageUrl,
   lipsync_audio_in: audioUrl,
   reel_still_url: imageUrl,

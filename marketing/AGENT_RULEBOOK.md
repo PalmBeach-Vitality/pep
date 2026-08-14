@@ -56,7 +56,7 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - Pep video stack: `marketing/n8n-pep-elevenlabs-video.md` (ElevenLabs cartoon intent → fal Kling I2V + ElevenLabs TTS; keep exact node names)
 - Pep fal + Kling setup: `marketing/n8n-pep-fal-kling-setup.md`
 - Pep lip-sync now: `marketing/n8n-pep-lipsync-setup.md`
-- **One workflow (talking path):** still → `prep_pep_lipsync` → `pep_lipsync_fal` (OmniHuman v1.5) → `save_lipsync_video_url` → sheets. Do **not** rename lipsync. Do **not** wire `kling_video_request`. Canvas has **no** `save_tts_audio_url`; audio is `fal_upload_tts_initiate.file_url`.
+- **One workflow (talking path):** still → `prep_pep_lipsync` → `pep_lipsync_fal` (OmniHuman v1.5) → `save_lipsync_video_url` → `(gather_pep_clips)` → sheets. 60s = four 1080p clips via `(split_pep_beats)` on that same path (unique pose per beat). Do **not** rename lipsync. Do **not** wire `kling_video_request`. Canvas has **no** `save_tts_audio_url`; audio is `fal_upload_tts_initiate.file_url`. 60s canvas steps: `marketing/n8n-pep-60s-1080-execute.md`.
 - **Talking recipe (locked):** Talking clip = **`pep_lipsync_fal`** OmniHuman v1.5. Dropdown: **Image [string]**, **Audio [string]**, **Resolution**, **Prompt [string]**. Prompt Value fx ON is `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}` (a JS string). Do **not** use `$json.omnihuman_prompt` (undefined). Max Wait **`1200`**. Random Pep blocking comes from tab `pep-blocking-pool` via `(get_blocking_pool)` into `prep_pep_beats`.
 
 ## Social / Imagine

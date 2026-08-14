@@ -27,6 +27,7 @@ Schedule Trigger
   → if_complaince
        false → stop
        true  → prep_pep_beats
+                 → split_pep_beats
                  → tts_pep_voice_over
                  → fal_upload_tts_initiate
                  → merge_tts_binary
@@ -36,6 +37,7 @@ Schedule Trigger
                  → prep_pep_lipsync
                  → pep_lipsync_fal
                  → save_lipsync_video_url
+                 → gather_pep_clips
                  → sheets_update_creation
 
 Schedule Trigger
@@ -66,8 +68,9 @@ TTS public URL = `fal_upload_tts_initiate.file_url`.
 | 6 | `grok_api` | Caption LLM (`POST /v1/chat/completions`) |
 | 7 | `parse_grok` | Parse caption JSON |
 | 8 | `if_complaince` | Compliance gate (`complaince` spelling is on purpose) |
-| 9 | `prep_pep_beats` | Beat briefs + `vo_beat_a` + random `pose_still` / `omnihuman_prompt` |
-| 10 | `tts_pep_voice_over` | ElevenLabs TTS binary MP3 |
+| 9 | `prep_pep_beats` | Four unique blockings + four VO slices (`beat_items`) |
+| — | `split_pep_beats` | One item → four beat items on the existing talking path |
+| 10 | `tts_pep_voice_over` | ElevenLabs TTS binary MP3 (runs 4×) |
 | 11 | `fal_upload_tts_initiate` | fal upload initiate → `file_url` + `upload_url` |
 | 12 | `merge_tts_binary` | Attach TTS binary onto initiate item |
 | 13 | `fal_upload_tts_put` | PUT binary `data` to `upload_url` |
@@ -75,8 +78,9 @@ TTS public URL = `fal_upload_tts_initiate.file_url`.
 | 15 | `save_still_url` | Save `reel_still_url` |
 | 16 | `prep_pep_lipsync` | OmniHuman inputs from `save_still_url.reel_still_url` + `fal_upload_tts_initiate.file_url` |
 | 17 | `pep_lipsync_fal` | fal OmniHuman v1.5 — `image_url` + `audio_url` + `resolution` `1080p`. Wait for Completion ON. Max wait `1200` |
-| 18 | `save_lipsync_video_url` | Save `lipsync_video_url` from `$json.video.url` · Include Other Input Fields **OFF** |
-| 19 | `sheets_update_creation` | Sheet writeback |
+| 18 | `save_lipsync_video_url` | Save `lipsync_video_url` from `$json.video.url` · Include Other Input Fields **OFF** · `beat` from `split_pep_beats` |
+| — | `gather_pep_clips` | Collapse 4 clips → CapCut URLs + one sheet writeback |
+| 19 | `sheets_update_creation` | Sheet writeback once |
 | — | `prep_grok_video_start` | Optional Kling walk B-roll — keep disconnected from talking path |
 | — | `ai_vid_generator` | Optional Kling POST (`queue.fal.run/.../kling-video/...`) |
 | — | `Wait2` | Wait after `ai_vid_generator` |
@@ -150,22 +154,16 @@ On node **`Prep_day_variant`**, set field:
    - Mode = **Run Once for Each Item**
    - Reads `$('Prep_day_variant')` then `$('Limit')`
    - Reads `$('get_blocking_pool').all()` when that node exists; otherwise builtin pools
-   - OUTPUT: `pep_body_action`, `pep_hand_gesture`, `pep_angle`, `pose_still`, `omnihuman_prompt`, `blocking_source`, `tts_text`, `vo_source` (`sheet`)
-2. `grok_imagine_reel_still`
+   - OUTPUT: `beat_items` (4 unique body+gesture combos), `pose_still_a`…`_d`, `omnihuman_prompt_a`…`_d`, `vo_beat_a`…`_d`, `blocking_source`
+2. **`(split_pep_beats)`** — paste `marketing/n8n-pep-split-beats.js` (All Items). Wire `prep_pep_beats` → **`(split_pep_beats)`** → `tts_pep_voice_over`. Do **not** duplicate `grok_imagine_reel_still_b/_c/_d`.
+3. `grok_imagine_reel_still`
    - URL → **`https://api.x.ai/v1/images/edits`** (never `/generations`)
-   - Body → **`marketing/n8n-pep-grok-still-body-lock.txt`** (EDIT `<IMAGE_0>` only)
+   - Body → **`marketing/n8n-pep-grok-still-body-lock.txt`** (POSE from `$('split_pep_beats').item.json.pose_still`)
    - Confirm request preview: `images[0].url` = master
-3. `save_still_url` — save `reel_still_url` / `data[0].url`
-4. **QC gate:** still vs master side-by-side. Face / hat logo / crimp / gloves / sneakers must match. Pose must match this run’s `pep_body_action` (walking / sitting / standing / stopping / turning) plus `pep_hand_gesture` — **not** the master thumbs-up, and **not** the same mid-stride walk every video. **Mouth OPEN mid-word** (OmniHuman start frame). Drift or planted thumbs-up → reroll. Do not send a thumbs-up still into OmniHuman.
+4. `save_still_url` — save `reel_still_url` / `data[0].url`
+5. **QC gate:** still vs master side-by-side. Face / hat logo / crimp / gloves / sneakers must match. Pose must match **that beat’s** `pep_body_action` — **not** the master thumbs-up, and **not** the same pose on all four beats. **Mouth OPEN mid-word** (OmniHuman start frame). Drift or planted thumbs-up → reroll. Do not send a thumbs-up still into OmniHuman.
 
-**Then duplicate for 4 stills** (keep original names for A):
-
-| Beat | Still node (exact / new) | Save node |
-|---|---|---|
-| A | `grok_imagine_reel_still` | `save_still_url` |
-| B | `grok_imagine_reel_still_b` | `save_still_url_b` |
-| C | `grok_imagine_reel_still_c` | `save_still_url_c` |
-| D | `grok_imagine_reel_still_d` | `save_still_url_d` |
+60s canvas steps: `marketing/n8n-pep-60s-1080-execute.md`.
 
 ---
 
@@ -247,7 +245,7 @@ Each Test workflow must pick a new unused sheet row (`sort_rotation` + `Limit` =
 
 **NEVER PIN:** `grok_imagine_reel_still`, `tts_pep_voice_over`, `pep_lipsync_fal`
 
-**UNPIN:** `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `get_blocking_pool`, `prep_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url`, `sheets_update_creation`
+**UNPIN:** `get_rows_in_sheet`, `filter_active`, `sort_rotation`, `Limit`, `Prep_day_variant`, `grok_api`, `parse_grok`, `if_complaince`, `get_blocking_pool`, `prep_pep_beats`, `split_pep_beats`, `tts_pep_voice_over`, `fal_upload_tts_initiate`, `merge_tts_binary`, `fal_upload_tts_put`, `grok_imagine_reel_still`, `save_still_url`, `prep_pep_lipsync`, `pep_lipsync_fal`, `save_lipsync_video_url`, `gather_pep_clips`, `sheets_update_creation`
 
 **PIN (skip Kling bill):** `prep_grok_video_start`, `ai_vid_generator`, `Wait2`, `Wait`, `grok_video_poll`, `kling_video_result`, `save_video_url`
 
@@ -308,7 +306,7 @@ Do **not** pin `pep_lipsync_fal` on that run or n8n will replay the old clip wit
 ## Phase E — ElevenLabs TTS + OmniHuman (same workflow)
 TTS and OmniHuman already sit on this canvas. Do not split them out.  
 See `marketing/n8n-pep-stitch-notes.md` and `marketing/n8n-pep-lipsync-setup.md`.  
-A→B→C→D concat (~60s) waits until Beat A OmniHuman looks right.
+A→B→C→D concat (~60s): four 1080p OmniHuman clips via `(split_pep_beats)` then CapCut. Steps: `marketing/n8n-pep-60s-1080-execute.md`.
 
 ---
 
@@ -334,6 +332,7 @@ $('grok_api')
 $('parse_grok')
 $('if_complaince')
 $('prep_pep_beats')
+$('split_pep_beats')
 $('tts_pep_voice_over')
 $('fal_upload_tts_initiate')
 $('merge_tts_binary')
@@ -343,6 +342,7 @@ $('save_still_url')
 $('prep_pep_lipsync')
 $('pep_lipsync_fal')
 $('save_lipsync_video_url')
+$('gather_pep_clips')
 $('sheets_update_creation')
 $('prep_grok_video_start')
 $('ai_vid_generator')
@@ -357,7 +357,10 @@ $('save_video_url')
 | File | Use |
 |---|---|
 | `marketing/n8n-pep-elevenlabs-video.md` | ElevenLabs TTS + OmniHuman talking clip (Kling optional B-roll) |
-| `marketing/n8n-pep-prep-beats.js` | Code for `prep_pep_beats` |
+| `marketing/n8n-pep-60s-1080-execute.md` | 60s 1080p stitch — nodes to add/change |
+| `marketing/n8n-pep-split-beats.js` | Code for `split_pep_beats` |
+| `marketing/n8n-pep-gather-clips.js` | Code for `gather_pep_clips` |
+| `marketing/n8n-pep-merge-tts-binary.js` | Code for `merge_tts_binary` |
 | `marketing/sheets/150-pb-pep-scenes.csv` | Scene + compound rotation tab |
 | `marketing/sheets/pep-blocking-pool.csv` | Pose / gesture / angle pool for `prep_pep_beats` |
 | `marketing/n8n-pep-grok-still-body.txt` | Body for `grok_imagine_reel_still` (+ _b/_c/_d) |
