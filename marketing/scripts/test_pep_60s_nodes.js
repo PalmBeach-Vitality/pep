@@ -42,9 +42,9 @@ mustInclude('n8n-pep-split-beats.js', [
   'omnihuman_prompt',
 ]);
 mustInclude('n8n-pep-merge-tts-binary.js', [
-  '$input.all()',
-  "$('tts_pep_voice_over').all()",
-  "$('split_pep_beats').all()",
+  "Run Once for Each Item",
+  "$('tts_pep_voice_over').item",
+  "$('split_pep_beats').item.json",
 ]);
 mustInclude('n8n-pep-prep-lipsync.js', [
   "fromNode('split_pep_beats', ['beat'])",

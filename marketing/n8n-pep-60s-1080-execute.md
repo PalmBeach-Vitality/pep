@@ -2,27 +2,31 @@
 
 1080p audio cap is **under 30s**. Full sheet `voice_over` is ~60s, so this is **4 × ~15s OmniHuman clips** with a **new pose each beat** (no 60s drift), then CapCut.
 
-Do **not** duplicate `_b/_c/_d` still/TTS/OmniHuman nodes. `(split_pep_beats)` runs the existing talking chain four times.
+Do **not** duplicate `_b/_c/_d` still/TTS/OmniHuman nodes. `(split_pep_beats)` + `(loop_pep_beats)` run the talking chain **one beat at a time** (fal max 3 concurrent).
 
 Do **not** Test workflow until you are ready to smoke. Saving params is free.
 
 ## Wire
 
+fal max concurrent = **3**. Four beats in parallel will 429. Run them **one at a time**.
+
 ```text
 if_complaince (true)
   → prep_pep_beats
   → (split_pep_beats)
-  → tts_pep_voice_over
-  → fal_upload_tts_initiate
-  → merge_tts_binary
-  → fal_upload_tts_put
-  → grok_imagine_reel_still
-  → save_still_url
-  → prep_pep_lipsync
-  → pep_lipsync_fal
-  → save_lipsync_video_url
-  → (gather_pep_clips)
-  → sheets_update_creation
+  → (loop_pep_beats)          Batch Size 1
+       loop → tts_pep_voice_over
+            → fal_upload_tts_initiate
+            → merge_tts_binary
+            → fal_upload_tts_put
+            → grok_imagine_reel_still
+            → save_still_url
+            → prep_pep_lipsync
+            → pep_lipsync_fal
+            → save_lipsync_video_url
+            → back to (loop_pep_beats)
+       done → (gather_pep_clips)
+            → sheets_update_creation
 ```
 
 `pep_lipsync_fal` stays **1080p**. Leave Kling disconnected.
@@ -39,7 +43,7 @@ OUTPUT must show `beat_items` (length 4) and four different `pep_body_action_a`�
 
 ## 2. ADD `(split_pep_beats)`
 
-`prep_pep_beats` → **`(split_pep_beats)`** → `tts_pep_voice_over`
+`prep_pep_beats` → **`(split_pep_beats)`** → **`(loop_pep_beats)`**
 
 | Parameter | Value |
 |---|---|
@@ -51,6 +55,32 @@ OUTPUT must show `beat_items` (length 4) and four different `pep_body_action_a`�
 Paste `marketing/n8n-pep-split-beats.js`.
 
 OUTPUT = **4 items**. Each item has `beat` (`a`/`b`/`c`/`d`), `tts_text`, `pose_still`, `omnihuman_prompt`.
+
+---
+
+## 2b. ADD `(loop_pep_beats)` (required — fal 3-concurrent cap)
+
+Search node: **Loop Over Items** (also listed as Split In Batches).
+
+`split_pep_beats` → **`(loop_pep_beats)`**
+
+| Parameter | fx | Value |
+|---|---|---|
+| Node type | — | Loop Over Items (Split In Batches) |
+| Exact name | — | `loop_pep_beats` |
+| Batch Size | OFF | `1` |
+| Options → Reset | — | **OFF** |
+
+Two outputs on this node: **loop** and **done**.
+
+**loop** → `tts_pep_voice_over` → … → `save_lipsync_video_url` → **back into** `loop_pep_beats`
+
+**done** → **`(gather_pep_clips)`** → `sheets_update_creation`
+
+Disconnect `split_pep_beats` → `tts_pep_voice_over` (that link is replaced by loop).  
+Disconnect `save_lipsync_video_url` → `gather_pep_clips` (gather hangs off **done**, not off save).
+
+Do **not** Test until this loop is in. Four parallel OmniHuman/fal jobs will 429 again.
 
 ---
 
@@ -98,9 +128,9 @@ JSON Body:
 
 ## 5. PASTE `merge_tts_binary`
 
-Mode: **Run Once for All Items**. Replace the JS with `marketing/n8n-pep-merge-tts-binary.js`.
+Mode: **Run Once for Each Item**. Replace the JS with `marketing/n8n-pep-merge-tts-binary.js`.
 
-Must zip by index. `.first()` would glue Beat A audio onto every clip.
+Paired `$('tts_pep_voice_over').item` for this beat. Do **not** zip `.all()` — the loop makes `.all()` grow.
 
 ---
 
@@ -131,13 +161,14 @@ Include Other Input Fields stays **OFF**.
 | `tts_audio_url` | String | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
 | `creation_id` | String | ON | `={{ $('split_pep_beats').item.json.creation_id \|\| $('prep_pep_beats').item.json.creation_id }}` |
 | `beat` | String | ON | `={{ $('split_pep_beats').item.json.beat }}` |
+| `reel_still_url` | String | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
 | `model_video` | String | OFF | `fal-omnihuman-v1.5` |
 
 ---
 
 ## 9. ADD `(gather_pep_clips)`
 
-`save_lipsync_video_url` → **`(gather_pep_clips)`** → `sheets_update_creation`
+`loop_pep_beats` (**done**) → **`(gather_pep_clips)`** → `sheets_update_creation`
 
 | Parameter | Value |
 |---|---|
@@ -154,7 +185,7 @@ OUTPUT (one item): `lipsync_video_url_a`…`_d` plus `stitch_clip_urls`. That is
 
 ## 10. CHANGE `sheets_update_creation` wire + match/URL fields
 
-Wire: `gather_pep_clips` → `sheets_update_creation` (disconnect the old `save_lipsync_video_url` → sheets link).
+Wire: `loop_pep_beats` (**done**) → `gather_pep_clips` → `sheets_update_creation`
 
 | Parameter | fx | Value |
 |---|---|---|

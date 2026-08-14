@@ -1,7 +1,7 @@
 // Node: gather_pep_clips (Code)
-// Wire: save_lipsync_video_url → gather_pep_clips → sheets_update_creation
+// Wire: loop_pep_beats (done) → gather_pep_clips → sheets_update_creation
+// Fallback wire: save_lipsync_video_url → gather_pep_clips (only if no loop)
 // Mode: Run Once for All Items
-// Collapse four 1080p OmniHuman clips into one item for sheet writeback.
 // CapCut URLs live on this OUTPUT (sheet has one video_url column — Beat A).
 
 function allFrom(name) {
@@ -12,7 +12,12 @@ function allFrom(name) {
   }
 }
 
-const clips = allFrom('save_lipsync_video_url');
+const incoming = $input.all().map((it) => it.json || {});
+let clips = incoming.filter((j) => j.lipsync_video_url || j.video_url);
+if (clips.length !== 4) {
+  clips = allFrom('save_lipsync_video_url');
+}
+
 const stills = allFrom('save_still_url');
 const splits = allFrom('split_pep_beats');
 const ORDER = ['a', 'b', 'c', 'd'];
@@ -46,10 +51,12 @@ for (let i = 0; i < ORDER.length; i++) {
   }
   urls.push(url);
   const still = stillBy[b] || stills[i] || {};
-  stillUrls.push(String(still.reel_still_url || still.data?.[0]?.url || '').trim());
+  stillUrls.push(
+    String(clip.reel_still_url || still.reel_still_url || still.data?.[0]?.url || '').trim()
+  );
 }
 
-const first = splits[0] || clips[0] || {};
+const first = clips.find((c) => String(c.beat).toLowerCase() === 'a') || splits[0] || clips[0] || {};
 
 return [
   {

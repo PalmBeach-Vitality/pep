@@ -14,7 +14,8 @@ Schedule Trigger
   → parse_grok
   → if_complaince
   → prep_pep_beats
-  → split_pep_beats
+  → (split_pep_beats)
+  → (loop_pep_beats)   [loop: talking chain one beat at a time; done: gather]
   → tts_pep_voice_over
   → fal_upload_tts_initiate
   → merge_tts_binary

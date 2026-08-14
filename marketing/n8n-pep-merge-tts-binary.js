@@ -1,39 +1,28 @@
 // Node: merge_tts_binary (Code)
 // Wire: fal_upload_tts_initiate → merge_tts_binary → fal_upload_tts_put
-// Mode: Run Once for All Items
-// Zip initiate + TTS binary + split_pep_beats fields by index.
-// Do NOT use .first() — that would attach Beat A audio to every beat.
+// Mode: Run Once for Each Item
+// Do NOT return [{ json: ... }]
+// Paired TTS binary for THIS beat. Works with (loop_pep_beats) batch size 1
+// and with four items. Do not use .all() zip — a loop makes .all() grow.
 
-const initiates = $input.all();
-const ttsItems = $('tts_pep_voice_over').all();
-let splits = [];
+const tts = $('tts_pep_voice_over').item;
+if (!tts.binary || !tts.binary.data) {
+  throw new Error('No binary data on tts_pep_voice_over for this beat');
+}
+
+let split = {};
 try {
-  splits = $('split_pep_beats').all();
+  split = $('split_pep_beats').item.json || {};
 } catch (e) {
-  splits = [];
+  split = {};
 }
 
-if (initiates.length !== ttsItems.length) {
-  throw new Error(
-    `TTS/initiate count mismatch: ${ttsItems.length} TTS vs ${initiates.length} initiate`
-  );
-}
-
-return initiates.map((initiate, i) => {
-  const tts = ttsItems[i];
-  const split = splits[i] || { json: {} };
-  if (!tts.binary || !tts.binary.data) {
-    throw new Error(
-      `No binary data on tts_pep_voice_over item ${i} (beat ${split.json?.beat || '?'})`
-    );
-  }
-  return {
-    json: {
-      ...(split.json || {}),
-      ...(initiate.json || {}),
-      beat: split.json?.beat || initiate.json?.beat || 'a',
-      creation_id: split.json?.creation_id || initiate.json?.creation_id,
-    },
-    binary: tts.binary,
-  };
-});
+return {
+  json: {
+    ...split,
+    ...$json,
+    beat: split.beat || $json.beat || 'a',
+    creation_id: split.creation_id || $json.creation_id,
+  },
+  binary: tts.binary,
+};
