@@ -56,13 +56,13 @@ const omniFromBeats =
 const omniPrompt = omniFromBeats || [
   'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot, talking with the audio.',
   'Mouth on the white 10ml label moves with speech. Only the mouth moves.',
-  'EYES: keep the two cartoon eyes from the still. Same size, same pupils, same catchlights. Do not morph, squash, cross, or drift the eyes.',
+  'EYES: keep the two cartoon eyes from the still. Same size, same pupils, same catchlights. Bare ovals only. NO eyelashes. Do not morph, squash, cross, or drift the eyes.',
   'LABEL: keep the vial type exactly 10ml. Do not add a letter after the l. Do not change, smear, or animate the type.',
   'Hold the still pose. Stay in the still backdrop.',
   'Body motion is small and natural only.',
   'FEET: sneakers stay on the ground. If walking, each step plants on the set. HARD FAIL hover.',
   'ARMS: relaxed, close to the body, gloves near the hips. Tiny talk motion only.',
-  'HARD FAIL: warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting, waving, thumbs-up, hat-tip.',
+  'HARD FAIL: eyelashes, warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting, waving, thumbs-up, hat-tip.',
 ].join(' ');
 
 return {

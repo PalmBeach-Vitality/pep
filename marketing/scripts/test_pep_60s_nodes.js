@@ -89,14 +89,17 @@ mustInclude('n8n-pep-grok-still-body-lock.txt', [
   'CRITICAL #6 — LABEL TYPE',
   'HARD FAIL: hovering',
   '10mlz',
+  'NO eyelashes',
 ]);
 mustInclude('n8n-pep-prep-beats.js', [
   'EYES: keep the two cartoon eyes from the still',
   'LABEL: keep the vial type exactly 10ml',
+  'NO eyelashes',
 ]);
 mustInclude('n8n-pep-prep-lipsync.js', [
   'EYES: keep the two cartoon eyes from the still',
   'LABEL: keep the vial type exactly 10ml',
+  'NO eyelashes',
 ]);
 
 const merge = fs.readFileSync(path.join(root, 'n8n-pep-merge-tts-binary.js'), 'utf8');
