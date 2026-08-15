@@ -47,6 +47,7 @@ mustInclude('n8n-pep-prep-beats.js', [
   "resolution: '720p'",
   'ARMS: relaxed',
   'cleanSetText',
+  'BOTH sneakers firmly on the ground',
 ]);
 mustNotInclude('n8n-pep-prep-beats.js', [
   'function splitVoice',
@@ -83,6 +84,8 @@ mustInclude('n8n-pep-prep-lipsync.js', [
 mustInclude('n8n-pep-grok-still-body-lock.txt', [
   'Scene brief:',
   'Arms stay relaxed and natural',
+  'CRITICAL #4 — FEET',
+  'HARD FAIL: hovering',
 ]);
 
 const merge = fs.readFileSync(path.join(root, 'n8n-pep-merge-tts-binary.js'), 'utf8');

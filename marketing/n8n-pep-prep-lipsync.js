@@ -58,6 +58,7 @@ const omniPrompt = omniFromBeats || [
   'Mouth on the white 10ml label moves with speech.',
   'Hold the still pose. Stay in the still backdrop.',
   'Body motion is small and natural only.',
+  'FEET: sneakers stay on the ground. If walking, each step plants on the set. HARD FAIL hover.',
   'ARMS: relaxed, close to the body, gloves near the hips. Tiny talk motion only.',
   'HARD FAIL: wild arm swings, rubber-band limbs, pointing, counting, waving, thumbs-up, hat-tip.',
 ].join(' ');

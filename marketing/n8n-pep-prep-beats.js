@@ -189,33 +189,33 @@ function rowsFromBlockingPool(type) {
 const BODY_ACTIONS = [
   {
     id: 'walking',
-    still: 'POSE: mid-stride WALKING toward camera, slight 3/4. One sneaker forward, one sneaker back. This is a walk, not the master planted pose.',
-    motion: 'walk toward camera slight 3/4, continuous stride, talking the whole time',
-    brief: 'walking mid-stride toward camera',
+    still: 'POSE: mid-stride WALKING toward camera, slight 3/4. One white sneaker stepping forward, one sneaker back. BOTH sneakers firmly on the ground of this set with contact shadows. HARD FAIL: hovering, floating, sneakers in mid-air. This is a walk, not the master thumbs-up freeze.',
+    motion: 'walk toward camera slight 3/4, each step plants on the ground, talking the whole time',
+    brief: 'walking mid-stride toward camera, sneakers on the ground',
   },
   {
     id: 'sitting',
-    still: 'POSE: SITTING on a set-appropriate perch in this environment (bench, rock, dock edge, stool). Full body visible. Talking. Not the master planted thumbs-up.',
-    motion: 'stay seated, shift weight, talk, small upper-body motion',
+    still: 'POSE: SITTING on a set-appropriate perch in this environment (bench, rock, dock edge, stool). Seat and sneakers contact the set. Full body visible. Talking. Not the master thumbs-up freeze. HARD FAIL: hovering.',
+    motion: 'stay seated on the perch, sneakers on the set, shift weight, talk',
     brief: 'sitting in the set, talking',
   },
   {
     id: 'standing',
-    still: 'POSE: STANDING at ease, weight on both white sneakers, slight 3/4 toward camera. Talking. Not frozen. Not the master thumbs-up.',
-    motion: 'stand in place, sway slightly, talk, shift weight sneaker to sneaker',
-    brief: 'standing and talking',
+    still: 'POSE: STANDING at ease, BOTH white sneakers flat on the ground with contact shadows, slight 3/4 toward camera. Talking. Not frozen. Not the master thumbs-up. HARD FAIL: hovering, floating, sneakers in mid-air.',
+    motion: 'stand in place with sneakers planted on the ground, sway slightly, talk',
+    brief: 'standing and talking, sneakers on the ground',
   },
   {
     id: 'stopping',
-    still: 'POSE: STOPPING mid-walk — one sneaker still forward, body coming to a halt, looking to camera, talking. Not a planted thumbs-up freeze.',
-    motion: 'take two steps then stop, hold the stop while talking, maybe start a step again',
-    brief: 'stopping mid-walk to talk',
+    still: 'POSE: STOPPING mid-walk — one sneaker forward, both sneakers on the ground with contact shadows, looking to camera, talking. Not the master thumbs-up freeze. HARD FAIL: hovering.',
+    motion: 'take two steps on the ground then stop, sneakers stay planted, talk',
+    brief: 'stopping mid-walk to talk, sneakers on the ground',
   },
   {
     id: 'turning',
-    still: 'POSE: TURNING toward camera from a 3/4, one sneaker pivoting, talking. Not the master thumbs-up.',
-    motion: 'turn toward camera, settle, talk, small pivot',
-    brief: 'turning toward camera while talking',
+    still: 'POSE: TURNING toward camera from a 3/4, one sneaker pivoting ON the ground, both sneakers touching the set. Talking. Not the master thumbs-up. HARD FAIL: hovering.',
+    motion: 'turn toward camera with sneakers on the ground, settle, talk',
+    brief: 'turning toward camera while talking, sneakers on the ground',
   },
 ];
 
@@ -315,15 +315,17 @@ function packBlocking(body, gesture, angleRow) {
     body.still,
     'HANDS: white gloves relaxed near the hips or hanging naturally. No pointing, no counting, no waving, no swinging.',
     `ANGLE: ${angle}.`,
+    'FEET: both white sneakers firmly on the ground of this set. Contact shadows. HARD FAIL hover.',
     'MOUTH OPEN mid-word (OmniHuman start frame).',
   ].join(' ');
-  const poseMotion = `${body.motion}; relaxed gloves near the hips; ${angle}; talking mouth the whole clip`;
+  const poseMotion = `${body.motion}; relaxed gloves near the hips; sneakers stay on the ground; ${angle}; talking mouth the whole clip`;
   const omnihuman_prompt = [
     'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot, talking with the audio.',
     'Mouth on the white 10ml label moves with speech.',
     'Hold the still pose. Stay in this exact set:',
     setText + '.',
     'Body motion is small and natural only — a little weight shift, a little sway, same walk/sit/stand the still already shows.',
+    'FEET: sneakers stay on the ground the whole clip. If walking, each step plants on the set. HARD FAIL: hovering, floating, walking on air.',
     'ARMS: relaxed, close to the body, gloves near the hips. Tiny talk motion only.',
     'HARD FAIL: wild arm swings, rubber-band limbs, pointing, counting fingers, waving, salutes, T-pose, thumbs-up, hat-tip.',
     'Do not invent new choreography. Do not change the backdrop.',
