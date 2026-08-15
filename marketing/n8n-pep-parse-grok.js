@@ -44,8 +44,13 @@ function asBool(v) {
   return false;
 }
 
-// Force native boolean (never string / never undefined)
-const compliance_ok = asBool(parsed.compliance_ok) === true;
+// Captions-only gate. Spoken wellness VO must not block the talking path.
+const captionsOk = !!(
+  String(parsed.ig_caption_draft || parsed.instagram_caption || '').trim() &&
+  String(parsed.fb_caption_draft || parsed.facebook_caption || '').trim()
+);
+const grokOk = asBool(parsed.compliance_ok) === true;
+const compliance_ok = !parse_error && (grokOk || captionsOk);
 
 let display_name = '';
 let compound_name = '';

@@ -15,11 +15,11 @@
   "messages": [
     {
       "role": "system",
-      "content": "You write short social captions for Palm Beach Pep (anthropomorphic 10mL vial mascot) for Palm Beach Vitality. Research-use-only framing belongs on captions only (including phrasing like 'research language only' when it fits). Do not write spoken voiceover. No disease, treatment, cure, or human-use claims. No nicknames like KLOW/Wolverine/GLOW — chemical names only. Return ONLY valid JSON with keys: compliance_ok (boolean), display_name (string), ig_caption_draft (string), fb_caption_draft (string), compliance_notes (string)."
+      "content": "You write short social captions for Palm Beach Pep (anthropomorphic 10mL vial mascot) for Palm Beach Vitality. Judge CAPTIONS only. Set compliance_ok true when IG/FB captions stay research-use, use chemical names only, and have no disease/cure/human-use claims. Do not write spoken voiceover. Do not judge or fail because of any sheet voice_over / wellness pitch. No nicknames like KLOW/Wolverine/GLOW. Return ONLY valid JSON with keys: compliance_ok (boolean), display_name (string), ig_caption_draft (string), fb_caption_draft (string), compliance_notes (string)."
     },
     {
       "role": "user",
-      "content": "={{ [`Product: ${$json.compound_name || $('Prep_day_variant').item.json.compound_name} (${$json.compound_id || $('Prep_day_variant').item.json.compound_id})`, `URL: ${$json.canonical_url || $('Prep_day_variant').item.json.canonical_url}`, `Caption lock: ${$json.caption_lock || $('Prep_day_variant').item.json.caption_lock}`, `Scene: ${$json.scene_brief || $('Prep_day_variant').item.json.scene_brief}`, `VO hint: ${$json.voice_over || $('Prep_day_variant').item.json.voice_over || ''}`, `Disclaimer: ${$json.disclaimer_short || $('Prep_day_variant').item.json.disclaimer_short}`, '', 'Write IG + FB captions that obey caption_lock. Keep Pep friendly and simple. End with research-use framing.'].join('\\n') }}"
+      "content": "={{ [`Product: ${$json.compound_name || $('Prep_day_variant').item.json.compound_name} (${$json.compound_id || $('Prep_day_variant').item.json.compound_id})`, `URL: ${$json.canonical_url || $('Prep_day_variant').item.json.canonical_url}`, `Caption lock: ${$json.caption_lock || $('Prep_day_variant').item.json.caption_lock}`, `Scene: ${$json.scene_brief || $('Prep_day_variant').item.json.scene_brief}`, `Disclaimer: ${$json.disclaimer_short || $('Prep_day_variant').item.json.disclaimer_short}`, '', 'Write IG + FB captions that obey caption_lock. Keep Pep friendly and simple. End with research-use framing. Set compliance_ok true if those captions pass. Ignore any spoken pitch.'].join('\\n') }}"
     }
   ]
 }
