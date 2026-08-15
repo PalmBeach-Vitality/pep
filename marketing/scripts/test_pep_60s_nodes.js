@@ -50,6 +50,7 @@ mustInclude('n8n-pep-prep-beats.js', [
   'BOTH sneakers firmly on the ground',
   'EYES: keep the same two cartoon ovals from the still',
   'Eyes SHOULD blink, glance, and look around naturally',
+  'ANIMATE THIS STILL ONLY',
   'LABEL: keep the vial type exactly 10ml',
   'NO eyelashes',
 ]);
@@ -93,6 +94,7 @@ mustInclude('n8n-pep-prep-lipsync.js', [
   'ARMS: relaxed',
   'EYES: keep the same two cartoon ovals from the still',
   'Eyes SHOULD blink, glance, and look around naturally',
+  'ANIMATE THIS STILL ONLY',
   'LABEL: keep the vial type exactly 10ml',
   'NO eyelashes',
 ]);

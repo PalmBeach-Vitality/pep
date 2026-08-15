@@ -105,7 +105,7 @@ JSON Body fx **ON**. Paste `marketing/n8n-pep-grok-still-body-lock.txt` (the `={
 
 POSE reads `$('split_pep_beats').item.json.pose_still` (standing). SET uses that row’s `surface`.
 
-QC the still before OmniHuman: eyes match master (bare ovals, no eyelashes), label type is exactly `10ml` (discard `10mlz`). In the talking clip, those eyes should blink and look around — discard only if they morph or grow lashes.
+QC the still before OmniHuman: eyes match master (bare ovals, no eyelashes), label type is exactly `10ml` (discard `10mlz`). If the still is good, do **not** remint `grok_imagine_reel_still`. Eye morph / lashes in the mp4 are an OmniHuman miss — remint `pep_lipsync_fal` only. Blinks and glances in the video are good.
 
 ---
 

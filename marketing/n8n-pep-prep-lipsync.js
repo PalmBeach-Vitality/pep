@@ -54,15 +54,16 @@ const omniFromBeats =
   fromNode('prep_pep_beats', ['omnihuman_prompt']);
 
 const omniPrompt = omniFromBeats || [
-  'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot, talking with the audio.',
-  'Mouth on the white 10ml label moves with speech.',
-  'EYES: keep the same two cartoon ovals from the still — same size, same round pupils, same catchlights. Bare ovals only. NO eyelashes. NO mascara. NO lash lines. Eyes SHOULD blink, glance, and look around naturally while he talks. HARD FAIL: morphing the eye shape, warping or smearing pupils, crossing the eyes, adding human eyelids or lashes.',
+  'ANIMATE THIS STILL ONLY. The input image is already the correct Pep. Do not redesign the face, eyes, label, hat, or body.',
+  'Palm Beach Pep talks with the audio. Mouth on the white 10ml label moves with speech.',
+  'EYES: keep the same two cartoon ovals from the still — same size, same round pupils, same catchlights. Bare ovals only. NO eyelashes. NO mascara. NO lash lines. Eyes SHOULD blink, glance, and look around naturally while he talks. That is good. HARD FAIL: morphing the eye shape, warping or smearing pupils, crossing the eyes, growing human eyelids or lashes during the clip.',
   'LABEL: keep the vial type exactly 10ml. Do not add a letter after the l. Do not change, smear, or animate the type.',
   'Hold the still pose. Stay in the still backdrop.',
   'Body motion is small and natural only.',
-  'FEET: sneakers stay on the ground. If walking, each step plants on the set. HARD FAIL hover.',
+  'FEET: sneakers stay on the ground. HARD FAIL hover.',
   'ARMS: relaxed, close to the body, gloves near the hips. Tiny talk motion only.',
   'HARD FAIL: eyelashes, warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting, waving, thumbs-up, hat-tip.',
+  'Do not restyle Pep.',
 ].join(' ');
 
 return {
