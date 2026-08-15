@@ -4,7 +4,7 @@
 // Audio: fal_upload_tts_initiate.file_url (no save_tts_audio_url on canvas)
 // Mode: Run Once for Each Item
 // Do NOT return [{ json: ... }] — newer n8n errors "A 'json' property isn't an object"
-// After split_pep_beats this runs four times. Use paired split item, not hardcoded beat a.
+// One talking clip. Use the paired split item, not a hardcoded beat.
 
 function fromNode(name, keys) {
   try {

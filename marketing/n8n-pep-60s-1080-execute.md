@@ -1,14 +1,14 @@
-# 60s 1080p stitch — nodes Sal must add or change
+# One 50s talking clip — nodes Sal must add or change
 
-1080p audio cap is **30s**. This pitch is **55–60s**, so `pep_lipsync_fal` Resolution must be **720p**. **4 scene cuts**, unique pose each, **same easy wellness pitch** on all 4. Intro + product + studies line + `Visit us at palmbeach-vitality.store.` No compliance.
+1080p audio cap is **30s**. This pitch is **~50–60s**, so `pep_lipsync_fal` Resolution must be **720p**. **One talking clip.** Standing Pep, sheet `voice_over`, lipsync, normal eyes. No extra scene cuts.
 
-Do **not** duplicate `_b/_c/_d` still/TTS/OmniHuman nodes. `(split_pep_beats)` + `(loop_pep_beats)` run the talking chain **one beat at a time** (fal max 3 concurrent).
+Leave `(loop_pep_beats)` on the canvas. Split now emits **1 item**, so the loop runs once and then `done`.
 
 Do **not** Test workflow until you are ready to smoke. Saving params is free.
 
 ## Wire
 
-fal max concurrent = **3**. Two beats in parallel can still 429 if anything else is running. Keep **`(loop_pep_beats)`** Batch Size **1**.
+Keep the loop. Do not delete it. Do not add `_b/_c/_d` nodes.
 
 ```text
 if_complaince (true)
@@ -37,11 +37,11 @@ if_complaince (true)
 
 Mode: **Run Once for Each Item**. Replace the JS with `marketing/n8n-pep-prep-beats.js`.
 
-OUTPUT must show `beat_items` (length **4**), four different `pep_body_action_a`…`_d`, and the **same** `tts_text` on every beat. Last sentence: `Visit us at palmbeach-vitality.store.` No FDA / unique-set / laboratory-research-use-only.
+OUTPUT must show `beat_items` (length **1**), `beat_count` **1**, standing pose, and `tts_text` = sheet pitch. Last sentence: `Visit us at palmbeach-vitality.store.` No FDA / unique-set / laboratory-research-use-only.
 
 ---
 
-## 2. ADD `(split_pep_beats)`
+## 2. PASTE `(split_pep_beats)`
 
 `prep_pep_beats` → **`(split_pep_beats)`** → **`(loop_pep_beats)`**
 
@@ -54,33 +54,19 @@ OUTPUT must show `beat_items` (length **4**), four different `pep_body_action_a`
 
 Paste `marketing/n8n-pep-split-beats.js`.
 
-OUTPUT = **4 items**. Each item has `beat` (`a`/`b`/`c`/`d`), the **same** `tts_text` (product pitch + store CTA), unique `pose_still`, unique `omnihuman_prompt`.
+OUTPUT = **1 item**. `beat` = `a`. Full pitch in `tts_text`. Standing `pose_still`.
 
 ---
 
-## 2b. ADD `(loop_pep_beats)` (required — fal 3-concurrent cap)
+## 2b. KEEP `(loop_pep_beats)`
 
-Search node: **Loop Over Items** (also listed as Split In Batches).
-
-`split_pep_beats` → **`(loop_pep_beats)`**
-
-| Parameter | fx | Value |
-|---|---|---|
-| Node type | — | Loop Over Items (Split In Batches) |
-| Exact name | — | `loop_pep_beats` |
-| Batch Size | OFF | `1` |
-| Options → Reset | — | **OFF** |
-
-Two outputs on this node: **loop** and **done**.
+Leave it. Batch Size **1**. Reset **OFF**.
 
 **loop** → `tts_pep_voice_over` → … → `save_lipsync_video_url` → **back into** `loop_pep_beats`
 
 **done** → **`(gather_pep_clips)`** → `sheets_update_creation`
 
-Disconnect `split_pep_beats` → `tts_pep_voice_over` (that link is replaced by loop).  
-Disconnect `save_lipsync_video_url` → `gather_pep_clips` (gather hangs off **done**, not off save).
-
-Do **not** Test until this loop is in. Parallel OmniHuman/fal jobs will 429.
+With 1 item the loop fires once, then done. You will not see badges `1` `2` `3` `4`.
 
 ---
 
@@ -88,7 +74,7 @@ Do **not** Test until this loop is in. Parallel OmniHuman/fal jobs will 429.
 
 JSON Body fx **ON**. Delete any `{ "text": ... }` first. Paste `marketing/n8n-pep-tts-body.txt` as the **entire** field (`={{ JSON.stringify({` … `}) }}`). Do **not** wrap it in another `{ }`. Preview must be one JSON object whose `text` is the pitch.
 
-Request preview: intro + product + studies line + `Visit us at palmbeach-vitality.store.` Same words on items 0–3. ~146 words. Easy, upbeat, wellness.
+Request preview: intro + product + studies line + `Visit us at palmbeach-vitality.store.` ~146 words. Easy, upbeat, wellness.
 
 ---
 
@@ -109,7 +95,7 @@ JSON Body:
 
 Mode: **Run Once for Each Item**. Replace the JS with `marketing/n8n-pep-merge-tts-binary.js`.
 
-Paired `$('tts_pep_voice_over').item` for this beat. Do **not** zip `.all()` — the loop makes `.all()` grow.
+Paired `$('tts_pep_voice_over').item`.
 
 ---
 
@@ -117,7 +103,7 @@ Paired `$('tts_pep_voice_over').item` for this beat. Do **not** zip `.all()` —
 
 JSON Body fx **ON**. Paste `marketing/n8n-pep-grok-still-body-lock.txt` (the `={{ JSON.stringify({` block only).
 
-POSE now reads `$('split_pep_beats').item.json.pose_still` so each beat gets a different body/gesture. SET still uses that row’s `surface`.
+POSE reads `$('split_pep_beats').item.json.pose_still` (standing). SET uses that row’s `surface`.
 
 QC the still before OmniHuman: eyes match master (no eyelashes), label type is exactly `10ml` (discard `10mlz`).
 
@@ -126,8 +112,6 @@ QC the still before OmniHuman: eyes match master (no eyelashes), label type is e
 ## 7. PASTE `prep_pep_lipsync`
 
 Mode: **Run Once for Each Item**. Replace the JS with `marketing/n8n-pep-prep-lipsync.js`.
-
-OUTPUT `beat` must be `a` then `b`. `omnihuman_prompt` must match that beat’s pose, not Beat A for both.
 
 ---
 
@@ -147,7 +131,7 @@ Include Other Input Fields stays **OFF**.
 
 ---
 
-## 9. ADD `(gather_pep_clips)`
+## 9. PASTE `(gather_pep_clips)`
 
 `loop_pep_beats` (**done**) → **`(gather_pep_clips)`** → `sheets_update_creation`
 
@@ -160,9 +144,7 @@ Include Other Input Fields stays **OFF**.
 
 Paste `marketing/n8n-pep-gather-clips.js`.
 
-Reads every loop run via `$('save_lipsync_video_url').all(0, runIndex)`. A plain `.all()` is only the last scene.
-
-OUTPUT (one item): `lipsync_video_url_a`…`_d` plus `stitch_clip_urls`. Four separate scenes, same pitch. Sheet still has one `video_url` column (scene A).
+OUTPUT (one item): `video_url` / `lipsync_video_url` = the one talking clip.
 
 ---
 
@@ -184,13 +166,11 @@ Wire: `loop_pep_beats` (**done**) → `gather_pep_clips` → `sheets_update_crea
 | `video_url` | String | ON | `={{ $('gather_pep_clips').item.json.video_url }}` |
 | `model_video` | String | ON | `={{ $('gather_pep_clips').item.json.model_video \|\| 'fal-omnihuman-v1.5' }}` |
 
-Do **not** add sheet columns. Copy scene B from `gather_pep_clips` OUTPUT if you need it. Do **not** blend A+B into one 60s film.
-
 ---
 
 ## 11. CHANGE `pep_lipsync_fal` Resolution to `720p`
 
-1080p audio max is **30s**. This VO is **55–60s**. Resolution **must** be **720p** or fal 422s.
+1080p audio max is **30s**. This VO is **~50–60s**. Resolution **must** be **720p** or fal 422s.
 
 | # | Parameter Name or ID dropdown (fx OFF) | Value fx | Value |
 |---|---|---|---|
@@ -217,11 +197,9 @@ Do **not** add a fifth parameter. Prompt Value must be a **string**.
 
 ---
 
-## After the two URLs exist
+## After the URLs exist
 
-These are **four different scene cuts**, not one smooth 60s clip. Same pitch on all four. Do **not** CapCut-morph them into one film.
-
-If you concat later: **hard cut**. No extra VO track — audio is already in each mp4.
+This is **one** talking mp4. Audio is already in the file. No concat. No extra VO track.
 
 ---
 
@@ -231,4 +209,4 @@ If you concat later: **hard cut**. No extra VO track — audio is already in eac
 
 **NEVER PIN:** `grok_imagine_reel_still`, `tts_pep_voice_over`, `pep_lipsync_fal`
 
-One Test workflow = 4 stills + 4 TTS + 4 OmniHuman **720p**. Loop runs 5 times (A, B, C, D, then done). Budget a long wait (four × up to 1200s). Every clip must speak the same easy wellness pitch (~146 words, 55–60s).
+One Test workflow = 1 still + 1 TTS + 1 OmniHuman **720p**. QC still first: no eyelashes, type exactly `10ml`.

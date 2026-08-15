@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Syntax + contract checks for 4-scene same-pitch talking path.
+// Syntax + contract checks for one 50s talking clip.
 
 const fs = require('fs');
 const path = require('path');
@@ -42,16 +42,21 @@ mustInclude('n8n-pep-prep-beats.js', [
   'extractProductPitch',
   'studies have shown',
   'Visit us at palmbeach-vitality.store.',
-  "beat_count: 4",
-  "const BEAT_IDS = ['a', 'b', 'c', 'd']",
+  'beat_count: 1',
+  "const BEAT_IDS = ['a']",
   "resolution: '720p'",
   'ARMS: relaxed',
   'cleanSetText',
   'BOTH sneakers firmly on the ground',
+  'EYES: keep the two cartoon eyes from the still',
+  'LABEL: keep the vial type exactly 10ml',
+  'NO eyelashes',
 ]);
 mustNotInclude('n8n-pep-prep-beats.js', [
   'function splitVoice',
   '1080p audio must stay under 75',
+  "const BEAT_IDS = ['a', 'b', 'c', 'd']",
+  'beat_count: 4',
 ]);
 mustInclude('n8n-pep-split-beats.js', [
   'Run Once for All Items',
@@ -59,19 +64,24 @@ mustInclude('n8n-pep-split-beats.js', [
   'pose_still',
   'omnihuman_prompt',
   'Visit us at palmbeach-vitality.store.',
-  "packs.length !== 4",
+  'packs.length !== 1',
   'studies have shown',
   "resolution: '720p'",
 ]);
 mustInclude('n8n-pep-gather-clips.js', [
-  'Expected 4 OmniHuman clips',
-  'lipsync_video_url_d',
+  'Expected 1 OmniHuman clip',
+  'lipsync_video_url_a',
   'stitch_clip_urls',
   '.all(0, run)',
   "resolution: '720p'",
+  'beat_count: 1',
+]);
+mustNotInclude('n8n-pep-gather-clips.js', [
+  'Expected 4 OmniHuman clips',
+  'lipsync_video_url_d',
 ]);
 mustInclude('n8n-pep-merge-tts-binary.js', [
-  "Run Once for Each Item",
+  'Run Once for Each Item',
   "$('tts_pep_voice_over').item",
   "$('split_pep_beats').item.json",
 ]);
@@ -80,6 +90,9 @@ mustInclude('n8n-pep-prep-lipsync.js', [
   "fromNode('split_pep_beats', ['omnihuman_prompt'])",
   "omnihuman_resolution: '720p'",
   'ARMS: relaxed',
+  'EYES: keep the two cartoon eyes from the still',
+  'LABEL: keep the vial type exactly 10ml',
+  'NO eyelashes',
 ]);
 mustInclude('n8n-pep-grok-still-body-lock.txt', [
   'Scene brief:',
@@ -89,16 +102,6 @@ mustInclude('n8n-pep-grok-still-body-lock.txt', [
   'CRITICAL #6 — LABEL TYPE',
   'HARD FAIL: hovering',
   '10mlz',
-  'NO eyelashes',
-]);
-mustInclude('n8n-pep-prep-beats.js', [
-  'EYES: keep the two cartoon eyes from the still',
-  'LABEL: keep the vial type exactly 10ml',
-  'NO eyelashes',
-]);
-mustInclude('n8n-pep-prep-lipsync.js', [
-  'EYES: keep the two cartoon eyes from the still',
-  'LABEL: keep the vial type exactly 10ml',
   'NO eyelashes',
 ]);
 
@@ -113,33 +116,31 @@ if (/beat:\s*'a'/.test(lipsync)) {
 }
 
 const pitch = "Hey, I'm Palm Beach Pep — quick research rundown. Today we're looking at GHK-Cu. GHK-Cu is a naturally occurring copper-binding tripeptide found in human plasma and other tissues. Visit us at palmbeach-vitality.store.";
-const beat_items = ['a', 'b', 'c', 'd'].map((beat, i) => ({
-  beat,
+const beat_items = [{
+  beat: 'a',
   tts_text: pitch,
-  pose_still: `POSE ${beat}`,
-  omnihuman_prompt: `omni ${beat}`,
-  pep_body_action: ['walking', 'sitting', 'standing', 'turning'][i],
-}));
-if (beat_items.length !== 4) throw new Error('need 4 beat_items');
-const texts = new Set(beat_items.map((b) => b.tts_text));
-if (texts.size !== 1) throw new Error('all four clips must speak the same pitch');
-if (![...texts][0].endsWith('Visit us at palmbeach-vitality.store.')) {
+  pose_still: 'POSE standing',
+  omnihuman_prompt: 'omni a',
+  pep_body_action: 'standing',
+}];
+if (beat_items.length !== 1) throw new Error('need 1 beat_item');
+if (!beat_items[0].tts_text.endsWith('Visit us at palmbeach-vitality.store.')) {
   throw new Error('pitch must end with store CTA');
 }
-const poses = new Set(beat_items.map((b) => b.pose_still));
-if (poses.size !== 4) throw new Error('poses not unique per scene');
 
 mustInclude('n8n-pep-60s-1080-execute.md', [
   'n8n-pep-tts-body.txt',
   '| 3 | **Resolution** (`resolution`) | OFF | `720p` |',
+  'One talking clip',
+]);
+mustNotInclude('n8n-pep-60s-1080-execute.md', [
+  'still 1080p',
+  '4 scene cuts',
 ]);
 mustInclude('n8n-pep-tts-body.txt', [
   '={{ JSON.stringify({',
   'eleven_multilingual_v2',
   "$('split_pep_beats').item.json.tts_text",
 ]);
-mustNotInclude('n8n-pep-60s-1080-execute.md', [
-  'still 1080p',
-]);
 
-console.log('ok 4-scene same-pitch node contracts');
+console.log('ok one 50s talking-clip node contracts');

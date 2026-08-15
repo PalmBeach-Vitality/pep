@@ -4,9 +4,9 @@
 // Uses: Prep_day_variant → Limit (EXACT names)
 // Mode: Run Once for Each Item
 // Do NOT return [{ json: ... }]
-// Four unique poses. EVERY clip speaks the SAME ~55–60s product pitch.
+// ONE talking clip. Standing Pep, same ~55–60s sheet pitch, 720p OmniHuman.
 // Easy upbeat wellness pitch. Intro + product + studies line + store CTA.
-// 720p OmniHuman (60s audio). 1080p cannot hold 55–60s.
+// 1080p cannot hold 55–60s audio. No extra scene cuts.
 
 function nodeJson(name) {
   try {
@@ -293,13 +293,15 @@ const sheetGestures = rowsFromBlockingPool('gesture');
 const sheetAngles = rowsFromBlockingPool('angle');
 const blockingSource = (sheetBodies.length && sheetGestures.length) ? 'pep-blocking-pool' : 'builtin';
 
-const BEAT_IDS = ['a', 'b', 'c', 'd'];
-const bodies = pickUnique(sheetBodies.length ? sheetBodies : BODY_ACTIONS, 4);
-const gestures = pickUnique(sheetGestures.length ? sheetGestures : GESTURES, 4);
+const BEAT_IDS = ['a'];
+const bodyPool = sheetBodies.length ? sheetBodies : BODY_ACTIONS;
+const standing = bodyPool.find((b) => /stand/i.test(String(b.id))) || BODY_ACTIONS.find((b) => b.id === 'standing');
+const bodies = [standing];
+const gestures = pickUnique(sheetGestures.length ? sheetGestures : GESTURES, 1);
 const anglePool = sheetAngles.length
   ? sheetAngles
   : ANGLES.map((label) => ({ id: label, brief: label }));
-const angles = pickUnique(anglePool, 4);
+const angles = pickUnique(anglePool, 1);
 
 const pepLock = [
   'CHARACTER LOCK — use master Pep reference exactly (https://files.catbox.moe/2yfdbi.jpg).',
@@ -362,10 +364,7 @@ const poseStill = packs[0].poseStill;
 const poseMotion = packs[0].poseMotion;
 
 const beatMeta = {
-  a: { name: 'scene_a', window: 'cut 1', extra: `${motion}; preserve Pep identity; no thumbs-up; no new text` },
-  b: { name: 'scene_b', window: 'cut 2', extra: 'new blocking in the same set; preserve Pep identity; no thumbs-up; no new text' },
-  c: { name: 'scene_c', window: 'cut 3', extra: 'new blocking in the same set; preserve Pep identity; no thumbs-up; no new text' },
-  d: { name: 'scene_d', window: 'cut 4', extra: 'new blocking in the same set; preserve Pep identity; no thumbs-up; no new text' },
+  a: { name: 'talking', window: 'one 50s clip', extra: `${motion}; preserve Pep identity; no thumbs-up; no new text; no eyelashes` },
 };
 
 const beats = {};
@@ -398,9 +397,8 @@ const beat_items = BEAT_IDS.map((id, i) => {
   };
 });
 
-const uniqueBodies = new Set(beat_items.map((b) => b.pep_body_action));
-if (uniqueBodies.size < 2) {
-  throw new Error('Need at least two different body actions across beats so Pep does not drift on one pose.');
+if (beat_items.length !== 1) {
+  throw new Error(`Expected 1 talking beat, got ${beat_items.length}.`);
 }
 
 return {
@@ -410,43 +408,22 @@ return {
   compound_name: compound,
   pep_ref_url: pepRefUrl,
   target_duration_seconds: 60,
-  beat_count: 4,
+  beat_count: 1,
   pep_body_action: body.id,
   pep_hand_gesture: gesture.id,
   pep_angle: angle,
   pep_body_action_a: packs[0].body.id,
-  pep_body_action_b: packs[1].body.id,
-  pep_body_action_c: packs[2].body.id,
-  pep_body_action_d: packs[3].body.id,
   pep_hand_gesture_a: packs[0].gesture.id,
-  pep_hand_gesture_b: packs[1].gesture.id,
-  pep_hand_gesture_c: packs[2].gesture.id,
-  pep_hand_gesture_d: packs[3].gesture.id,
   blocking_source: blockingSource,
   pose_still: poseStill,
   pose_still_a: packs[0].poseStill,
-  pose_still_b: packs[1].poseStill,
-  pose_still_c: packs[2].poseStill,
-  pose_still_d: packs[3].poseStill,
   pose_motion: poseMotion,
   omnihuman_prompt: omnihuman_prompt,
   omnihuman_prompt_a: packs[0].omnihuman_prompt,
-  omnihuman_prompt_b: packs[1].omnihuman_prompt,
-  omnihuman_prompt_c: packs[2].omnihuman_prompt,
-  omnihuman_prompt_d: packs[3].omnihuman_prompt,
   beat_items: beat_items,
   beat_a_brief: beats.a.brief,
-  beat_b_brief: beats.b.brief,
-  beat_c_brief: beats.c.brief,
-  beat_d_brief: beats.d.brief,
   beat_a_motion: beats.a.motion,
-  beat_b_motion: beats.b.motion,
-  beat_c_motion: beats.c.motion,
-  beat_d_motion: beats.d.motion,
   vo_beat_a: voiceOver,
-  vo_beat_b: voiceOver,
-  vo_beat_c: voiceOver,
-  vo_beat_d: voiceOver,
   tts_text: voiceOver,
   vo_source: 'sheet',
   voice_over: voiceOver,
