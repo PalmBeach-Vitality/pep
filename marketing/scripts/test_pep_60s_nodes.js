@@ -120,9 +120,9 @@ mustInclude('n8n-pep-60s-1080-execute.md', [
   '| 3 | **Resolution** (`resolution`) | OFF | `720p` |',
 ]);
 mustInclude('n8n-pep-tts-body.txt', [
-  '={{ (() => {',
-  'studies have shown',
-  'Need 142-150 words',
+  '={{ JSON.stringify({',
+  'eleven_multilingual_v2',
+  "$('split_pep_beats').item.json.tts_text",
 ]);
 mustNotInclude('n8n-pep-60s-1080-execute.md', [
   'still 1080p',

@@ -86,7 +86,7 @@ Do **not** Test until this loop is in. Parallel OmniHuman/fal jobs will 429.
 
 ## 3. CHANGE `tts_pep_voice_over` JSON Body only
 
-JSON Body fx **ON**. Paste `marketing/n8n-pep-tts-body.txt` (the whole `={{ (() => {` block). No markdown fences. Do **not** wrap it in `{ "text": ... }`. Request preview on **every** item must be the same product pitch, ending with `Visit us at palmbeach-vitality.store.`
+JSON Body fx **ON**. Delete any `{ "text": ... }` first. Paste `marketing/n8n-pep-tts-body.txt` as the **entire** field (`={{ JSON.stringify({` … `}) }}`). Do **not** wrap it in another `{ }`. Preview must be one JSON object whose `text` is the pitch.
 
 Request preview: intro + product + studies line + `Visit us at palmbeach-vitality.store.` Same words on items 0–3. ~146 words. Easy, upbeat, wellness.
 
