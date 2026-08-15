@@ -8,11 +8,26 @@
 // Easy upbeat wellness pitch. Intro + product + studies line + store CTA.
 // 720p OmniHuman (60s audio). 1080p cannot hold 55–60s.
 
-const row = (() => {
-  try { return $('Prep_day_variant').item.json; } catch (e) {}
-  try { return $('Limit').item.json; } catch (e) {}
-  return $json;
-})();
+function nodeJson(name) {
+  try {
+    return $(name).item.json || {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function firstText(obj, keys) {
+  for (const k of keys) {
+    const v = String(obj?.[k] ?? '').replace(/\s+/g, ' ').trim();
+    if (v) return v;
+  }
+  return '';
+}
+
+const fromPrep = nodeJson('Prep_day_variant');
+const fromLimit = nodeJson('Limit');
+const fromInput = $json || {};
+const row = Object.assign({}, fromLimit, fromPrep, fromInput);
 
 const compound = row.compound_name || 'research compound';
 const compoundId = row.compound_id || '';
@@ -22,10 +37,14 @@ const lighting = row.lighting || 'bright clean key';
 const grade = row.color_grade || 'clean controlled grade';
 const hero = row.hero_style || `Palm Beach Pep featuring ${compound}`;
 const motion = row.video_motion_prompt || row.camera_move || 'slow push-in';
-const voiceOverRaw = String(row.voice_over || '').replace(/\s+/g, ' ').trim();
+const VO_KEYS = ['voice_over', 'Voice_Over', 'voiceOver', 'Voice Over'];
+const voiceOverRaw =
+  firstText(fromInput, VO_KEYS) ||
+  firstText(fromPrep, VO_KEYS) ||
+  firstText(fromLimit, VO_KEYS);
 if (!voiceOverRaw) {
   throw new Error(
-    'Missing voice_over from the sheet row. TTS must use tab 150-pb-pep-scenes column voice_over. Check Prep_day_variant.voice_over.'
+    'Missing voice_over. Open Limit OUTPUT — that field must be the sheet pitch. On Prep_day_variant set Include Other Input Fields ON, or add voice_over = {{ $json.voice_over }}. Unpin Prep_day_variant if it is an old pin without voice_over. Re-import tab 150-pb-pep-scenes if the live sheet column is empty.'
   );
 }
 if (voiceOverRaw.includes("$('") || voiceOverRaw.includes('={{')) {
