@@ -13,7 +13,7 @@ If a still drifts → **discard and reroll**. Never send a drifted still into `a
 
 Master identity (must match 1:1):
 - Clear glass **10ml** vial + silver aluminum crimp seal
-- White label: big cartoon eyes, open smile + pink tongue, rosy cheeks, bold **10ml**
+- White label: two even cartoon eyes (white ovals, round black pupils, tiny catchlights), open smile + pink tongue, rosy cheeks, bold type that is exactly **10ml** (four characters only — no extra letter, no **10mlz**)
 - White baseball cap with **Palm Beach Vitality** sunset + palm-tree logo (not molecular)
 - Gray tube limbs, white cartoon gloves, rounded white sneakers
 - Master file is a planted thumbs-up. Video stills MUST change pose to mid-stride walk (toward camera, slight 3/4, screen-right), mouth open mid-word, no thumbs-up. Face/hat/vial/gloves/sneakers stay identical.
@@ -48,7 +48,7 @@ Must be true in request preview:
 3. `image.type` is `image_url`
 4. Prompt starts with `EDIT THIS IMAGE ONLY` + identity lock
 
-**QC gate:** open still next to master. Face / hat logo / crimp / gloves / sneakers must match. Pose must be mid-stride walking (not the master thumbs-up). Mouth must be a talking AH/OH, not a wide held grin. If identity drifts, pose is planted/thumbs-up, or mouth is a grin-hold → rerun. Do not send a thumbs-up or grin still into `ai_vid_generator`.
+**QC gate:** open still next to master. Face / hat logo / crimp / gloves / sneakers must match. The two cartoon eyes must stay the same pair (not warped, crossed, or uneven). Label type must be exactly `10ml` — discard `10mlz` or any extra glyph after the `l`. Pose must be mid-stride walking (not the master thumbs-up). Mouth must be a talking AH/OH, not a wide held grin. If identity drifts, eyes smear, label type is wrong, pose is planted/thumbs-up, or mouth is a grin-hold → rerun. Do not send a bad still into OmniHuman or `ai_vid_generator`.
 
 ---
 

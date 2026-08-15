@@ -303,13 +303,13 @@ const angles = pickUnique(anglePool, 4);
 
 const pepLock = [
   'CHARACTER LOCK — use master Pep reference exactly (https://files.catbox.moe/2yfdbi.jpg).',
-  'Anthropomorphic clear 10mL sterile injectable-style glass vial,',
+  'Anthropomorphic clear 10ml sterile injectable-style glass vial,',
   'rubber stopper + silver aluminum crimp seal only (NOT screw-cap, NOT black twist cap),',
-  'white mid-body label with cheerful cartoon face and bold 10ml text,',
+  'white mid-body label with the same two cartoon eyes and bold type that is exactly 10ml (four characters only: 1, 0, m, l),',
   'white baseball cap with Palm Beach Vitality sunset + palm-tree logo,',
   'gray tube limbs, white cartoon gloves, rounded white sneakers,',
   'mouth open mid-word, clean 3D-cartoon / sticker style with bold outlines.',
-  'HARD FAIL: thumbs-up. No hat-tip freeze. No extra mascots. No humans. No doctor offices. No hospitals.',
+  'HARD FAIL: thumbs-up. HARD FAIL: warped eyes. HARD FAIL: any letter after 10ml (no 10mlz). No hat-tip freeze. No extra mascots. No humans. No doctor offices. No hospitals.',
 ].join(' ');
 
 function cleanSetText(surfaceText, briefText) {
@@ -340,13 +340,15 @@ function packBlocking(body, gesture, angleRow) {
   const poseMotion = `${body.motion}; relaxed gloves near the hips; sneakers stay on the ground; ${angle}; talking mouth the whole clip`;
   const omnihuman_prompt = [
     'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot, talking with the audio.',
-    'Mouth on the white 10ml label moves with speech.',
+    'Mouth on the white 10ml label moves with speech. Only the mouth moves.',
+    'EYES: keep the two cartoon eyes from the still. Same size, same pupils, same catchlights. Do not morph, squash, cross, or drift the eyes.',
+    'LABEL: keep the vial type exactly 10ml. Do not add a letter after the l. Do not change, smear, or animate the type.',
     'Hold the still pose. Stay in this exact set:',
     setText + '.',
     'Body motion is small and natural only — a little weight shift, a little sway, same walk/sit/stand the still already shows.',
     'FEET: sneakers stay on the ground the whole clip. If walking, each step plants on the set. HARD FAIL: hovering, floating, walking on air.',
     'ARMS: relaxed, close to the body, gloves near the hips. Tiny talk motion only.',
-    'HARD FAIL: wild arm swings, rubber-band limbs, pointing, counting fingers, waving, salutes, T-pose, thumbs-up, hat-tip.',
+    'HARD FAIL: warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting fingers, waving, salutes, T-pose, thumbs-up, hat-tip.',
     'Do not invent new choreography. Do not change the backdrop.',
   ].join(' ');
   return { body, gesture, angle, poseStill, poseMotion, omnihuman_prompt };

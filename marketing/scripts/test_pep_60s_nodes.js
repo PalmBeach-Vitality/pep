@@ -85,7 +85,18 @@ mustInclude('n8n-pep-grok-still-body-lock.txt', [
   'Scene brief:',
   'Arms stay relaxed and natural',
   'CRITICAL #4 — FEET',
+  'CRITICAL #5 — EYES',
+  'CRITICAL #6 — LABEL TYPE',
   'HARD FAIL: hovering',
+  '10mlz',
+]);
+mustInclude('n8n-pep-prep-beats.js', [
+  'EYES: keep the two cartoon eyes from the still',
+  'LABEL: keep the vial type exactly 10ml',
+]);
+mustInclude('n8n-pep-prep-lipsync.js', [
+  'EYES: keep the two cartoon eyes from the still',
+  'LABEL: keep the vial type exactly 10ml',
 ]);
 
 const merge = fs.readFileSync(path.join(root, 'n8n-pep-merge-tts-binary.js'), 'utf8');

@@ -119,6 +119,8 @@ JSON Body fx **ON**. Paste `marketing/n8n-pep-grok-still-body-lock.txt` (the `={
 
 POSE now reads `$('split_pep_beats').item.json.pose_still` so each beat gets a different body/gesture. SET still uses that row’s `surface`.
 
+QC the still before OmniHuman: eyes match master, label type is exactly `10ml` (discard `10mlz`).
+
 ---
 
 ## 7. PASTE `prep_pep_lipsync`
