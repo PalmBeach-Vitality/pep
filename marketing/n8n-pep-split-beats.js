@@ -32,8 +32,8 @@ if (!/backed by a COA/i.test(tts_text) || !/>99%/.test(tts_text) || !/american m
   throw new Error('tts_text must include the COA / American made / >99% purity line before the store CTA.');
 }
 const wc = tts_text.split(/\s+/).filter(Boolean).length;
-if (wc < 154 || wc > 230) {
-  throw new Error(`tts_text is ${wc} words. Need 154–230 for the science pitch.`);
+if (wc < 112 || wc > 125) {
+  throw new Error(`tts_text is ${wc} words. Need 112–125 to fit the 50s OmniHuman clip.`);
 }
 const low = tts_text.toLowerCase();
 if (

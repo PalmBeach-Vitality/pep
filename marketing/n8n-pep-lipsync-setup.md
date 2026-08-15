@@ -127,8 +127,8 @@ Do **not** also add a `xi-api-key` header on the node. The credential already se
     throw new Error('TTS text must include: Studies have shown X has been beneficial to X in recent research studies. Re-import 150-pb-pep-scenes.');
   }
   const n = text.split(/\s+/).filter(Boolean).length;
-  if (n < 154 || n > 230) {
-    throw new Error(`Spoken VO is ${n} words (~${(n / 2.51).toFixed(1)}s). Need 154–230 words. Re-import 150-pb-pep-scenes.`);
+  if (n < 112 || n > 125) {
+    throw new Error(`Spoken VO is ${n} words (~${(n / 2.51).toFixed(1)}s). Need 112–125 words. Re-import 150-pb-pep-scenes.`);
   }
   return JSON.stringify({
     text: text,

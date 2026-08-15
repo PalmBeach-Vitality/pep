@@ -4,9 +4,9 @@
 // Uses: Prep_day_variant → Limit (EXACT names)
 // Mode: Run Once for Each Item
 // Do NOT return [{ json: ... }]
-// ONE talking clip. Standing Pep, same ~70–80s sheet pitch, 720p OmniHuman.
+// ONE talking clip. Standing Pep, same ~50s sheet pitch, 720p OmniHuman.
 // Easy science pitch: how this peptide works + studies line + COA line + store CTA.
-// 1080p cannot hold this audio. No extra scene cuts.
+// OmniHuman caps near 50s. No extra scene cuts.
 
 function nodeJson(name) {
   try {
@@ -127,8 +127,8 @@ function extractProductPitch(raw, disclaimerText) {
     throw new Error('Product pitch must include the COA line before the store CTA: Palm Beach Vitality research peptides are backed by a COA with every single order, American made delivering >99% purity 100% of the time.');
   }
   const n = wordsOf(t).length;
-  if (n < 154 || n > 230) {
-    throw new Error(`Spoken VO is ${n} words (~${(n / 2.51).toFixed(1)}s). Need 154–230 words (~61–92s at Pep TTS rate). Re-import 150-pb-pep-scenes.`);
+  if (n < 112 || n > 125) {
+    throw new Error(`Spoken VO is ${n} words (~${(n / 2.51).toFixed(1)}s). Need 112–125 words (~45–50s at Pep TTS rate). Re-import 150-pb-pep-scenes.`);
   }
   return t;
 }
@@ -422,7 +422,7 @@ const poseStill = packs[0].poseStill;
 const poseMotion = packs[0].poseMotion;
 
 const beatMeta = {
-  a: { name: 'talking', window: 'one 70s clip', extra: `${motion}; preserve Pep identity; no thumbs-up; no new text; no mid-clip lash grow-in` },
+  a: { name: 'talking', window: 'one 50s clip', extra: `${motion}; preserve Pep identity; no thumbs-up; no new text; no mid-clip lash grow-in` },
 };
 
 const beats = {};

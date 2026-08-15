@@ -12,8 +12,8 @@ COA = (
     "Palm Beach Vitality research peptides are backed by a COA with every single order, "
     "American made delivering >99% purity 100% of the time."
 )
-TARGET_MIN = 154
-TARGET_MAX = 230
+TARGET_MIN = 112
+TARGET_MAX = 125
 BANNED = [
     "for laboratory research use only",
     "not for human use or consumption",
