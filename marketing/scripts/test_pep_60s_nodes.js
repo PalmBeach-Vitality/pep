@@ -60,6 +60,7 @@ mustNotInclude('n8n-pep-prep-beats.js', [
   '1080p audio must stay under 75',
   "const BEAT_IDS = ['a', 'b', 'c', 'd']",
   'beat_count: 4',
+  'pep_script',
 ]);
 mustInclude('n8n-pep-split-beats.js', [
   'Run Once for All Items',

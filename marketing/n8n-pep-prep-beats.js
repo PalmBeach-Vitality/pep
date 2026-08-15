@@ -75,7 +75,6 @@ function stripSpokenCompliance(text, disclaimerText) {
   return t.replace(/\s{2,}/g, ' ').replace(/\s+\./g, '.').replace(/^\.\s*/, '').trim();
 }
 
-const pepScript = String(row.pep_script || '').trim();
 const disclaimer = String(row.disclaimer_short || '').trim();
 const PITCH_CTA = 'Visit us at palmbeach-vitality.store.';
 
@@ -489,7 +488,6 @@ return {
   voice_over: voiceOver,
   scene_brief: sceneBrief,
   set_text: setText,
-  pep_script: pepScript,
   disclaimer_short: disclaimer,
   aspect_ratio: '9:16',
   resolution: '720p',

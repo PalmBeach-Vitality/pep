@@ -127,7 +127,6 @@ On node **`Prep_day_variant`**, set field:
 | `color_grade` | `{{ $json.color_grade }}` |
 | `hero_style` | `{{ $json.hero_style }}` |
 | `voice_over` | `{{ $json.voice_over }}` |
-| `pep_script` | `{{ $json.pep_script }}` |
 | `disclaimer_short` | `{{ $json.disclaimer_short }}` |
 | `times_used` | `{{ $json.times_used }}` |
 | `last_used_at` | `{{ $json.last_used_at }}` |

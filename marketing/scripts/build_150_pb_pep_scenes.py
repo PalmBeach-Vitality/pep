@@ -73,7 +73,6 @@ COLS = [
     "theme",
     "workflow",
     "voice_over",
-    "pep_script",
     "product_description",
     "disclaimer_short",
 ]
@@ -540,7 +539,7 @@ def scrub_nick(text: str) -> str:
     return t
 
 
-def unique_script(i: int, chemical_name: str, science: str, surface: str) -> tuple[str, str]:
+def unique_script(i: int, chemical_name: str, science: str, surface: str) -> str:
     opener = OPENERS[(i * 3 + len(chemical_name)) % len(OPENERS)]
     closer = CLOSERS[i % len(CLOSERS)]
     science = scrub_nick(science)
@@ -563,7 +562,7 @@ def unique_script(i: int, chemical_name: str, science: str, surface: str) -> tup
         f"{closer} "
         f"{DISCLAIMER}"
     )
-    return script, pep_bit
+    return script
 
 
 def build_row(
@@ -577,7 +576,6 @@ def build_row(
     vibe_name: str,
     source_id: str,
     voice_over: str,
-    pep_script: str,
     visual_extra: str = "",
 ) -> dict[str, str]:
     qs, lighting, grade = VIBE_PACK.get(vibe_name, VIBE_PACK["Clean"])
@@ -654,7 +652,6 @@ def build_row(
         "theme": theme,
         "workflow": "vid_gen_palm_beach_pep",
         "voice_over": voice_over,
-        "pep_script": pep_script,
         "product_description": product_desc,
         "disclaimer_short": DISCLAIMER,
     }
@@ -700,8 +697,8 @@ def main() -> None:
                 if "Palm Beach Pep" not in p and "checking in" not in p and "rolling through" not in p:
                     science = p
                     break
-        voice, pep = unique_script(i, cname, science, surface)
-        rows.append(build_row(i, cid, cname, url, pdesc, surface, theme, vibe, f"UP-{u['Scene #']}", voice, pep))
+        voice = unique_script(i, cname, science, surface)
+        rows.append(build_row(i, cid, cname, url, pdesc, surface, theme, vibe, f"UP-{u['Scene #']}", voice))
 
     extra = [
         "BPC-157",
@@ -762,7 +759,7 @@ def main() -> None:
         idx = 101 + j
         surface, vibe, theme = PLACES[idx - 1]
         cid, cname, url, pdesc = PRODUCTS[prod]
-        voice, pep = unique_script(idx, cname, SCIENCE[cname], surface)
+        voice = unique_script(idx, cname, SCIENCE[cname], surface)
         rows.append(
             build_row(
                 idx,
@@ -775,7 +772,6 @@ def main() -> None:
                 vibe,
                 f"GEN-{idx}",
                 voice,
-                pep,
                 visual_extra="This beat uses a one-of-a-kind background detail so it never matches another Pep scene.",
             )
         )
@@ -794,7 +790,7 @@ def main() -> None:
         raise SystemExit("scene_brief not unique")
 
     for r in rows:
-        blob = r["voice_over"] + r["pep_script"] + r["compound_name"] + r["scene_brief"]
+        blob = r["voice_over"] + r["compound_name"] + r["scene_brief"]
         if "Wolverine" in blob or re.search(r"\bGLOW\b", blob) or re.search(r"\bKLOW\b", blob):
             raise SystemExit(f"nickname leftover in {r['creation_id']}")
         loc_blob = f"{r['surface']} {r['theme']}".lower()
