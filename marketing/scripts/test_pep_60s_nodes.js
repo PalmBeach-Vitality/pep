@@ -116,9 +116,13 @@ const poses = new Set(beat_items.map((b) => b.pose_still));
 if (poses.size !== 4) throw new Error('poses not unique per scene');
 
 mustInclude('n8n-pep-60s-1080-execute.md', [
-  'studies have shown',
-  'Need 142–150 words',
+  'n8n-pep-tts-body.txt',
   '| 3 | **Resolution** (`resolution`) | OFF | `720p` |',
+]);
+mustInclude('n8n-pep-tts-body.txt', [
+  '={{ (() => {',
+  'studies have shown',
+  'Need 142-150 words',
 ]);
 mustNotInclude('n8n-pep-60s-1080-execute.md', [
   'still 1080p',

@@ -1,0 +1,37 @@
+={{ (() => {
+  const text = String($json.tts_text || $('split_pep_beats').item.json.tts_text || '').trim();
+  if (!text) {
+    throw new Error('Missing beat tts_text. Check split_pep_beats OUTPUT.');
+  }
+  if (text.includes("$('") || text.includes('={{')) {
+    throw new Error('TTS text is an n8n expression, not the sheet VO. JSON Body fx must be ON, paste starting with ={{');
+  }
+  const low = text.toLowerCase();
+  if (
+    low.includes("today's unique set") ||
+    low.includes('for laboratory research use only') ||
+    low.includes('not evaluated by the fda') ||
+    low.includes('everything stays in the research') ||
+    low.includes('not for human use')
+  ) {
+    throw new Error('TTS text is sheet-list/compliance, not the product sales pitch. Re-paste prep_pep_beats.');
+  }
+  if (!text.endsWith('Visit us at palmbeach-vitality.store.')) {
+    throw new Error('TTS text must end with: Visit us at palmbeach-vitality.store.');
+  }
+  if (!/palm beach pep/i.test(text)) {
+    throw new Error('TTS text must start with Pep introducing himself.');
+  }
+  if (!/studies have shown/i.test(text) || !/beneficial to/i.test(text) || !/recent research studies/i.test(text)) {
+    throw new Error('TTS text must include the studies-have-shown wellness line. Re-import 150-pb-pep-scenes.');
+  }
+  const n = text.split(/\s+/).filter(Boolean).length;
+  if (n < 142 || n > 150) {
+    throw new Error('Spoken VO is ' + n + ' words. Need 142-150 words (55-60s). Re-import 150-pb-pep-scenes.');
+  }
+  return JSON.stringify({
+    text: text,
+    model_id: 'eleven_multilingual_v2',
+    voice_settings: { stability: 0.45, similarity_boost: 0.8 }
+  });
+})() }}
