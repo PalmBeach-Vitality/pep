@@ -142,9 +142,9 @@ Include Other Input Fields stays **OFF**.
 | Mode | **Run Once for All Items** |
 | Language | JavaScript |
 
-**Select all** in the JavaScript field, **delete**, then paste `marketing/n8n-pep-gather-clips.js`. Do not paste under old gather JS. First line must be `// Node: gather_pep_clips (Code)`. The field must contain `gatherPepClips` **once**.
+**Select all** in the JavaScript field, **delete**, then paste `marketing/n8n-pep-gather-clips.js`. Do not paste under old gather JS. First line must be `// Node: gather_pep_clips (Code)`. Mode **Run Once for All Items**.
 
-OUTPUT (one item): `video_url` / `lipsync_video_url` = the one talking clip.
+OUTPUT (one item): `video_url` and `lipsync_video_url` = the one talking clip.
 
 ---
 

@@ -1,85 +1,85 @@
 // Node: gather_pep_clips (Code)
-// REPLACE THE ENTIRE JavaScript field: select all, delete, then paste this file.
-// Do not paste under old gather JS. Search the field: `gatherPepClips` must appear once.
-// Wire: loop_pep_beats (done) → gather_pep_clips → sheets_update_creation
 // Mode: Run Once for All Items
-// One talking clip. Loop runs once, then done.
+// Select all, delete, paste this whole file. Do not paste under old JS.
 
-return (function gatherPepClips() {
-  function jsonOf(it) {
-    return it?.json || it || {};
-  }
+function jsonOf(it) {
+  return (it && it.json) || it || {};
+}
 
-  function allRuns(name) {
-    const out = [];
-    for (let run = 0; run < 8; run++) {
-      let items;
-      try {
-        items = $(name).all(0, run);
-      } catch (e) {
-        break;
-      }
-      if (!items || !items.length) break;
-      for (const it of items) out.push(jsonOf(it));
+function allRuns(name) {
+  const out = [];
+  for (let run = 0; run < 8; run++) {
+    let items;
+    try {
+      items = $(name).all(0, run);
+    } catch (e) {
+      break;
     }
-    if (!out.length) {
-      try {
-        out.push(...$(name).all().map(jsonOf));
-      } catch (e) {}
-    }
-    return out;
+    if (!items || !items.length) break;
+    for (const it of items) out.push(jsonOf(it));
   }
-
-  function clipUrl(j) {
-    return String(j.lipsync_video_url || j.video_url || j.video?.url || '').trim();
+  if (!out.length) {
+    try {
+      out.push.apply(out, $(name).all().map(jsonOf));
+    } catch (e) {}
   }
+  return out;
+}
 
-  function stillUrl(j) {
-    return String(j.reel_still_url || j.data?.[0]?.url || '').trim();
-  }
+function clipUrl(j) {
+  if (!j) return '';
+  if (j.lipsync_video_url) return String(j.lipsync_video_url).trim();
+  if (j.video_url) return String(j.video_url).trim();
+  if (j.video && j.video.url) return String(j.video.url).trim();
+  return '';
+}
 
-  const loopDoneItems = $input.all().map(jsonOf);
-  let clips = allRuns('save_lipsync_video_url').filter((j) => clipUrl(j));
-  if (!clips.length) {
-    const fal = allRuns('pep_lipsync_fal').filter((j) => clipUrl(j));
-    if (fal.length) clips = fal;
-  }
-  if (!clips.length) {
-    clips = loopDoneItems.filter((j) => clipUrl(j));
-  }
+function stillUrl(j) {
+  if (!j) return '';
+  if (j.reel_still_url) return String(j.reel_still_url).trim();
+  if (j.data && j.data[0] && j.data[0].url) return String(j.data[0].url).trim();
+  return '';
+}
 
-  const stills = allRuns('save_still_url');
-  const splits = allRuns('split_pep_beats');
+const fromSave = allRuns('save_lipsync_video_url').filter(function (j) {
+  return clipUrl(j);
+});
+const fromFal = allRuns('pep_lipsync_fal').filter(function (j) {
+  return clipUrl(j);
+});
+const fromIn = $input.all().map(jsonOf).filter(function (j) {
+  return clipUrl(j);
+});
+const clips = fromSave.length ? fromSave : fromFal.length ? fromFal : fromIn;
 
-  if (clips.length < 1) {
-    throw new Error(
-      'Expected 1 OmniHuman clip, got 0. Check pep_lipsync_fal / save_lipsync_video_url.'
-    );
-  }
+if (!clips.length) {
+  throw new Error('Expected 1 OmniHuman clip, got 0. Check pep_lipsync_fal and save_lipsync_video_url.');
+}
 
-  const clip = clips[0];
-  const url = clipUrl(clip);
-  if (!url) {
-    throw new Error('Missing lipsync URL.');
-  }
-  const still = stills[0] || {};
-  const first = splits[0] || clip;
+const clip = clips[0];
+const url = clipUrl(clip);
+if (!url) {
+  throw new Error('Missing lipsync URL.');
+}
 
-  return [
-    {
-      json: {
-        creation_id: first.creation_id || clip.creation_id || '',
-        beat_count: 1,
-        resolution: '720p',
-        model_video: 'fal-omnihuman-v1.5',
-        reel_still_url: stillUrl(clip) || stillUrl(still) || '',
-        reel_still_url_a: stillUrl(clip) || stillUrl(still) || '',
-        video_url: url,
-        lipsync_video_url: url,
-        lipsync_video_url_a: url,
-        stitch_clip_urls: [url],
-        stitch_note: 'One 50s talking clip. Same sheet pitch. Audio is already in the mp4.',
-      },
+const still = allRuns('save_still_url')[0] || {};
+const first = allRuns('split_pep_beats')[0] || clip;
+const stillFinal = stillUrl(clip) || stillUrl(still);
+
+return [
+  {
+    json: {
+      creation_id: first.creation_id || clip.creation_id || '',
+      beat_count: 1,
+      resolution: '720p',
+      model_video: 'fal-omnihuman-v1.5',
+      reel_still_url: stillFinal,
+      reel_still_url_a: stillFinal,
+      video_url: url,
+      lipsync_video_url: url,
+      lipsync_video_url_a: url,
+      stitch_clip_urls: [url],
+      stitch_note: 'One 50s talking clip. Same sheet pitch. Audio is already in the mp4.',
     },
-  ];
-})();
+  },
+];

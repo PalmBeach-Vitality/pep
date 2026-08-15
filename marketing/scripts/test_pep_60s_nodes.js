@@ -81,13 +81,12 @@ mustInclude('n8n-pep-gather-clips.js', [
   '.all(0, run)',
   "resolution: '720p'",
   'beat_count: 1',
-  'gatherPepClips',
-  'loopDoneItems',
 ]);
 mustNotInclude('n8n-pep-gather-clips.js', [
   'Expected 4 OmniHuman clips',
   'lipsync_video_url_d',
   'const incoming',
+  'gatherPepClips',
 ]);
 mustInclude('n8n-pep-merge-tts-binary.js', [
   'Run Once for Each Item',
