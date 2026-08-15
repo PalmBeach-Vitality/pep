@@ -132,6 +132,59 @@ function extractProductPitch(raw, disclaimerText) {
 
 const voiceOver = extractProductPitch(voiceOverRaw, disclaimer);
 
+// Spoken names for ElevenLabs only. Written pitch / captions stay chemical names.
+// Longer keys first so combo names win. Optional sheet column tts_pronounce: Name=spoken|Name=spoken
+const PRONOUNCE = [
+  ['KPV / BPC-157 / TB-500 / GHK-Cu', 'K P V, B P C 157, T B 500, and G H K copper'],
+  ['BPC-157 / TB-500 / GHK-Cu', 'B P C 157, T B 500, and G H K copper'],
+  ['CJC (no DAC)/Ipamorelin', 'C J C, no D A C, and eye-PAM-or-REL-in'],
+  ['BPC-157 / TB-500', 'B P C 157 and T B 500'],
+  ['CJC (no DAC)', 'C J C, no D A C'],
+  ['Thymosin Alpha-1', 'THY-mo-sin Alpha one'],
+  ['Tesamorelin', 'tess-uh-mo-REL-in'],
+  ['Sermorelin', 'ser-mo-REL-in'],
+  ['Ipamorelin', 'eye-PAM-or-REL-in'],
+  ['Semaglutide', 'SEM-uh-GLOO-tide'],
+  ['Tirzepatide', 'teer-ZEP-uh-tide'],
+  ['Retatrutide', 'reh-TAT-roo-tide'],
+  ['AOD-9604', 'A O D 9604'],
+  ['GHK-Cu', 'G H K copper'],
+  ['BPC-157', 'B P C 157'],
+  ['TB-500', 'T B 500'],
+  ['PT-141', 'P T 141'],
+  ['MOTS-C', 'mots C'],
+  ['SS-31', 'S S 31'],
+  ['NAD+', 'N A D plus'],
+  ['Semax', 'SEE-max'],
+  ['Selank', 'SEL-ank'],
+  ['KPV', 'K P V'],
+];
+
+function extraPronouncePairs(raw) {
+  const out = [];
+  String(raw || '')
+    .split(/\n|\|/)
+    .forEach((line) => {
+      const m = String(line).match(/^\s*(.+?)\s*=\s*(.+?)\s*$/);
+      if (m) out.push([m[1].trim(), m[2].trim()]);
+    });
+  return out;
+}
+
+function applyPronunciation(text) {
+  let t = String(text || '');
+  const pairs = extraPronouncePairs(row.tts_pronounce).concat(PRONOUNCE);
+  pairs.sort((a, b) => b[0].length - a[0].length);
+  for (const [from, to] of pairs) {
+    if (!from || !to) continue;
+    const re = new RegExp(from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    t = t.replace(re, to);
+  }
+  return t;
+}
+
+const voiceSpeak = applyPronunciation(voiceOver);
+
 const PEP_MASTER_DEFAULT = 'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-master.jpg';
 const pepRefUrl = String(row.pep_ref_url || PEP_MASTER_DEFAULT).trim();
 if (!pepRefUrl) {
@@ -386,6 +439,7 @@ const beat_items = BEAT_IDS.map((id, i) => {
   return {
     beat: id,
     tts_text: voiceOver,
+    tts_speak: voiceSpeak,
     pep_body_action: p.body.id,
     pep_hand_gesture: p.gesture.id,
     pep_angle: p.angle,
@@ -425,6 +479,7 @@ return {
   beat_a_motion: beats.a.motion,
   vo_beat_a: voiceOver,
   tts_text: voiceOver,
+  tts_speak: voiceSpeak,
   vo_source: 'sheet',
   voice_over: voiceOver,
   scene_brief: sceneBrief,

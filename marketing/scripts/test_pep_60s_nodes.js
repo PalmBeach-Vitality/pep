@@ -144,7 +144,12 @@ mustNotInclude('n8n-pep-60s-1080-execute.md', [
 mustInclude('n8n-pep-tts-body.txt', [
   '={{ JSON.stringify({',
   'eleven_multilingual_v2',
-  "$('split_pep_beats').item.json.tts_text",
+  'tts_speak',
+]);
+mustInclude('n8n-pep-prep-beats.js', [
+  'SEM-uh-GLOO-tide',
+  'tts_speak: voiceSpeak',
+  'applyPronunciation',
 ]);
 
 console.log('ok one 50s talking-clip node contracts');

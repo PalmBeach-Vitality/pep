@@ -59,6 +59,7 @@ return [
       ...src,
       beat: beat,
       tts_text: tts_text,
+      tts_speak: String(pack.tts_speak || src.tts_speak || tts_text),
       pep_body_action: pack.pep_body_action || src.pep_body_action,
       pep_hand_gesture: pack.pep_hand_gesture || src.pep_hand_gesture,
       pep_angle: pack.pep_angle || src.pep_angle,

@@ -28,7 +28,7 @@ Second Pep tab (blocking / pose pool, Sal-named):
 
 `https://github.com/PalmBeach-Vitality/pep/blob/cursor/palm-beach-pep-scenes-8510/marketing/sheets/pep-blocking-pool.csv`
 
-Spoken Pep lines come **only** from tab `150-pb-pep-scenes` column `voice_over`. Easy, upbeat, science-plus-wellness pitch. Intro + product + **Studies have shown X has been beneficial to X in recent research studies.** + close. **55–60 seconds** (142–150 words). Last sentence: **`Visit us at palmbeach-vitality.store.`** One talking clip. `pep_lipsync_fal` Resolution **`720p`** (1080p cannot take 55–60s audio). Never speak compliance/disclaimer. Captions still carry research-use framing.
+Spoken Pep lines come **only** from tab `150-pb-pep-scenes` column `voice_over`. Easy, upbeat, science-plus-wellness pitch. Intro + product + **Studies have shown X has been beneficial to X in recent research studies.** + close. **55–60 seconds** (142–150 words). Last sentence: **`Visit us at palmbeach-vitality.store.`** One talking clip. ElevenLabs reads `tts_speak` (pronunciation map in `prep_pep_beats`). Captions keep the chemical name. See `marketing/n8n-pep-pronunciation.md`. `pep_lipsync_fal` Resolution **`720p`**. Never speak compliance/disclaimer. Captions still carry research-use framing.
 
 Scene rotation columns on that same tab: `times_used`, `last_used_at`. `sort_rotation` is `times_used` ASC then `last_used_at` ASC. `sheets_update_creation` writes both.
 

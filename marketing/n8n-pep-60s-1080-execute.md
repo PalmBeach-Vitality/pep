@@ -74,7 +74,7 @@ With 1 item the loop fires once, then done. You will not see badges `1` `2` `3` 
 
 JSON Body fx **ON**. Delete any `{ "text": ... }` first. Paste `marketing/n8n-pep-tts-body.txt` as the **entire** field (`={{ JSON.stringify({` … `}) }}`). Do **not** wrap it in another `{ }`. Preview must be one JSON object whose `text` is the pitch.
 
-Request preview: intro + product + studies line + `Visit us at palmbeach-vitality.store.` ~146 words. Easy, upbeat, wellness.
+Request preview: intro + product + studies line + `Visit us at palmbeach-vitality.store.` ~146 words. Easy, upbeat, wellness. `text` is `tts_speak` (pronunciation map). Semaglutide must read as `SEM-uh-GLOO-tide`.
 
 ---
 
