@@ -293,17 +293,40 @@ const pepLock = [
   'HARD FAIL: thumbs-up. No hat-tip freeze. No extra mascots. No humans. No doctor offices. No hospitals.',
 ].join(' ');
 
+function cleanSetText(surfaceText, briefText) {
+  let t = [surfaceText, briefText].filter(Boolean).join('. ');
+  t = t.replace(/\s+/g, ' ');
+  const drop = [
+    /He points[^.]+\./gi,
+    /then open-glove[^.]*\./gi,
+    /open-glove gesture\.?/gi,
+    /points to the environment[^.]+\./gi,
+    /count(?:ing)? on (?:glove )?fingers[^.]+\./gi,
+  ];
+  for (const re of drop) t = t.replace(re, ' ');
+  return t.replace(/\s{2,}/g, ' ').trim();
+}
+
+const setText = cleanSetText(surface, sceneBrief);
+
 function packBlocking(body, gesture, angleRow) {
   const angle = angleText(angleRow);
-  const poseStill = [body.still, gesture.still, `ANGLE: ${angle}.`, 'MOUTH OPEN mid-word (OmniHuman start frame).'].join(' ');
-  const poseMotion = `${body.motion}; ${gesture.motion}; ${angle}; talking mouth the whole clip`;
+  const poseStill = [
+    body.still,
+    'HANDS: white gloves relaxed near the hips or hanging naturally. No pointing, no counting, no waving, no swinging.',
+    `ANGLE: ${angle}.`,
+    'MOUTH OPEN mid-word (OmniHuman start frame).',
+  ].join(' ');
+  const poseMotion = `${body.motion}; relaxed gloves near the hips; ${angle}; talking mouth the whole clip`;
   const omnihuman_prompt = [
-    'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot,',
-    'talking with the audio. Mouth on the white 10ml label moves with speech.',
-    (body.omni || body.motion) + '.',
-    (gesture.omni || gesture.motion) + '.',
-    angle + '.',
-    'No thumbs-up. No hat-tip freeze.',
+    'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot, talking with the audio.',
+    'Mouth on the white 10ml label moves with speech.',
+    'Hold the still pose. Stay in this exact set:',
+    setText + '.',
+    'Body motion is small and natural only — a little weight shift, a little sway, same walk/sit/stand the still already shows.',
+    'ARMS: relaxed, close to the body, gloves near the hips. Tiny talk motion only.',
+    'HARD FAIL: wild arm swings, rubber-band limbs, pointing, counting fingers, waving, salutes, T-pose, thumbs-up, hat-tip.',
+    'Do not invent new choreography. Do not change the backdrop.',
   ].join(' ');
   return { body, gesture, angle, poseStill, poseMotion, omnihuman_prompt };
 }
@@ -327,10 +350,9 @@ for (let i = 0; i < BEAT_IDS.length; i++) {
   const id = BEAT_IDS[i];
   const p = packs[i];
   const meta = beatMeta[id];
-  const gestureLabel = String(p.gesture.id || '').replace(/_/g, ' ');
   beats[id] = {
     name: meta.name,
-    brief: `Scene ${id.toUpperCase()} ${meta.name.toUpperCase()}: Palm Beach Pep mid-ground in this unique set: ${surface}. Blocking this cut: ${p.body.brief}, ${gestureLabel}. ${p.poseStill} ${pepLock} Product lock: ${compound} (${compoundId}). Lighting: ${lighting}. Grade: ${grade}. Hero: ${hero}. Full environment, not void packshot.`,
+    brief: `Scene ${id.toUpperCase()} ${meta.name.toUpperCase()}: Palm Beach Pep mid-ground in this unique set: ${setText}. Blocking this cut: ${p.body.brief}, relaxed gloves. ${p.poseStill} ${pepLock} Product lock: ${compound} (${compoundId}). Lighting: ${lighting}. Grade: ${grade}. Hero: ${hero}. Full environment, not void packshot.`,
     motion: `${p.poseMotion}; ${meta.window}; ${meta.extra}`,
   };
 }
@@ -405,6 +427,8 @@ return {
   tts_text: voiceOver,
   vo_source: 'sheet',
   voice_over: voiceOver,
+  scene_brief: sceneBrief,
+  set_text: setText,
   pep_script: pepScript,
   disclaimer_short: disclaimer,
   aspect_ratio: '9:16',

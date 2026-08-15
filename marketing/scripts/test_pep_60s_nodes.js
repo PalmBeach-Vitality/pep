@@ -45,6 +45,8 @@ mustInclude('n8n-pep-prep-beats.js', [
   "beat_count: 4",
   "const BEAT_IDS = ['a', 'b', 'c', 'd']",
   "resolution: '720p'",
+  'ARMS: relaxed',
+  'cleanSetText',
 ]);
 mustNotInclude('n8n-pep-prep-beats.js', [
   'function splitVoice',
@@ -76,6 +78,11 @@ mustInclude('n8n-pep-prep-lipsync.js', [
   "fromNode('split_pep_beats', ['beat'])",
   "fromNode('split_pep_beats', ['omnihuman_prompt'])",
   "omnihuman_resolution: '720p'",
+  'ARMS: relaxed',
+]);
+mustInclude('n8n-pep-grok-still-body-lock.txt', [
+  'Scene brief:',
+  'Arms stay relaxed and natural',
 ]);
 
 const merge = fs.readFileSync(path.join(root, 'n8n-pep-merge-tts-binary.js'), 'utf8');

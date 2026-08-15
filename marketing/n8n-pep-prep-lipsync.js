@@ -54,10 +54,12 @@ const omniFromBeats =
   fromNode('prep_pep_beats', ['omnihuman_prompt']);
 
 const omniPrompt = omniFromBeats || [
-  'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot,',
-  'talking with the audio. Mouth on the white 10ml label moves with speech.',
-  'Natural body motion with the audio — walk, sit, stand, or stop as the still shows.',
-  'No thumbs-up. No hat-tip freeze.',
+  'Palm Beach Pep, anthropomorphic 10ml crimp-seal glass vial mascot, talking with the audio.',
+  'Mouth on the white 10ml label moves with speech.',
+  'Hold the still pose. Stay in the still backdrop.',
+  'Body motion is small and natural only.',
+  'ARMS: relaxed, close to the body, gloves near the hips. Tiny talk motion only.',
+  'HARD FAIL: wild arm swings, rubber-band limbs, pointing, counting, waving, thumbs-up, hat-tip.',
 ].join(' ');
 
 return {
