@@ -48,7 +48,8 @@ mustInclude('n8n-pep-prep-beats.js', [
   'ARMS: relaxed',
   'cleanSetText',
   'BOTH sneakers firmly on the ground',
-  'EYES: keep the two cartoon eyes from the still',
+  'EYES: keep the same two cartoon ovals from the still',
+  'Eyes SHOULD blink, glance, and look around naturally',
   'LABEL: keep the vial type exactly 10ml',
   'NO eyelashes',
 ]);
@@ -90,7 +91,8 @@ mustInclude('n8n-pep-prep-lipsync.js', [
   "fromNode('split_pep_beats', ['omnihuman_prompt'])",
   "omnihuman_resolution: '720p'",
   'ARMS: relaxed',
-  'EYES: keep the two cartoon eyes from the still',
+  'EYES: keep the same two cartoon ovals from the still',
+  'Eyes SHOULD blink, glance, and look around naturally',
   'LABEL: keep the vial type exactly 10ml',
   'NO eyelashes',
 ]);

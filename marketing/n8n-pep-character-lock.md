@@ -48,7 +48,7 @@ Must be true in request preview:
 3. `image.type` is `image_url`
 4. Prompt starts with `EDIT THIS IMAGE ONLY` + identity lock
 
-**QC gate:** open still next to master. Face / hat logo / crimp / gloves / sneakers must match. The two cartoon eyes must stay the same pair (not warped, crossed, uneven, or given eyelashes). Label type must be exactly `10ml` — discard `10mlz` or any extra glyph after the `l`. Pose must be mid-stride walking (not the master thumbs-up). Mouth must be a talking AH/OH, not a wide held grin. If identity drifts, eyes smear, lashes appear, label type is wrong, pose is planted/thumbs-up, or mouth is a grin-hold → rerun. Do not send a bad still into OmniHuman or `ai_vid_generator`.
+**QC gate:** open still next to master. Face / hat logo / crimp / gloves / sneakers must match. The two cartoon eyes must stay the same bare ovals (not warped, crossed, uneven, or given eyelashes). Label type must be exactly `10ml` — discard `10mlz` or any extra glyph after the `l`. Pose is standing at ease (not the master thumbs-up). Mouth must be a talking AH/OH, not a wide held grin. If identity drifts, eyes smear, lashes appear, label type is wrong, pose is thumbs-up, or mouth is a grin-hold → rerun. Do not send a bad still into OmniHuman. In the talking clip, those same ovals SHOULD blink and look around — fail only if they morph or grow lashes.
 
 ---
 

@@ -105,7 +105,7 @@ JSON Body fx **ON**. Paste `marketing/n8n-pep-grok-still-body-lock.txt` (the `={
 
 POSE reads `$('split_pep_beats').item.json.pose_still` (standing). SET uses that row’s `surface`.
 
-QC the still before OmniHuman: eyes match master (no eyelashes), label type is exactly `10ml` (discard `10mlz`).
+QC the still before OmniHuman: eyes match master (bare ovals, no eyelashes), label type is exactly `10ml` (discard `10mlz`). In the talking clip, those eyes should blink and look around — discard only if they morph or grow lashes.
 
 ---
 
