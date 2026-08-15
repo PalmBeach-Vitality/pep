@@ -19,7 +19,7 @@
     },
     {
       "role": "user",
-      "content": "={{ [`Product: ${$json.compound_name || $('Prep_day_variant').item.json.compound_name} (${$json.compound_id || $('Prep_day_variant').item.json.compound_id})`, `URL: ${$json.canonical_url || $('Prep_day_variant').item.json.canonical_url}`, `Caption lock: ${$json.caption_lock || $('Prep_day_variant').item.json.caption_lock}`, `Scene: ${$json.scene_brief || $('Prep_day_variant').item.json.scene_brief}`, `Disclaimer: ${$json.disclaimer_short || $('Prep_day_variant').item.json.disclaimer_short}`, '', 'Write IG + FB captions that obey caption_lock. Keep Pep friendly and simple. End with research-use framing. Set compliance_ok true if those captions pass. Ignore any spoken pitch.'].join('\\n') }}"
+      "content": "={{ [`Product: ${$json.compound_name || $('Prep_day_variant').item.json.compound_name} (${$json.compound_id || $('Prep_day_variant').item.json.compound_id})`, `URL: ${$json.canonical_url || $('Prep_day_variant').item.json.canonical_url}`, `Caption lock: ${$json.caption_lock || $('Prep_day_variant').item.json.caption_lock}`, `Scene: ${$json.scene_brief || $('Prep_day_variant').item.json.scene_brief}`, '', 'Write IG + FB captions that obey caption_lock. Keep Pep friendly and simple. End with research-use framing. Set compliance_ok true if those captions pass. Ignore any spoken pitch.'].join('\\n') }}"
     }
   ]
 }

@@ -52,7 +52,7 @@ if (voiceOverRaw.includes("$('") || voiceOverRaw.includes('={{')) {
 }
 
 // Caption-only. Never speak legal/compliance lines. Captions stay on grok_api / caption_lock.
-function stripSpokenCompliance(text, disclaimerText) {
+function stripSpokenCompliance(text) {
   let t = String(text || '').replace(/\s+/g, ' ').trim();
   t = t.replace(/\s*[—–-]\s*research language only\.?/gi, '.');
   const drop = [
@@ -67,22 +67,16 @@ function stripSpokenCompliance(text, disclaimerText) {
     /everything stays in the research and laboratory space\.?/gi,
   ];
   for (const re of drop) t = t.replace(re, ' ');
-  const d = String(disclaimerText || '').trim();
-  if (d) {
-    const esc = d.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    t = t.replace(new RegExp(esc, 'gi'), ' ');
-  }
   return t.replace(/\s{2,}/g, ' ').replace(/\s+\./g, '.').replace(/^\.\s*/, '').trim();
 }
 
-const disclaimer = String(row.disclaimer_short || '').trim();
 const PITCH_CTA = 'Visit us at palmbeach-vitality.store.';
 
 function wordsOf(text) {
   return String(text || '').split(/\s+/).filter(Boolean);
 }
 
-function extractProductPitch(raw, disclaimerText) {
+function extractProductPitch(raw) {
   let t = String(raw || '').replace(/\s+/g, ' ').trim();
   const cuts = [
     /\s*Today['’]s unique set:.*/i,
@@ -93,7 +87,7 @@ function extractProductPitch(raw, disclaimerText) {
     const idx = t.search(re);
     if (idx > 20) t = t.slice(0, idx).trim();
   }
-  t = stripSpokenCompliance(t, disclaimerText);
+  t = stripSpokenCompliance(t);
   t = t.replace(/\s*Visit us at palmbeach-vitality\.store\.?\s*$/i, '').trim();
   if (t && !/[.!?]$/.test(t)) t += '.';
   t = (t + ' ' + PITCH_CTA).replace(/\s+/g, ' ').trim();
@@ -132,7 +126,7 @@ function extractProductPitch(raw, disclaimerText) {
   return t;
 }
 
-const voiceOver = extractProductPitch(voiceOverRaw, disclaimer);
+const voiceOver = extractProductPitch(voiceOverRaw);
 
 // Spoken names for ElevenLabs only. Written pitch / captions stay chemical names.
 // Longer keys first so combo names win. Optional sheet column tts_pronounce: Name=spoken|Name=spoken
@@ -488,7 +482,6 @@ return {
   voice_over: voiceOver,
   scene_brief: sceneBrief,
   set_text: setText,
-  disclaimer_short: disclaimer,
   aspect_ratio: '9:16',
   resolution: '720p',
   model_still: 'grok-imagine-image',

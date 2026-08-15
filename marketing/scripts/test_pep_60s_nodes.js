@@ -61,6 +61,7 @@ mustNotInclude('n8n-pep-prep-beats.js', [
   "const BEAT_IDS = ['a', 'b', 'c', 'd']",
   'beat_count: 4',
   'pep_script',
+  'disclaimer_short',
 ]);
 mustInclude('n8n-pep-split-beats.js', [
   'Run Once for All Items',

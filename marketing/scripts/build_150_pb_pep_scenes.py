@@ -8,10 +8,6 @@ import re
 from collections import Counter
 from pathlib import Path
 
-DISCLAIMER = (
-    "For laboratory research use only. Not for human use or consumption. "
-    "Not a drug, dietary supplement, or cosmetic. Not evaluated by the FDA."
-)
 PEP_LOCK = (
     "CHARACTER LOCK — Palm Beach Pep: anthropomorphic clear 10mL sterile injectable-style glass vial, "
     "rubber stopper + silver aluminum crimp seal (NOT screw-cap, NOT black twist cap), white mid-body label "
@@ -74,7 +70,6 @@ COLS = [
     "workflow",
     "voice_over",
     "product_description",
-    "disclaimer_short",
 ]
 
 PRODUCTS = {
@@ -559,8 +554,7 @@ def unique_script(i: int, chemical_name: str, science: str, surface: str) -> str
         "Everything stays in the research and laboratory space. No treatment claims. No human-use advice. "
         "Palm Beach Vitality focuses on documentation, purity verification, and clear catalog labeling. "
         f"{pep_bit} "
-        f"{closer} "
-        f"{DISCLAIMER}"
+        f"{closer}"
     )
     return script
 
@@ -653,7 +647,6 @@ def build_row(
         "workflow": "vid_gen_palm_beach_pep",
         "voice_over": voice_over,
         "product_description": product_desc,
-        "disclaimer_short": DISCLAIMER,
     }
 
 
@@ -796,8 +789,6 @@ def main() -> None:
         loc_blob = f"{r['surface']} {r['theme']}".lower()
         if "hospital" in loc_blob or "doctor office" in loc_blob or "clinic" in loc_blob:
             raise SystemExit(f"forbidden location in {r['creation_id']}: {r['surface']}")
-        if DISCLAIMER not in r["voice_over"]:
-            raise SystemExit(f"missing disclaimer {r['creation_id']}")
 
     out = Path("/workspace/marketing/sheets/150-pb-pep-scenes.csv")
     with out.open("w", newline="", encoding="utf-8") as f:
