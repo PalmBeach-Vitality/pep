@@ -38,6 +38,7 @@ Whenever you update a file Sal needs to download, import, or open, **immediately
 Use the same blob URL form as above. Raw GitHub URLs are fine for direct download/import.
 
 ## n8n
+- **Prefer a predefined n8n node over HTTP Request.** Search **+** for the product first (ElevenLabs, fal.ai, Google Sheets, xAI). Use that node. HTTP is last resort, and only after saying no node exists. If HTTP is required, use **Authentication → Predefined Credential Type** when n8n has that brand’s credential. Catalog: `marketing/n8n-node-reference.md` + https://docs.n8n.io/integrations/
 - New node names: `lower_case_with_underscores`
 - One node (or tight group) at a time, with exact node names
 - **When telling Sal to pin or unpin, always list the exact canvas node names.** Never say “pin TTS” or “unpin video” without the names. Example: PIN `tts_pep_voice_over`, `fal_upload_tts_initiate`. UNPIN `pep_lipsync_fal`.
