@@ -394,8 +394,8 @@ JSON Body (fx **ON**). Paste this whole block. Do **not** paste a JSON object wi
     throw new Error('TTS text must include: Studies have shown X has been beneficial to X in recent research studies. Re-import 150-pb-pep-scenes.');
   }
   const n = text.split(/\s+/).filter(Boolean).length;
-  if (n < 142 || n > 150) {
-    throw new Error(`Spoken VO is ${n} words (~${(n / 2.51).toFixed(1)}s). Need 142–150 words (55–60s). Re-import 150-pb-pep-scenes.`);
+  if (n < 154 || n > 230) {
+    throw new Error(`Spoken VO is ${n} words (~${(n / 2.51).toFixed(1)}s). Need 154–230 words. Re-import 150-pb-pep-scenes.`);
   }
   return JSON.stringify({
     text: text,
@@ -405,7 +405,7 @@ JSON Body (fx **ON**). Paste this whole block. Do **not** paste a JSON object wi
 })() }}
 ```
 
-`tts_text` is the full easy wellness pitch (~146 words, 55–60s) on every beat. Request preview must show product words, not `$('prep_pep_beats')`, not FDA/disclaimer.
+`tts_text` is the full science pitch (~70–80s) on every beat. Request preview must show product words, not `$('prep_pep_beats')`, not FDA/disclaimer.
 
 ---
 

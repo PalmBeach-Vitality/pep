@@ -27,5 +27,8 @@ Optional sheet override column `tts_pronounce` (do not add unless Sal asks): `Se
 | SS-31 | S S 31 |
 | PT-141 | P T 141 |
 | CJC (no DAC) | C J C, no D A C |
+| COA | certificate of analysis |
+| >99% | greater than ninety-nine percent |
+| 100% of the time | one hundred percent of the time |
 
 Semaglutide is **SEM-uh-GLOO-tide** (stress on GLOO), not seh-MAG-luh-tide / sema-GLUT-ide.

@@ -4,9 +4,9 @@
 // Uses: Prep_day_variant → Limit (EXACT names)
 // Mode: Run Once for Each Item
 // Do NOT return [{ json: ... }]
-// ONE talking clip. Standing Pep, same ~55–60s sheet pitch, 720p OmniHuman.
-// Easy upbeat wellness pitch. Intro + product + studies line + store CTA.
-// 1080p cannot hold 55–60s audio. No extra scene cuts.
+// ONE talking clip. Standing Pep, same ~70–80s sheet pitch, 720p OmniHuman.
+// Easy science pitch: how this peptide works + studies line + COA line + store CTA.
+// 1080p cannot hold this audio. No extra scene cuts.
 
 function nodeJson(name) {
   try {
@@ -123,9 +123,12 @@ function extractProductPitch(raw, disclaimerText) {
   if (!/studies have shown/i.test(t) || !/beneficial to/i.test(t) || !/recent research studies/i.test(t)) {
     throw new Error('Product pitch must include: Studies have shown X has been beneficial to X in recent research studies.');
   }
+  if (!/backed by a COA/i.test(t) || !/>99%/.test(t) || !/american made/i.test(t) || !/100% of the time/i.test(t)) {
+    throw new Error('Product pitch must include the COA line before the store CTA: Palm Beach Vitality research peptides are backed by a COA with every single order, American made delivering >99% purity 100% of the time.');
+  }
   const n = wordsOf(t).length;
-  if (n < 142 || n > 150) {
-    throw new Error(`Spoken VO is ${n} words (~${(n / 2.51).toFixed(1)}s). Need 142–150 words (55–60s at Pep TTS rate). Re-import 150-pb-pep-scenes.`);
+  if (n < 154 || n > 230) {
+    throw new Error(`Spoken VO is ${n} words (~${(n / 2.51).toFixed(1)}s). Need 154–230 words (~61–92s at Pep TTS rate). Re-import 150-pb-pep-scenes.`);
   }
   return t;
 }
@@ -135,6 +138,8 @@ const voiceOver = extractProductPitch(voiceOverRaw, disclaimer);
 // Spoken names for ElevenLabs only. Written pitch / captions stay chemical names.
 // Longer keys first so combo names win. Optional sheet column tts_pronounce: Name=spoken|Name=spoken
 const PRONOUNCE = [
+  ['>99% purity 100% of the time', 'greater than ninety-nine percent purity one hundred percent of the time'],
+  ['backed by a COA', 'backed by a certificate of analysis'],
   ['KPV / BPC-157 / TB-500 / GHK-Cu', 'K P V, B P C 157, T B 500, and G H K copper'],
   ['BPC-157 / TB-500 / GHK-Cu', 'B P C 157, T B 500, and G H K copper'],
   ['CJC (no DAC)/Ipamorelin', 'C J C, no D A C, and eye-PAM-or-REL-in'],
@@ -360,11 +365,11 @@ const pepLock = [
   'CHARACTER LOCK — use master Pep reference exactly (https://files.catbox.moe/2yfdbi.jpg).',
   'Anthropomorphic clear 10ml sterile injectable-style glass vial,',
   'rubber stopper + silver aluminum crimp seal only (NOT screw-cap, NOT black twist cap),',
-  'white mid-body label with the same two cartoon eyes (bare ovals, NO eyelashes) and bold type that is exactly 10ml (four characters only: 1, 0, m, l),',
+  'white mid-body label with the same two cartoon eyes as the master (copy the master eye shape and lash state exactly) and bold type that is exactly 10ml (four characters only: 1, 0, m, l),',
   'white baseball cap with Palm Beach Vitality sunset + palm-tree logo,',
   'gray tube limbs, white cartoon gloves, rounded white sneakers,',
   'mouth open mid-word, clean 3D-cartoon / sticker style with bold outlines.',
-  'HARD FAIL: thumbs-up. HARD FAIL: warped eyes. HARD FAIL: eyelashes. HARD FAIL: any letter after 10ml (no 10mlz). No hat-tip freeze. No extra mascots. No humans. No doctor offices. No hospitals.',
+  'HARD FAIL: thumbs-up. HARD FAIL: warped eyes. HARD FAIL: inventing extra human lashes the master does not have. HARD FAIL: any letter after 10ml (no 10mlz). No hat-tip freeze. No extra mascots. No humans. No doctor offices. No hospitals.',
 ].join(' ');
 
 function cleanSetText(surfaceText, briefText) {
@@ -396,14 +401,14 @@ function packBlocking(body, gesture, angleRow) {
   const omnihuman_prompt = [
     'ANIMATE THIS STILL ONLY. The input image is already the correct Pep. Do not redesign the face, eyes, label, hat, or body.',
     'Palm Beach Pep talks with the audio. Mouth on the white 10ml label moves with speech.',
-    'EYES: keep the same two cartoon ovals from the still — same size, same round pupils, same catchlights. Bare ovals only. NO eyelashes. NO mascara. NO lash lines. Eyes SHOULD blink, glance, and look around naturally while he talks. That is good. HARD FAIL: morphing the eye shape, warping or smearing pupils, crossing the eyes, growing human eyelids or lashes during the clip.',
+    'EYES: keep the same two cartoon ovals from the still — same size, same round pupils, same catchlights, same lash state as the still from 00:00. Copy the still. Do not invent new lashes. Do not grow lashes after a blink. Eyes SHOULD blink, glance, and look around naturally while he talks. That is good. HARD FAIL: morphing the eye shape, warping or smearing pupils, crossing the eyes, growing human eyelids, or growing new lashes mid-clip. Lashes are OK only if they already exist on this still from the first second. If the still has no lashes, keep zero lashes the whole clip. Mid-clip lash grow-in is the fail.',
     'LABEL: keep the vial type exactly 10ml. Do not add a letter after the l. Do not change, smear, or animate the type.',
     'Hold the still pose. Stay in this exact set:',
     setText + '.',
     'Body motion is small and natural only — a little weight shift, a little sway, same standing pose the still already shows.',
     'FEET: sneakers stay on the ground the whole clip. HARD FAIL: hovering, floating, walking on air.',
     'ARMS: relaxed, close to the body, gloves near the hips. Tiny talk motion only.',
-    'HARD FAIL: eyelashes, warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting fingers, waving, salutes, T-pose, thumbs-up, hat-tip.',
+    'HARD FAIL: mid-clip lash grow-in, warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting fingers, waving, salutes, T-pose, thumbs-up, hat-tip.',
     'Do not invent new choreography. Do not change the backdrop. Do not restyle Pep.',
   ].join(' ');
   return { body, gesture, angle, poseStill, poseMotion, omnihuman_prompt };
@@ -417,7 +422,7 @@ const poseStill = packs[0].poseStill;
 const poseMotion = packs[0].poseMotion;
 
 const beatMeta = {
-  a: { name: 'talking', window: 'one 50s clip', extra: `${motion}; preserve Pep identity; no thumbs-up; no new text; no eyelashes` },
+  a: { name: 'talking', window: 'one 70s clip', extra: `${motion}; preserve Pep identity; no thumbs-up; no new text; no mid-clip lash grow-in` },
 };
 
 const beats = {};

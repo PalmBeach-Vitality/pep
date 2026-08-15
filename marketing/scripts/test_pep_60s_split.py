@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Every VO is an easy 55–60s wellness pitch with the studies line."""
+"""Every VO is an easy science pitch with studies + COA + store CTA."""
 
 from __future__ import annotations
 
@@ -8,8 +8,12 @@ from pathlib import Path
 
 SRC = Path("/workspace/marketing/sheets/150-pb-pep-scenes.csv")
 CTA = "Visit us at palmbeach-vitality.store."
-TARGET_MIN = 142
-TARGET_MAX = 150
+COA = (
+    "Palm Beach Vitality research peptides are backed by a COA with every single order, "
+    "American made delivering >99% purity 100% of the time."
+)
+TARGET_MIN = 154
+TARGET_MAX = 230
 BANNED = [
     "for laboratory research use only",
     "not for human use or consumption",
@@ -48,6 +52,8 @@ def main() -> None:
         assert "studies have shown" in low, cid
         assert "beneficial to" in low, cid
         assert "recent research studies" in low, cid
+        assert COA in vo, cid
+        assert vo.index(COA) < vo.index(CTA), cid
         secs.append(n / 2.51)
     ghk = next(x for x in rows if x["creation_id"] == "PEP-013")
     print("ok rows", len(rows))

@@ -32,7 +32,7 @@
   },
   prompt: [
     'EDIT THIS IMAGE ONLY.',
-    'CRITICAL #1 — CHARACTER: The mascot must stay the EXACT same Pep as the input. Identical face, identical cartoon eyes (NO eyelashes), exact 10ml label type, PALM BEACH VITALITY hat logo, silver crimp, glass vial, gray limbs, white gloves, white sneakers, 3D sticker style. Do not redraw Pep. No screw cap, no extra mascots, no humans.',
+    'CRITICAL #1 — CHARACTER: The mascot must stay the EXACT same Pep as the input. Identical face, identical cartoon eyes (copy the input lash state exactly), exact 10ml label type, PALM BEACH VITALITY hat logo, silver crimp, glass vial, gray limbs, white gloves, white sneakers, 3D sticker style. Do not redraw Pep. No screw cap, no extra mascots, no humans.',
     'The words Palm Beach on the hat are BRANDING ONLY. They are not the location. Do not default to sand, turquoise surf, or a generic shoreline.',
     'CRITICAL #2 — SET: Replace the gray background with this exact 9:16 environment and no other: ' + String($('split_pep_beats').item.json.surface || $('prep_pep_beats').item.json.surface || $('Prep_day_variant').item.json.surface || '') + '. HARD FAIL if the background is a different place. HARD FAIL if you draw a beach unless that surface text is a beach, sand, shore, or ocean. If the surface is a boardwalk, gym, lab, street, park, pool, landmark, or studio, that is what must fill the frame.',
     'CRITICAL #3 — POSE: Change from the master planted thumbs-up. Use: ' + String($('split_pep_beats').item.json.pose_still || $('prep_pep_beats').item.json.pose_still || '') + ' MOUTH OPEN mid-word on the 10ml label (OmniHuman start). HARD FAIL thumbs-up.',

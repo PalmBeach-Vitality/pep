@@ -28,9 +28,12 @@ if (!tts_text.endsWith(CTA)) {
 if (!/studies have shown/i.test(tts_text) || !/beneficial to/i.test(tts_text) || !/recent research studies/i.test(tts_text)) {
   throw new Error('tts_text must include the studies-have-shown wellness line.');
 }
+if (!/backed by a COA/i.test(tts_text) || !/>99%/.test(tts_text) || !/american made/i.test(tts_text)) {
+  throw new Error('tts_text must include the COA / American made / >99% purity line before the store CTA.');
+}
 const wc = tts_text.split(/\s+/).filter(Boolean).length;
-if (wc < 142 || wc > 150) {
-  throw new Error(`tts_text is ${wc} words. Need 142–150 for 55–60s.`);
+if (wc < 154 || wc > 230) {
+  throw new Error(`tts_text is ${wc} words. Need 154–230 for the science pitch.`);
 }
 const low = tts_text.toLowerCase();
 if (

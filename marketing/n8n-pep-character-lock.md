@@ -13,7 +13,7 @@ If a still drifts → **discard and reroll**. Never send a drifted still into `a
 
 Master identity (must match 1:1):
 - Clear glass **10ml** vial + silver aluminum crimp seal
-- White label: two even cartoon eyes (white ovals, round black pupils, tiny catchlights, **no eyelashes**), open smile + pink tongue, rosy cheeks, bold type that is exactly **10ml** (four characters only — no extra letter, no **10mlz**)
+- White label: two even cartoon eyes (white ovals, round black pupils, tiny catchlights, **same lash state as the master**), open smile + pink tongue, rosy cheeks, bold type that is exactly **10ml** (four characters only — no extra letter, no **10mlz**)
 - White baseball cap with **Palm Beach Vitality** sunset + palm-tree logo (not molecular)
 - Gray tube limbs, white cartoon gloves, rounded white sneakers
 - Master file is a planted thumbs-up. Video stills MUST change pose to mid-stride walk (toward camera, slight 3/4, screen-right), mouth open mid-word, no thumbs-up. Face/hat/vial/gloves/sneakers stay identical.
@@ -48,7 +48,7 @@ Must be true in request preview:
 3. `image.type` is `image_url`
 4. Prompt starts with `EDIT THIS IMAGE ONLY` + identity lock
 
-**QC gate:** open still next to master. Face / hat logo / crimp / gloves / sneakers must match. The two cartoon eyes must stay the same bare ovals (not warped, crossed, uneven, or given eyelashes). Label type must be exactly `10ml` — discard `10mlz` or any extra glyph after the `l`. Pose is standing at ease (not the master thumbs-up). Mouth must be a talking AH/OH, not a wide held grin. If identity drifts, eyes smear, lashes appear, label type is wrong, pose is thumbs-up, or mouth is a grin-hold → rerun. Do not send a bad still into OmniHuman. In the talking clip, those same ovals SHOULD blink and look around — fail only if they morph or grow lashes.
+**QC gate:** open still next to master. Face / hat logo / crimp / gloves / sneakers must match. The two cartoon eyes must stay the same ovals (not warped, crossed, or uneven). Copy the master’s lash state from frame one — master currently has none, so the still should have none. Label type must be exactly `10ml` — discard `10mlz` or any extra glyph after the `l`. Pose is standing at ease (not the master thumbs-up). Mouth must be a talking AH/OH, not a wide held grin. If identity drifts, eyes smear, lashes appear that the master does not have, label type is wrong, pose is thumbs-up, or mouth is a grin-hold → rerun. Do not send a bad still into OmniHuman. In the talking clip, those same ovals SHOULD blink and look around. Lashes are OK if they exist from 1s matching the still, or are absent the whole clip. **HARD FAIL mid-clip lash grow-in** (new lashes after the first blink).
 
 ---
 

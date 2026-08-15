@@ -52,7 +52,8 @@ mustInclude('n8n-pep-prep-beats.js', [
   'Eyes SHOULD blink, glance, and look around naturally',
   'ANIMATE THIS STILL ONLY',
   'LABEL: keep the vial type exactly 10ml',
-  'NO eyelashes',
+  'same lash state as the still from 00:00',
+  'Mid-clip lash grow-in is the fail',
 ]);
 mustNotInclude('n8n-pep-prep-beats.js', [
   'function splitVoice',
@@ -69,6 +70,7 @@ mustInclude('n8n-pep-split-beats.js', [
   'packs.length !== 1',
   'studies have shown',
   "resolution: '720p'",
+  'backed by a COA',
 ]);
 mustInclude('n8n-pep-gather-clips.js', [
   'Expected 1 OmniHuman clip',
@@ -96,7 +98,8 @@ mustInclude('n8n-pep-prep-lipsync.js', [
   'Eyes SHOULD blink, glance, and look around naturally',
   'ANIMATE THIS STILL ONLY',
   'LABEL: keep the vial type exactly 10ml',
-  'NO eyelashes',
+  'same lash state as the still from 00:00',
+  'Mid-clip lash grow-in is the fail',
 ]);
 mustInclude('n8n-pep-grok-still-body-lock.txt', [
   'Scene brief:',
@@ -106,7 +109,7 @@ mustInclude('n8n-pep-grok-still-body-lock.txt', [
   'CRITICAL #6 — LABEL TYPE',
   'HARD FAIL: hovering',
   '10mlz',
-  'NO eyelashes',
+  'copy the input lash state exactly',
 ]);
 
 const merge = fs.readFileSync(path.join(root, 'n8n-pep-merge-tts-binary.js'), 'utf8');
@@ -150,6 +153,8 @@ mustInclude('n8n-pep-prep-beats.js', [
   'SEM-uh-GLOO-tide',
   'tts_speak: voiceSpeak',
   'applyPronunciation',
+  'certificate of analysis',
+  'greater than ninety-nine percent',
 ]);
 
 console.log('ok one 50s talking-clip node contracts');

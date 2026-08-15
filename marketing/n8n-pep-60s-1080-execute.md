@@ -105,7 +105,7 @@ JSON Body fx **ON**. Paste `marketing/n8n-pep-grok-still-body-lock.txt` (the `={
 
 POSE reads `$('split_pep_beats').item.json.pose_still` (standing). SET uses that row’s `surface`.
 
-QC the still before OmniHuman: eyes match master (bare ovals, no eyelashes), label type is exactly `10ml` (discard `10mlz`). If the still is good, do **not** remint `grok_imagine_reel_still`. Eye morph / lashes in the mp4 are an OmniHuman miss — remint `pep_lipsync_fal` only. Blinks and glances in the video are good.
+QC the still before OmniHuman: eyes match master (same lash state from frame one; master currently has none), label type is exactly `10ml` (discard `10mlz`). If the still is good, do **not** remint `grok_imagine_reel_still`. Eye morph / **lash grow-in after the first blink** in the mp4 are an OmniHuman miss — remint `pep_lipsync_fal` only. Lashes are OK if they exist from 1s or are absent the whole clip. Blinks and glances in the video are good.
 
 ---
 
@@ -209,4 +209,4 @@ This is **one** talking mp4. Audio is already in the file. No concat. No extra V
 
 **NEVER PIN:** `grok_imagine_reel_still`, `tts_pep_voice_over`, `pep_lipsync_fal`
 
-One Test workflow = 1 still + 1 TTS + 1 OmniHuman **720p**. QC still first: no eyelashes, type exactly `10ml`.
+One Test workflow = 1 still + 1 TTS + 1 OmniHuman **720p**. QC still first: same lash state as master from frame one, type exactly `10ml`.
