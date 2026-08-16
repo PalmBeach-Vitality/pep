@@ -4,7 +4,8 @@
 // Uses: Prep_day_variant → Limit (EXACT names)
 // Mode: Run Once for Each Item
 // Do NOT return [{ json: ... }]
-// ONE talking clip. Standing Pep, same ~50s sheet pitch, 720p OmniHuman.
+// ONE talking clip. Walk-and-talk (default) or stand/sit from the scene row.
+// Same ~50s sheet pitch, 720p OmniHuman.
 // Easy science pitch: how this peptide works + studies line + COA line + store CTA.
 // OmniHuman caps near 50s. No extra scene cuts.
 
@@ -346,9 +347,74 @@ const blockingSource = (sheetBodies.length && sheetGestures.length) ? 'pep-block
 
 const BEAT_IDS = ['a'];
 const bodyPool = sheetBodies.length ? sheetBodies : BODY_ACTIONS;
-const standing = bodyPool.find((b) => /stand/i.test(String(b.id))) || BODY_ACTIONS.find((b) => b.id === 'standing');
-const bodies = [standing];
-const gestures = pickUnique(sheetGestures.length ? sheetGestures : GESTURES, 1);
+const gesturePool = sheetGestures.length ? sheetGestures : GESTURES;
+
+function bodyById(pool, id) {
+  return pool.find((b) => String(b.id).toLowerCase() === id) || BODY_ACTIONS.find((b) => b.id === id);
+}
+
+function gestureById(pool, id) {
+  return pool.find((g) => String(g.id).toLowerCase() === id) || GESTURES.find((g) => g.id === id);
+}
+
+function sceneMotionHint() {
+  return [
+    sceneBrief,
+    motion,
+    row.video_prompt,
+    row.video_motion_prompt,
+    row.hero_style,
+  ]
+    .map((v) => String(v || '').toLowerCase())
+    .join(' ');
+}
+
+function pickTalkBody(pool) {
+  const hint = sceneMotionHint();
+  const walking = bodyById(pool, 'walking');
+  const standing = bodyById(pool, 'standing');
+  const sitting = bodyById(pool, 'sitting');
+  const stopping = bodyById(pool, 'stopping');
+  const turning = bodyById(pool, 'turning');
+  const pep = hint.match(/\bpep\s+(walks|walking|stands|standing|sits|sitting|turns|turning|stops|stopping)\b/);
+  if (pep) {
+    const v = pep[1];
+    if (/walk/.test(v) && walking) return walking;
+    if (/sit/.test(v) && sitting) return sitting;
+    if (/stand/.test(v) && walking) return walking; // stand rows walk-and-talk; do not freeze
+    if (/turn/.test(v) && turning) return turning;
+    if (/stop/.test(v) && (stopping || walking)) return stopping || walking;
+  }
+  if (/\bsit(?:s|ting)?\b|\bseated\b/.test(hint) && sitting) return sitting;
+  if (/\bwalk(?:s|ing)?\b|\bstroll\b/.test(hint) && walking) return walking;
+  if (/\bstops?\b|\bstopping\b/.test(hint) && (stopping || walking)) return stopping || walking;
+  if (/\bturns?\b|\bturning\b/.test(hint) && turning) return turning;
+  if (/\bstand(?:s|ing)?\b/.test(hint) && walking) return walking;
+  return walking || standing;
+}
+
+function bodyId(body) {
+  return String(body?.id || '').toLowerCase();
+}
+
+function isWalkingBody(body) {
+  return bodyId(body) === 'walking';
+}
+
+function isLocomotionBody(body) {
+  const id = bodyId(body);
+  return id === 'walking' || id === 'stopping' || id === 'turning';
+}
+
+function pickTalkGesture(body, pool) {
+  if (isLocomotionBody(body)) {
+    return gestureById(pool, 'walk_swing') || pickUnique(pool, 1)[0];
+  }
+  return gestureById(pool, 'hip_rest') || pickUnique(pool, 1)[0];
+}
+
+const bodies = [pickTalkBody(bodyPool)];
+const gestures = [pickTalkGesture(bodies[0], gesturePool)];
 const anglePool = sheetAngles.length
   ? sheetAngles
   : ANGLES.map((label) => ({ id: label, brief: label }));
@@ -383,27 +449,72 @@ const setText = cleanSetText(surface, sceneBrief);
 
 function packBlocking(body, gesture, angleRow) {
   const angle = angleText(angleRow);
+  const walking = isWalkingBody(body);
+  const locomotion = isLocomotionBody(body);
+  const sitting = /sit/i.test(String(body.id || ''));
+  const handsStill = locomotion
+    ? 'HANDS: both white gloves in a natural walk swing at hip height. Neither glove raised. NO thumbs-up. NO pointing. NO counting.'
+    : 'HANDS: white gloves relaxed near the hips or hanging naturally. No pointing, no counting, no waving.';
+  const feetStill = walking
+    ? 'FEET: mid-stride. One sneaker forward, one back. BOTH sneakers touching the ground of this set with contact shadows. HARD FAIL hover.'
+    : 'FEET: both white sneakers firmly on the ground of this set. Contact shadows. HARD FAIL hover.';
   const poseStill = [
     body.still,
-    'HANDS: white gloves relaxed near the hips or hanging naturally. No pointing, no counting, no waving, no swinging.',
+    handsStill,
     `ANGLE: ${angle}.`,
-    'FEET: both white sneakers firmly on the ground of this set. Contact shadows. HARD FAIL hover.',
+    feetStill,
     'MOUTH OPEN mid-word (OmniHuman start frame).',
   ].join(' ');
-  const poseMotion = `${body.motion}; relaxed gloves near the hips; sneakers stay on the ground; ${angle}; talking mouth the whole clip`;
-  const omnihuman_prompt = [
+  const poseMotion = walking
+    ? `${body.motion}; WALK AND TALK at the same time; gloves swing at hip height; each step plants; ${angle}; talking mouth the whole clip`
+    : locomotion
+      ? `${body.motion}; keep talking; gloves at hip height; sneakers on the ground; ${angle}; talking mouth the whole clip`
+      : `${body.motion}; relaxed gloves near the hips; sneakers stay on the ground; ${angle}; talking mouth the whole clip`;
+  const eyeLock = 'EYES: keep the same two cartoon ovals from the still — same size, same round pupils, same catchlights, same lash state as the still from 00:00. Copy the still. Do not invent new lashes. Do not grow lashes after a blink. Eyes SHOULD blink, glance, and look around naturally while he talks. That is good. HARD FAIL: morphing the eye shape, warping or smearing pupils, crossing the eyes, growing human eyelids, or growing new lashes mid-clip. Lashes are OK only if they already exist on this still from the first second. If the still has no lashes, keep zero lashes the whole clip. Mid-clip lash grow-in is the fail.';
+  const labelLock = 'LABEL: keep the vial type exactly 10ml. Do not add a letter after the l. Do not change, smear, or animate the type.';
+  const omniWalk = [
+    'ANIMATE THIS STILL ONLY. The input image is already the correct Pep. Do not redesign the face, eyes, label, hat, or body.',
+    'WALK AND TALK AT THE SAME TIME. Palm Beach Pep keeps walking while the mouth on the white 10ml label talks with the audio. Do not freeze standing. The still is a mid-stride start frame — continue the walk from it for the whole clip.',
+    eyeLock,
+    labelLock,
+    'Stay mid-ground, full body visible. Slow natural walk through this exact set. Do not walk out of frame. Camera holds. Keep the same Pep scale.',
+    setText + '.',
+    'LEGS: continuous walk cycle. Each sneaker plants on the ground with a contact shadow. HARD FAIL: hovering, floating, sliding, moonwalk, walking on air, standing still the whole clip.',
+    'ARMS: natural walk swing at hip height, close to the body. Tiny talk motion only. No raised gloves.',
+    'HARD FAIL: standing frozen, mid-clip lash grow-in, warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting fingers, waving, salutes, T-pose, thumbs-up, hat-tip.',
+    'Do not change the backdrop. Do not restyle Pep.',
+  ];
+  const omniMove = [
+    'ANIMATE THIS STILL ONLY. The input image is already the correct Pep. Do not redesign the face, eyes, label, hat, or body.',
+    'Palm Beach Pep talks with the audio while moving. Mouth on the white 10ml label moves with speech.',
+    `BODY: ${body.motion}. Do not freeze standing still. Continue this action from the still.`,
+    eyeLock,
+    labelLock,
+    'Stay mid-ground, full body visible. Stay in this exact set:',
+    setText + '.',
+    'FEET: sneakers stay in contact with the ground. Each step plants. HARD FAIL: hovering, floating, sliding, moonwalk, walking on air.',
+    'ARMS: natural motion at hip height, close to the body. No raised gloves.',
+    'HARD FAIL: standing frozen, mid-clip lash grow-in, warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting fingers, waving, salutes, T-pose, thumbs-up, hat-tip.',
+    'Do not change the backdrop. Do not restyle Pep.',
+  ];
+  const omniStand = [
     'ANIMATE THIS STILL ONLY. The input image is already the correct Pep. Do not redesign the face, eyes, label, hat, or body.',
     'Palm Beach Pep talks with the audio. Mouth on the white 10ml label moves with speech.',
-    'EYES: keep the same two cartoon ovals from the still — same size, same round pupils, same catchlights, same lash state as the still from 00:00. Copy the still. Do not invent new lashes. Do not grow lashes after a blink. Eyes SHOULD blink, glance, and look around naturally while he talks. That is good. HARD FAIL: morphing the eye shape, warping or smearing pupils, crossing the eyes, growing human eyelids, or growing new lashes mid-clip. Lashes are OK only if they already exist on this still from the first second. If the still has no lashes, keep zero lashes the whole clip. Mid-clip lash grow-in is the fail.',
-    'LABEL: keep the vial type exactly 10ml. Do not add a letter after the l. Do not change, smear, or animate the type.',
-    'Hold the still pose. Stay in this exact set:',
+    eyeLock,
+    labelLock,
+    sitting
+      ? 'Stay seated on this set perch. Do not stand up. Stay in this exact set:'
+      : 'Talk in place. Stay in this exact set:',
     setText + '.',
-    'Body motion is small and natural only — a little weight shift, a little sway, same standing pose the still already shows.',
+    sitting
+      ? 'Body motion is small and natural — a little weight shift on the seat, talking the whole clip.'
+      : 'Body motion is small and natural only — a little weight shift, a little sway, same standing pose the still already shows.',
     'FEET: sneakers stay on the ground the whole clip. HARD FAIL: hovering, floating, walking on air.',
     'ARMS: relaxed, close to the body, gloves near the hips. Tiny talk motion only.',
     'HARD FAIL: mid-clip lash grow-in, warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting fingers, waving, salutes, T-pose, thumbs-up, hat-tip.',
-    'Do not invent new choreography. Do not change the backdrop. Do not restyle Pep.',
-  ].join(' ');
+    'Do not change the backdrop. Do not restyle Pep.',
+  ];
+  const omnihuman_prompt = (walking ? omniWalk : locomotion ? omniMove : omniStand).join(' ');
   return { body, gesture, angle, poseStill, poseMotion, omnihuman_prompt };
 }
 
@@ -415,7 +526,7 @@ const poseStill = packs[0].poseStill;
 const poseMotion = packs[0].poseMotion;
 
 const beatMeta = {
-  a: { name: 'talking', window: 'one 50s clip', extra: `${motion}; preserve Pep identity; no thumbs-up; no new text; no mid-clip lash grow-in` },
+  a: { name: 'talking', window: 'one 50s clip', extra: `${body.id} while talking; ${motion}; preserve Pep identity; no thumbs-up; no new text; no mid-clip lash grow-in` },
 };
 
 const beats = {};
@@ -425,7 +536,7 @@ for (let i = 0; i < BEAT_IDS.length; i++) {
   const meta = beatMeta[id];
   beats[id] = {
     name: meta.name,
-    brief: `Scene ${id.toUpperCase()} ${meta.name.toUpperCase()}: Palm Beach Pep mid-ground in this unique set: ${setText}. Blocking this cut: ${p.body.brief}, relaxed gloves. ${p.poseStill} ${pepLock} Product lock: ${compound} (${compoundId}). Lighting: ${lighting}. Grade: ${grade}. Hero: ${hero}. Full environment, not void packshot.`,
+    brief: `Scene ${id.toUpperCase()} ${meta.name.toUpperCase()}: Palm Beach Pep mid-ground in this unique set: ${setText}. Blocking this cut: ${p.body.brief}, ${p.gesture.brief || p.gesture.id}. ${p.poseStill} ${pepLock} Product lock: ${compound} (${compoundId}). Lighting: ${lighting}. Grade: ${grade}. Hero: ${hero}. Full environment, not void packshot.`,
     motion: `${p.poseMotion}; ${meta.window}; ${meta.extra}`,
   };
 }

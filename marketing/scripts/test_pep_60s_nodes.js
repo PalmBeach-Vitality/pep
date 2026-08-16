@@ -39,13 +39,14 @@ function mustNotInclude(file, needles) {
 mustInclude('n8n-pep-prep-beats.js', [
   'beat_items',
   'pickUnique',
+  'pickTalkBody',
+  'WALK AND TALK AT THE SAME TIME',
   'extractProductPitch',
   'studies have shown',
   'Visit us at palmbeach-vitality.store.',
   'beat_count: 1',
   "const BEAT_IDS = ['a']",
   "resolution: '720p'",
-  'ARMS: relaxed',
   'cleanSetText',
   'BOTH sneakers firmly on the ground',
   'EYES: keep the same two cartoon ovals from the still',
@@ -54,6 +55,9 @@ mustInclude('n8n-pep-prep-beats.js', [
   'LABEL: keep the vial type exactly 10ml',
   'same lash state as the still from 00:00',
   'Mid-clip lash grow-in is the fail',
+  'Do not freeze standing',
+  '\\bpep\\s+(walks|walking|stands|standing|sits|sitting|turns|turning|stops|stopping)\\b',
+  'isLocomotionBody',
 ]);
 mustNotInclude('n8n-pep-prep-beats.js', [
   'function splitVoice',
@@ -62,6 +66,8 @@ mustNotInclude('n8n-pep-prep-beats.js', [
   'beat_count: 4',
   'pep_script',
   'disclaimer_short',
+  'const bodies = [standing]',
+  'Hold the still pose',
 ]);
 mustInclude('n8n-pep-split-beats.js', [
   'Run Once for All Items',
@@ -97,7 +103,7 @@ mustInclude('n8n-pep-prep-lipsync.js', [
   "fromNode('split_pep_beats', ['beat'])",
   "fromNode('split_pep_beats', ['omnihuman_prompt'])",
   "omnihuman_resolution: '720p'",
-  'ARMS: relaxed',
+  'WALK AND TALK AT THE SAME TIME',
   'EYES: keep the same two cartoon ovals from the still',
   'Eyes SHOULD blink, glance, and look around naturally',
   'ANIMATE THIS STILL ONLY',
@@ -107,7 +113,7 @@ mustInclude('n8n-pep-prep-lipsync.js', [
 ]);
 mustInclude('n8n-pep-grok-still-body-lock.txt', [
   'Scene brief:',
-  'Arms stay relaxed and natural',
+  'If this pose is walking',
   'CRITICAL #4 — FEET',
   'CRITICAL #5 — EYES',
   'CRITICAL #6 — LABEL TYPE',
@@ -143,6 +149,7 @@ mustInclude('n8n-pep-60s-1080-execute.md', [
   'n8n-pep-tts-body.txt',
   '| 3 | **Resolution** (`resolution`) | OFF | `720p` |',
   'One talking clip',
+  'walks and talks',
 ]);
 mustNotInclude('n8n-pep-60s-1080-execute.md', [
   'still 1080p',
@@ -160,5 +167,42 @@ mustInclude('n8n-pep-prep-beats.js', [
   'certificate of analysis',
   'greater than ninety-nine percent',
 ]);
+
+function pickTalkBodyId(hint) {
+  const h = String(hint || '').toLowerCase();
+  const pep = h.match(/\bpep\s+(walks|walking|stands|standing|sits|sitting|turns|turning|stops|stopping)\b/);
+  if (pep) {
+    const v = pep[1];
+    if (/walk/.test(v)) return 'walking';
+    if (/sit/.test(v)) return 'sitting';
+    if (/stand/.test(v)) return 'walking';
+    if (/turn/.test(v)) return 'turning';
+    if (/stop/.test(v)) return 'stopping';
+  }
+  if (/\bsit(?:s|ting)?\b|\bseated\b/.test(h)) return 'sitting';
+  if (/\bwalk(?:s|ing)?\b|\bstroll\b/.test(h)) return 'walking';
+  if (/\bstops?\b|\bstopping\b/.test(h)) return 'stopping';
+  if (/\bturns?\b|\bturning\b/.test(h)) return 'turning';
+  if (/\bstand(?:s|ing)?\b/.test(h)) return 'walking';
+  return 'walking';
+}
+if (pickTalkBodyId('Palm Beach Pep walks mid-ground in this unique set') !== 'walking') {
+  throw new Error('walk scene must pick walking');
+}
+if (pickTalkBodyId('Palm Beach Pep stands mid-ground talking') !== 'walking') {
+  throw new Error('stand scene must walk-and-talk, not freeze standing');
+}
+if (pickTalkBodyId('Palm Beach Pep sits mid-ground') !== 'sitting') {
+  throw new Error('sit scene must pick sitting');
+}
+if (pickTalkBodyId('Palm Beach Pep turns toward camera') !== 'turning') {
+  throw new Error('turn scene must pick turning');
+}
+if (pickTalkBodyId('Palm Beach Pep stops mid-stride mid-ground') !== 'stopping') {
+  throw new Error('stop scene must pick stopping');
+}
+if (pickTalkBodyId('') !== 'walking') {
+  throw new Error('default body must be walking');
+}
 
 console.log('ok one 50s talking-clip node contracts');

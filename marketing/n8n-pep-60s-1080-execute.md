@@ -1,6 +1,6 @@
 # One 50s talking clip — nodes Sal must add or change
 
-1080p audio cap is **30s**. This pitch is **~50–60s**, so `pep_lipsync_fal` Resolution must be **720p**. **One talking clip.** Standing Pep, sheet `voice_over`, lipsync, normal eyes. No extra scene cuts.
+1080p audio cap is **30s**. This pitch is **~50–60s**, so `pep_lipsync_fal` Resolution must be **720p**. **One talking clip.** Pep **walks and talks** on walk and stand scenes. Sit / turn / stop follow that row. Sheet `voice_over`, lipsync, normal eyes. No extra scene cuts.
 
 Leave `(loop_pep_beats)` on the canvas. Split now emits **1 item**, so the loop runs once and then `done`.
 
@@ -37,7 +37,7 @@ if_complaince (true)
 
 Mode: **Run Once for Each Item**. Replace the JS with `marketing/n8n-pep-prep-beats.js`.
 
-OUTPUT must show `beat_items` (length **1**), `beat_count` **1**, standing pose, and `tts_text` = sheet pitch. Last sentence: `Visit us at palmbeach-vitality.store.` No FDA / unique-set / laboratory-research-use-only.
+OUTPUT must show `beat_items` (length **1**), `beat_count` **1**, `pep_body_action` (`walking` on walk and stand scenes), and `tts_text` = sheet pitch. Last sentence: `Visit us at palmbeach-vitality.store.` No FDA / unique-set / laboratory-research-use-only.
 
 ---
 
@@ -54,7 +54,7 @@ OUTPUT must show `beat_items` (length **1**), `beat_count` **1**, standing pose,
 
 Paste `marketing/n8n-pep-split-beats.js`.
 
-OUTPUT = **1 item**. `beat` = `a`. Full pitch in `tts_text`. Standing `pose_still`.
+OUTPUT = **1 item**. `beat` = `a`. Full pitch in `tts_text`. `pose_still` matches that row (mid-stride walk when `pep_body_action` is `walking`).
 
 ---
 
@@ -103,7 +103,7 @@ Paired `$('tts_pep_voice_over').item`.
 
 JSON Body fx **ON**. Paste `marketing/n8n-pep-grok-still-body-lock.txt` (the `={{ JSON.stringify({` block only).
 
-POSE reads `$('split_pep_beats').item.json.pose_still` (standing). SET uses that row’s `surface`.
+POSE reads `$('split_pep_beats').item.json.pose_still` (mid-stride walk when the scene walks). SET uses that row’s `surface`. Do **not** pin an old standing still into a walk clip.
 
 QC the still before OmniHuman: eyes match master (same lash state from frame one; master currently has none), label type is exactly `10ml` (discard `10mlz`). If the still is good, do **not** remint `grok_imagine_reel_still`. Eye morph / **lash grow-in after the first blink** in the mp4 are an OmniHuman miss — remint `pep_lipsync_fal` only. Lashes are OK if they exist from 1s or are absent the whole clip. Blinks and glances in the video are good.
 
