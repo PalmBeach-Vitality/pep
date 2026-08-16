@@ -11,7 +11,7 @@ Paste body from: marketing/n8n-grok-imagine-body-feed.txt
 
 Endpoint: POST https://api.x.ai/v1/images/edits
 Paste body from: marketing/n8n-grok-imagine-body-pen-edit.txt
-Wire via IF node `if_pen_scene` → `grok_imagine_pen_edit` (see marketing/n8n-pen-hardware-lock.txt)
+Wire via IF node `if_pen_scene` → `grok_imagine_pen_edit` (see marketing/n8n-image-gen-buffer-pen-nodes.md)
 
 Templates (auto-selected by compound):
 - BLUE (Semaglutide / Tirzepatide / Retatrutide):
