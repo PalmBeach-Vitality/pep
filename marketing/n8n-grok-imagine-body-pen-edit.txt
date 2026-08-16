@@ -21,8 +21,8 @@
       type: 'image_url'
     },
     prompt: [
-      'EDIT the reference image. PRESERVE the research pen HARDWARE exactly, including the slightly elongated longer 3mL barrel proportions: light gray/off-white matte elongated barrel, clear transparent left tip-cap, ' + accent + ' mid accent ring, white wrap label with ' + accentShort + ' DNA double-helix graphic on the left of the label, ' + accent + ' ribbed/textured dial on the right end.',
-      'Do not redesign the pen. Do not shorten the barrel. Do not change proportions, cap style, or dial style. Keep accent color exactly ' + accentShort + '.',
+      'EDIT the reference image. PRESERVE this sleek luxury research pen HARDWARE exactly, including the elongated slimmer 3mL barrel: matte pearl-gray medical plastic (not chrome), clear glass-like left tip-cap with NO pocket clip, ' + accent + ' precision mid accent ring, white wrap label with refined ' + accentShort + ' DNA double-helix graphic on the left of the label, ' + accent + ' finely ribbed dose dial on the right end.',
+      'Keep the premium catalog look — expensive, refined, photoreal. Do not redesign the pen. Do not shorten the barrel. Do not add a pocket clip. Do not change proportions, cap style, or dial style. Keep accent color exactly ' + accentShort + '.',
       colorRule,
       'ONLY change the label text to this compound name in large ' + accentShort + ' sans-serif: ' + name + '.',
       'Secondary label line in smaller ' + accentShort + ' text: 3ml pen.',

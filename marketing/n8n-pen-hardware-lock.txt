@@ -1,7 +1,9 @@
 # PEN HARDWARE LOCK — image_gen_buffer / GROK_Imagine
 
-Goal: every `pen_3ml_scene` uses the same slightly elongated Palm Beach Vitality research pen.
-Only label compound name + accent color change.
+Goal: every `pen_3ml_scene` uses the sleek elongated Palm Beach Vitality research pen
+(Drive master: `retatrutide_pen_source.png`). Only label name + accent color change.
+
+Build nodes here: `marketing/n8n-image-gen-buffer-pen-nodes.md`
 
 ## Accent color rule (hard)
 
@@ -10,7 +12,7 @@ Only label compound name + accent color change.
 | Semaglutide, Tirzepatide, Retatrutide | **BLUE** (`P-SEM-001`, `P-TIR-001`, `P-RET-001`) |
 | All other peptide pens | **RED** |
 
-## Templates (public raw URLs used by edits)
+## Templates
 
 Blue:
 https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-blue.png
@@ -18,43 +20,14 @@ https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786
 Red:
 https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-red.png
 
-Blobs:
-https://github.com/PalmBeach-Vitality/pep/blob/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-blue.png
-https://github.com/PalmBeach-Vitality/pep/blob/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-red.png
+Drive master (source ad, not used as edit input — spa backdrop banned):
+https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/retatrutide_pen_source.png
 
-`marketing/n8n-grok-imagine-body-pen-edit.txt` auto-picks blue vs red template from compound id/name.
+`marketing/n8n-grok-imagine-body-pen-edit.txt` auto-picks blue vs red from compound id/name.
 
-## n8n wiring (exact new node names)
+## Exact new node names
 
-After `Prep_day_variant` (or immediately before Imagine), add:
-
-1) IF node name: `if_pen_scene`
-   Condition: `{{ $('Prep_day_variant').item.json.scene_category }}` equals `pen_3ml_scene`
-
-2) TRUE branch — HTTP Request node name: `grok_imagine_pen_edit`
-   Method: POST
-   URL: `https://api.x.ai/v1/images/edits`
-   Auth: same xAI bearer as GROK_Imagine
-   Content-Type: application/json
-   Body (expression / JSON): paste from `marketing/n8n-grok-imagine-body-pen-edit.txt`
-
-3) FALSE branch — keep existing `GROK_Imagine` (or rename keep as-is)
-   URL stays: `https://api.x.ai/v1/images/generations`
-   Body: paste updated `marketing/n8n-grok-imagine-body-feed.txt`
-
-4) Merge both Imagine outputs back into the existing Save_render_URL / Buffer path.
-   Merge node name: `merge_imagine_out`
-   Mode: Append (or Combine by position — whichever matches your downstream)
-
-## If you cannot add IF yet (temporary fallback)
-
-Keep generations URL, but re-paste `marketing/n8n-grok-imagine-body-feed.txt`
-(includes longer barrel + blue/red accent rule). Prefer the edits branch ASAP.
-
-## Sheet re-import
-
-Re-import `3-image-lab-scenes-150` so pen rows carry longer barrel + correct BLUE/RED language
-in product_form_detail / product_hero / scene_brief.
+`if_pen_scene` → `grok_imagine_pen_edit` (TRUE) / `GROK_Imagine` (FALSE) → `merge_imagine_out`
 
 ## Do NOT
 
