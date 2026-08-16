@@ -1,9 +1,7 @@
 # PEN HARDWARE LOCK — image_gen_buffer / GROK_Imagine
 
-Goal: every `pen_3ml_scene` uses the sleek elongated Palm Beach Vitality research pen
-(Drive master: `retatrutide_pen_source.png`). Only label name + accent color change.
-
-Build nodes here: `marketing/n8n-image-gen-buffer-pen-nodes.md`
+No IF nodes. Code node `prep_imagine_request` chooses edits vs generations.
+See: marketing/n8n-image-gen-buffer-pen-nodes.md
 
 ## Accent color rule (hard)
 
@@ -20,18 +18,11 @@ https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786
 Red:
 https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-red.png
 
-Drive master (source ad, not used as edit input — spa backdrop banned):
+Drive master:
 https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/retatrutide_pen_source.png
 
-`marketing/n8n-grok-imagine-body-pen-edit.txt` auto-picks blue vs red from compound id/name.
+## Exact node names
 
-## Exact new node names
+`prep_imagine_request` → `GROK_Imagine` → `Save_render_URL`
 
-`if_pen_scene` → `grok_imagine_pen_edit` (TRUE) / `GROK_Imagine` (FALSE) → `merge_imagine_out`
-
-## Do NOT
-
-- Do not send spa/bathroom marble lifestyle backgrounds into edits
-- Do not change vial rows (still 10mL crimp-seal only)
-- Do not use blue accents on non-GLP peptide pens
-- Do not use red accents on Semaglutide / Tirzepatide / Retatrutide
+Delete `if_pen_scene` / `grok_imagine_pen_edit` / `merge_imagine_out` if you added them.

@@ -1,112 +1,84 @@
-# image_gen_buffer — pen branch (node-by-node)
+# image_gen_buffer — pen lock without IF
 
-Workflow: `image_gen_buffer`  
-Insert immediately **before** existing `GROK_Imagine`.
+Workflow: `image_gen_buffer`
+
+No IF. No Merge. No second Imagine HTTP.
 
 ```text
 … → if_compliance (or current node that feeds GROK_Imagine)
-      → if_pen_scene
-           TRUE  → grok_imagine_pen_edit ─┐
-           FALSE → GROK_Imagine ──────────┼→ merge_imagine_out → Save_render_URL
+      → prep_imagine_request
+      → GROK_Imagine
+      → Save_render_URL
 ```
 
-Accent rule (already in pen-edit body):
-- BLUE: Semaglutide / Tirzepatide / Retatrutide
-- RED: all other peptides
+`prep_imagine_request` sets `imagine_url` + `imagine_body_string`:
+- `pen_3ml_scene` → `POST /v1/images/edits` + blue or red template
+- lab / vial → `POST /v1/images/generations`
 
-Reply **node 1 ok** after each node.
+If you already added `if_pen_scene` / `grok_imagine_pen_edit` / `merge_imagine_out`, delete them and use this instead.
+
+Reply **node 1 ok** after Node 1.
 
 ---
 
-## Node 1 — `if_pen_scene`
+## Node 1 — `prep_imagine_request`
 
-**Node type:** IF
+**Node type:** Code
 
 | Parameter | Value |
 |---|---|
-| Node name | `if_pen_scene` |
-| Conditions | 1 condition |
-| Combinator | AND |
-| Value 1 (fx ON) | `{{ $('Prep_day_variant').item.json.scene_category }}` |
-| Operation | is equal to |
-| Value 2 | `pen_3ml_scene` |
+| Node name | `prep_imagine_request` |
+| Mode | Run Once for All Items (or Run Once for Each Item — either is fine for 1 item) |
+| Language | JavaScript |
+| Include Other Input Fields | ON if available; the script also spreads `$json` |
 
-**Why:** Pens go to Imagine **edits** (template lock). Lab/vial stay on generations.
+**Code — paste entire file:**  
+https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/n8n-prep-imagine-request.js
+
+**Why:** One node decides edits vs generations. Avoids IF branch bugs.
 
 **Wire:**
 - Before: the node that currently feeds `GROK_Imagine` (usually `if_compliance` true, or `Parse_Grok`)
-- After TRUE: `grok_imagine_pen_edit` (add in Node 2)
-- After FALSE: existing `GROK_Imagine`
-- Disconnect the old direct wire into `GROK_Imagine` from the before-node
+- After: existing `GROK_Imagine`
+- Keep the rest of the chain as-is
 
-**Test:** Execute once. TRUE when `scene_category` is `pen_3ml_scene`; FALSE for `lab_scene` / `vial_10ml_scene`.
+**Test:** Execute `prep_imagine_request` only.
+- Pen row → `imagine_mode` is `pen_edit_blue` or `pen_edit_red`; `imagine_url` ends with `/images/edits`; body has `image.url`
+- Lab/vial → `imagine_mode` is `lab_or_vial_generate`; `imagine_url` ends with `/images/generations`; no `image` key
 
 ---
 
-## Node 2 — `grok_imagine_pen_edit`
+## Node 2 — `GROK_Imagine` (EDIT existing — do not create, do not rename)
 
-**Node type:** HTTP Request  
-**Action:** DUPLICATE `GROK_Imagine`, then rename and change URL + body
+**Node type:** HTTP Request (already exists)
+
+Change only URL + body. Keep auth, headers, and downstream wire to `Save_render_URL`.
 
 | Parameter | Value |
 |---|---|
-| Node name | `grok_imagine_pen_edit` |
+| Node name | `GROK_Imagine` (unchanged) |
 | Method | POST |
-| URL | `https://api.x.ai/v1/images/edits` |
-| Authentication | Same credential as `GROK_Imagine` (xAI Header Auth / Bearer) |
+| URL (fx ON) | `{{ $json.imagine_url }}` |
+| Authentication | unchanged (xAI Header Auth / Bearer) |
 | Send Headers | ON |
 | Header | `Content-Type` = `application/json` |
 | Send Body | ON |
-| Body Content Type | JSON / Raw JSON |
+| Body Content Type | JSON / Raw |
 | Specify Body | Using Expression (fx ON) |
+| Body (fx ON) | `{{ $json.imagine_body_string }}` |
 
-**Body (fx ON) — paste entire file:**  
-https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/n8n-grok-imagine-body-pen-edit.txt
+**Do not** leave a hardcoded `/images/generations` URL. The Code node owns the path.
 
-**Why:** Edits the sleek blue/red template; only label name + cleanroom scene change.
+**Wire:** unchanged after this node (`Save_render_URL`).
 
-**Wire:**
-- Before: `if_pen_scene` TRUE
-- After: `merge_imagine_out` (Node 3)
-
-**Test:** Pin a pen row, execute. Response should include an image URL. Pen hardware matches template; label shows today’s compound.
-
----
-
-## Node 3 — `merge_imagine_out`
-
-**Node type:** Merge
-
-| Parameter | Value |
-|---|---|
-| Node name | `merge_imagine_out` |
-| Mode | Append |
-| Number of Inputs | 2 |
-| Input 1 | `grok_imagine_pen_edit` |
-| Input 2 | `GROK_Imagine` |
-
-**Why:** One downstream path into `Save_render_URL` / Buffer.
-
-**Wire:**
-- Input 1: `grok_imagine_pen_edit`
-- Input 2: `GROK_Imagine`
-- After: existing `Save_render_URL` (move the old `GROK_Imagine` → `Save_render_URL` wire here)
-
-**Test:** Lab/vial run still reaches `Save_render_URL`. Pen run also reaches `Save_render_URL`.
+**Test:**
+1. Pin a Retatrutide / Semaglutide / Tirzepatide pen → blue template edit
+2. Pin BPC-157 or PT-141 pen → red template edit
+3. Pin a vial or lab row → generations, no pen template
 
 ---
 
-## Existing node edit — `GROK_Imagine`
-
-Do **not** rename. Re-paste generations body (lab/vial + pen fallback):
-
-https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/n8n-grok-imagine-body-feed.txt
-
-URL stays: `https://api.x.ai/v1/images/generations`
-
----
-
-## Templates used by Node 2
+## Templates (used only when Code sets edits)
 
 - Blue: https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-blue.png
 - Red: https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-red.png
