@@ -1,15 +1,28 @@
 # PEN HARDWARE LOCK — image_gen_buffer / GROK_Imagine
 
-Goal: every pen_3ml_scene image uses the same Palm Beach Vitality research pen hardware
-(Retatrutide reference look: gray body, clear left cap, cobalt blue ring + dial, white DNA-helix label).
-Only the label compound name changes. Lab/vial scenes stay on text-to-image generations.
+Goal: every `pen_3ml_scene` uses the same slightly elongated Palm Beach Vitality research pen.
+Only label compound name + accent color change.
 
-## Template asset (public raw URL used by edits)
+## Accent color rule (hard)
 
-https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template.png
+| Compounds | Accent color (ring + DNA + label type + dial) |
+|---|---|
+| Semaglutide, Tirzepatide, Retatrutide | **BLUE** (`P-SEM-001`, `P-TIR-001`, `P-RET-001`) |
+| All other peptide pens | **RED** |
 
-Blob:
-https://github.com/PalmBeach-Vitality/pep/blob/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template.png
+## Templates (public raw URLs used by edits)
+
+Blue:
+https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-blue.png
+
+Red:
+https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-red.png
+
+Blobs:
+https://github.com/PalmBeach-Vitality/pep/blob/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-blue.png
+https://github.com/PalmBeach-Vitality/pep/blob/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-red.png
+
+`marketing/n8n-grok-imagine-body-pen-edit.txt` auto-picks blue vs red template from compound id/name.
 
 ## n8n wiring (exact new node names)
 
@@ -36,15 +49,16 @@ After `Prep_day_variant` (or immediately before Imagine), add:
 ## If you cannot add IF yet (temporary fallback)
 
 Keep generations URL, but re-paste `marketing/n8n-grok-imagine-body-feed.txt`
-(pen lock language is much stronger). Prefer the edits branch ASAP for exact hardware match.
+(includes longer barrel + blue/red accent rule). Prefer the edits branch ASAP.
 
 ## Sheet re-import
 
-Re-import `3-image-lab-scenes-150` so pen rows carry LOCKED PBV research pen hardware
+Re-import `3-image-lab-scenes-150` so pen rows carry longer barrel + correct BLUE/RED language
 in product_form_detail / product_hero / scene_brief.
 
 ## Do NOT
 
-- Do not send the spa/bathroom marble lifestyle background from the marketing ad into edits
+- Do not send spa/bathroom marble lifestyle backgrounds into edits
 - Do not change vial rows (still 10mL crimp-seal only)
-- Do not invent alternate pen colors or dial styles
+- Do not use blue accents on non-GLP peptide pens
+- Do not use red accents on Semaglutide / Tirzepatide / Retatrutide

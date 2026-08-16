@@ -13,8 +13,13 @@ Endpoint: POST https://api.x.ai/v1/images/edits
 Paste body from: marketing/n8n-grok-imagine-body-pen-edit.txt
 Wire via IF node `if_pen_scene` → `grok_imagine_pen_edit` (see marketing/n8n-pen-hardware-lock.txt)
 
-Template:
-https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template.png
+Templates (auto-selected by compound):
+- BLUE (Semaglutide / Tirzepatide / Retatrutide):
+  https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-blue.png
+- RED (all other peptides):
+  https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-red.png
+
+Pen length: slightly elongated longer 3mL barrel (not short stubby).
 
 IMPORTANT: Body must use scene_brief from Prep_day_variant (full lab),
 NOT the old scientific poster / color-scheme prompt.
