@@ -1,0 +1,50 @@
+# PEN HARDWARE LOCK — image_gen_buffer / GROK_Imagine
+
+Goal: every pen_3ml_scene image uses the same Palm Beach Vitality research pen hardware
+(Retatrutide reference look: gray body, clear left cap, cobalt blue ring + dial, white DNA-helix label).
+Only the label compound name changes. Lab/vial scenes stay on text-to-image generations.
+
+## Template asset (public raw URL used by edits)
+
+https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template.png
+
+Blob:
+https://github.com/PalmBeach-Vitality/pep/blob/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template.png
+
+## n8n wiring (exact new node names)
+
+After `Prep_day_variant` (or immediately before Imagine), add:
+
+1) IF node name: `if_pen_scene`
+   Condition: `{{ $('Prep_day_variant').item.json.scene_category }}` equals `pen_3ml_scene`
+
+2) TRUE branch — HTTP Request node name: `grok_imagine_pen_edit`
+   Method: POST
+   URL: `https://api.x.ai/v1/images/edits`
+   Auth: same xAI bearer as GROK_Imagine
+   Content-Type: application/json
+   Body (expression / JSON): paste from `marketing/n8n-grok-imagine-body-pen-edit.txt`
+
+3) FALSE branch — keep existing `GROK_Imagine` (or rename keep as-is)
+   URL stays: `https://api.x.ai/v1/images/generations`
+   Body: paste updated `marketing/n8n-grok-imagine-body-feed.txt`
+
+4) Merge both Imagine outputs back into the existing Save_render_URL / Buffer path.
+   Merge node name: `merge_imagine_out`
+   Mode: Append (or Combine by position — whichever matches your downstream)
+
+## If you cannot add IF yet (temporary fallback)
+
+Keep generations URL, but re-paste `marketing/n8n-grok-imagine-body-feed.txt`
+(pen lock language is much stronger). Prefer the edits branch ASAP for exact hardware match.
+
+## Sheet re-import
+
+Re-import `3-image-lab-scenes-150` so pen rows carry LOCKED PBV research pen hardware
+in product_form_detail / product_hero / scene_brief.
+
+## Do NOT
+
+- Do not send the spa/bathroom marble lifestyle background from the marketing ad into edits
+- Do not change vial rows (still 10mL crimp-seal only)
+- Do not invent alternate pen colors or dial styles

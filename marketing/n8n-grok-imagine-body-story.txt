@@ -14,7 +14,7 @@
     'Catalog: ' + String($('Prep_day_variant').item.json.canonical_url || '') + '.',
     'VIAL SPEC (mandatory whenever a vial appears): exactly a 10mL sterile injectable-style clear glass vial with rubber stopper and aluminum crimp seal. Size reads as 10mL. FORBIDDEN: black twist caps, screw caps, dropper bottles, serum jars, ampoules-only, oversized reagent bottles.',
     'If category is vial_10ml_scene: show one 10mL sterile crimp-seal injectable vial of that compound as a SMALL mid-ground element inside the full lab.',
-    'If category is pen_3ml_scene: show one 3mL pre-filled research dosage pen of that compound as a SMALL mid-ground element inside the full lab. No injection act, no people, no needle use.',
+    'If category is pen_3ml_scene: show the LOCKED PBV research pen (gray matte 3mL barrel, clear left tip-cap, cobalt blue mid ring + ribbed dial, white DNA-helix label with this compound name) as a SMALL mid-ground element inside the full lab. Same hardware as Retatrutide reference pen — only label text changes. No injection act, no people, no needle use, no spa lifestyle backdrop.',
     'If category is lab_scene: full lab environment; compound identity mainly via typography; optional distant labeled 10mL sterile crimp-seal vial only — never a close-up, never a twist-cap bottle.',
     'QUALITY BAR: luxury American biotech catalog photography; photoreal; controlled light; sharp detail; expensive; not cartoon; not cluttered collage.',
     'COLOR SYSTEM TODAY: ' + String($('Prep_day_variant').item.json.daily_color_scheme || 'deep navy, electric teal, white') + '.',

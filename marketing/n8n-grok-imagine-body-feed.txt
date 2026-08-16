@@ -13,7 +13,7 @@
     'Product lock: ' + String($('Prep_day_variant').item.json.compound_id || '') + ' / ' + String($('Parse_Grok').item.json.display_name || $('Prep_day_variant').item.json.compound_name || '') + '.',
     'Form detail: ' + String($('Prep_day_variant').item.json.product_form_detail || '') + '.',
     'If scene_category is vial_10ml_scene: one 10mL sterile injectable clear glass vial with rubber stopper + aluminum crimp seal only (NO black twist/screw caps), small mid-ground on a clean pharma bench inside the cleanroom.',
-    'If scene_category is pen_3ml_scene: one 3mL pre-filled research dosage pen, small mid-ground on a clean pharma bench. No injection act.',
+    'If scene_category is pen_3ml_scene: LOCKED PBV research pen hardware EXACTLY — light gray/off-white matte 3mL barrel; clear transparent left tip-cap; bright cobalt-blue mid accent ring; white wrap label with blue DNA double-helix graphic on left of label; compound name in large blue sans-serif plus smaller \"3ml pen\" line; bright cobalt-blue ribbed dial on right. Same silhouette/colors as Palm Beach Vitality Retatrutide reference pen — only label text changes. Small mid-ground on a clean pharma bench. No injection act. No spa/bathroom marble lifestyle backdrop.',
     'If scene_category is lab_scene: pure pharmaceutical cleanroom; optional distant labeled 10mL crimp-seal vial only; never a close-up.',
     'OVERLAY TEXT (required, sharp, perfectly spelled) as clean premium type over the photoreal pharma lab photo — do not replace the photo with a flat poster:',
     'Exact brand wordmark: PALM BEACH VITALITY',

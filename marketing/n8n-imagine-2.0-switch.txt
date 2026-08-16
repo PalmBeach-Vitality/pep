@@ -1,16 +1,27 @@
-# GROK_Imagine — Imagine 2.0 + FULL LAB SCENE
+# GROK_Imagine — Imagine 2.0 + FULL LAB SCENE (+ PEN HARDWARE LOCK)
 
 Model: grok-imagine-image-2.0
+
+## Lab + vial (text-to-image)
+
 Endpoint: POST https://api.x.ai/v1/images/generations
+Paste body from: marketing/n8n-grok-imagine-body-feed.txt
+
+## Pen scenes (reference edit — preferred)
+
+Endpoint: POST https://api.x.ai/v1/images/edits
+Paste body from: marketing/n8n-grok-imagine-body-pen-edit.txt
+Wire via IF node `if_pen_scene` → `grok_imagine_pen_edit` (see marketing/n8n-pen-hardware-lock.txt)
+
+Template:
+https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template.png
 
 IMPORTANT: Body must use scene_brief from Prep_day_variant (full lab),
 NOT the old scientific poster / color-scheme prompt.
 
-Paste body from: marketing/n8n-grok-imagine-body-feed.txt
-
 Before run, confirm Prep_day_variant has:
 - scene_id
 - scene_category
-- scene_brief  (starts with FULL LAB…)
+- scene_brief  (starts with FULL PHARMA LAB… or FULL PHARMA LAB + LOCKED PBV…)
 - compound_id / compound_name / canonical_url
 - product_form_detail
