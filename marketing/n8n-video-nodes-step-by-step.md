@@ -1,5 +1,7 @@
 # n8n Video Reels — Step-by-step node build
 
+**HARD RULE:** every video generation parameter (`video_motion_prompt`, `camera_move`, `camera_angle`, `camera_direction`, `shot_family`, `framing`, `model_video`, `duration_seconds`, `resolution`, `aspect_ratio`) comes from the sheet. Nodes must not invent, default, append, truncate, or override them. See `marketing/n8n-HARD-RULE-video-params-from-sheet.md`.
+
 Do these **in order**. Each step says **DUPLICATE** or **CREATE FROM SCRATCH**, plus the **n8n node type**.  
 **New nodes use lowercase names only** (example: `lower_case_node`).  
 Exact canvas names matter for `$('node_name')` expressions.

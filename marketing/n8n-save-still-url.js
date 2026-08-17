@@ -27,7 +27,7 @@ function pickUrl(obj) {
   return '';
 }
 
-var input = ($json && typeof $json === 'object') ? $json : {};
+var input = $json && typeof $json === 'object' ? $json : {};
 var stillUrl =
   pickUrl(firstJson('grok_imagine_edit_still')) ||
   pickUrl(firstJson('grok_imagine_reel_still')) ||
@@ -39,18 +39,39 @@ if (!stillUrl) {
 }
 
 var pick = firstJson('pick_creation');
-var sheet = firstJson('get_reel_creations');
 
-return [{
-  json: Object.assign({}, input, {
-    still_url: stillUrl,
-    reel_still_url: stillUrl,
-    save_still_url: stillUrl,
-    creation_id: String(input.creation_id || pick.creation_id || sheet.creation_id || ''),
-    video_prompt: String(input.video_prompt || pick.video_prompt || sheet.video_prompt || ''),
-    video_motion_prompt: String(input.video_motion_prompt || pick.video_motion_prompt || sheet.video_motion_prompt || ''),
-    scene_brief: String(input.scene_brief || pick.scene_brief || sheet.scene_brief || ''),
-    compound_id: String(input.compound_id || pick.compound_id || sheet.compound_id || ''),
-    compound_name: String(input.compound_name || pick.compound_name || sheet.compound_name || ''),
-  }),
-}];
+function fromPick(name) {
+  var v = input[name];
+  if (v !== undefined && v !== null && String(v).trim() !== '') return v;
+  if (pick[name] !== undefined && pick[name] !== null && String(pick[name]).trim() !== '') {
+    return pick[name];
+  }
+  return '';
+}
+
+return [
+  {
+    json: Object.assign({}, input, {
+      still_url: stillUrl,
+      reel_still_url: stillUrl,
+      save_still_url: stillUrl,
+      creation_id: String(fromPick('creation_id') || ''),
+      video_prompt: String(fromPick('video_prompt') || ''),
+      video_motion_prompt: String(fromPick('video_motion_prompt') || ''),
+      scene_brief: String(fromPick('scene_brief') || ''),
+      compound_id: String(fromPick('compound_id') || ''),
+      compound_name: String(fromPick('compound_name') || ''),
+      model_video: String(fromPick('model_video') || ''),
+      duration_seconds: fromPick('duration_seconds'),
+      resolution: String(fromPick('resolution') || ''),
+      aspect_ratio: fromPick('aspect_ratio'),
+      camera_move: String(fromPick('camera_move') || ''),
+      shot_family: String(fromPick('shot_family') || ''),
+      camera_angle: String(fromPick('camera_angle') || ''),
+      camera_direction: String(fromPick('camera_direction') || ''),
+      framing: String(fromPick('framing') || ''),
+      row_number: Number(pick.row_number || input.row_number || 0) || 0,
+      creation_times_used: Number(pick.creation_times_used || pick.times_used || 0) || 0,
+    }),
+  },
+];

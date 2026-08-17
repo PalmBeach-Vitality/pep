@@ -3,10 +3,12 @@
 // Mode: Run Once for All Items
 // n8n Code node: pick_creation
 // Type: Code | Mode: Run Once for All Items
-// After: get_reel_creations / filter Active on 9-lab-item-creations-500
+// After: get_reel_creations / filter Active on 500_Peptide_Wellness_Reel_Scenes
 // Before: grok_imagine_reel_still
 //
-// SHEETS-ONLY: all creative fields come from the Sheet 9 row.
+// HARD RULE: every video generation parameter comes from the sheet row.
+// This node must not invent camera, motion, model_video, duration, aspect_ratio, or resolution.
+// SHEETS-ONLY: all creative fields come from the 500_Peptide_Wellness_Reel_Scenes row.
 // Rotation each run: different compound_name AND different lab_scene (category).
 // Then least-used row within that pair. No hardcoded prompts/cameras/models.
 
@@ -139,13 +141,9 @@ const scored = creations
     const video_prompt = hardenStillPrompt(
       stripVidDisclaimer(val(c, ['video_prompt', 'videoPrompt']))
     );
-    const video_motion_prompt = (() => {
-      let m = stripVidDisclaimer(
-        val(c, ['video_motion_prompt', 'videoMotionPrompt', 'motion_prompt'])
-      );
-      if (m && !/VIAL LABEL LOCK/i.test(m)) m = (m + VIAL_LABEL_LOCK).trim();
-      return m;
-    })();
+    const video_motion_prompt = stripVidDisclaimer(
+      val(c, ['video_motion_prompt', 'videoMotionPrompt', 'motion_prompt'])
+    );
     const still_edit_from_sheet = String(
       val(c, ['still_edit_prompt', 'stillEditPrompt'], '')
     ).trim();
@@ -205,7 +203,7 @@ const scored = creations
 if (!scored.length) {
   const sampleKeys = Object.keys(creations[0] || {}).join(', ');
   throw new Error(
-    'No valid creations (need creation_id + video_prompt + video_motion_prompt from Sheet 9). First row keys: ' +
+    'No valid creations (need creation_id + video_prompt + video_motion_prompt from 500_Peptide_Wellness_Reel_Scenes). First row keys: ' +
       sampleKeys
   );
 }
@@ -338,22 +336,25 @@ const pick = (bothDifferent.length
     : diversified)[0];
 
 if (!pick.model_still) {
-  throw new Error('Sheet 9 row missing model_still for ' + pick.creation_id);
+  throw new Error('Sheet row missing model_still for ' + pick.creation_id);
 }
 if (!pick.model_video) {
-  throw new Error('Sheet 9 row missing model_video for ' + pick.creation_id);
+  throw new Error('HARD RULE: sheet row missing model_video for ' + pick.creation_id);
 }
 if (!pick.duration_seconds) {
-  throw new Error('Sheet 9 row missing duration_seconds for ' + pick.creation_id);
+  throw new Error('HARD RULE: sheet row missing duration_seconds for ' + pick.creation_id);
 }
 if (!pick.resolution) {
-  throw new Error('Sheet 9 row missing resolution for ' + pick.creation_id);
+  throw new Error('HARD RULE: sheet row missing resolution for ' + pick.creation_id);
 }
 if (!pick.aspect_ratio) {
-  throw new Error('Sheet 9 row missing aspect_ratio for ' + pick.creation_id);
+  throw new Error('HARD RULE: sheet row missing aspect_ratio for ' + pick.creation_id);
+}
+if (!pick.camera_move) {
+  throw new Error('HARD RULE: sheet row missing camera_move for ' + pick.creation_id);
 }
 if (!pick.still_resolution) {
-  throw new Error('Sheet 9 row missing still_resolution for ' + pick.creation_id);
+  throw new Error('Sheet row missing still_resolution for ' + pick.creation_id);
 }
 
 let compound = {};

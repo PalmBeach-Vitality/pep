@@ -4,6 +4,8 @@
 // After: get_reel_creations / filter Active on 9-lab-item-creations-500
 // Before: grok_imagine_reel_still
 //
+// HARD RULE: every video generation parameter comes from the sheet row.
+// This node must not invent camera, motion, model_video, duration, aspect_ratio, or resolution.
 // Least-used rotation + skip same category AND same shot_family as last used.
 
 const creations = $input.all().map((i) => i.json);
@@ -34,42 +36,6 @@ function isActive(status) {
   return !s || s === 'active' || s === 'true' || s === '1' || s === 'yes';
 }
 
-function buildMotionPrompt(row) {
-  const fromSheet = String(
-    val(row, ['video_motion_prompt', 'videoMotionPrompt', 'motion_prompt'], '')
-  ).trim();
-  if (fromSheet) return fromSheet;
-
-  const name = String(val(row, ['lab_item', 'labItem', 'item_name'], 'laboratory research item')).trim();
-  const camera = String(
-    val(row, ['camera_move', 'cameraMove', 'camera'], 'slow straight push-in, then hold')
-  ).trim();
-  const family = String(val(row, ['shot_family', 'shotFamily'], 'push_in')).trim();
-  const angle = String(val(row, ['camera_angle', 'cameraAngle'], 'eye-level')).trim();
-  const direction = String(
-    val(row, ['camera_direction', 'cameraDirection'], 'straight forward')
-  ).trim();
-  const framing = String(val(row, ['framing'], 'centered editorial hero')).trim();
-  const lighting = String(val(row, ['lighting'], 'clinical catalog lighting')).trim();
-  const surface = String(val(row, ['surface'], 'clean laboratory surface')).trim();
-  const compound = String(val(row, ['compound_name', 'compoundName'], '')).trim();
-  const peptide = peptideNameForVial(compound);
-  const labelRule = peptide
-    ? `Keep any on-subject vial sticker as '${peptide}' on line 1 and 10ml on line 2. No milligram or per-milliliter marks. `
-    : `Do not add product compound labels onto the subject. `;
-  return (
-    `Photoreal vertical 9:16 laboratory research catalog film of ${name}. ` +
-    `SHOT FAMILY: ${family}. CAMERA ANGLE: ${angle}. CAMERA DIRECTION: ${direction}. ` +
-    `FRAMING: ${framing}. CAMERA: ${camera}. ` +
-    `Path must be straight or a simple tilt/pedestal only — never travel around the subject. ` +
-    `Lighting continuity: ${lighting}. Surface continuity: ${surface}. ` +
-    `Keep the subject sharp and unchanged from the still. ` +
-    labelRule +
-    `No people, no hands, no needles, no lifestyle. ` +
-    `For laboratory research use only. Not for human use or consumption.`
-  );
-}
-
 const scored = creations
   .map((c) => {
     const rankNum = Number(val(c, ['rank', 'creation_rank'], 0));
@@ -97,8 +63,16 @@ const scored = creations
       scene_brief: val(c, ['scene_brief', 'sceneBrief']),
       quality_suffix: val(c, ['quality_suffix', 'qualitySuffix']),
       quality_var_count: val(c, ['quality_var_count', 'qualityVarCount'], 12),
+      aspect_ratio: val(c, ['aspect_ratio', 'aspectRatio']),
+      duration_seconds: val(c, ['duration_seconds', 'durationSeconds', 'duration']),
+      resolution: val(c, ['resolution']),
+      model_still: val(c, ['model_still', 'modelStill']),
+      model_video: val(c, ['model_video', 'modelVideo']),
+      still_resolution: val(c, ['still_resolution', 'stillResolution']),
       video_prompt: val(c, ['video_prompt', 'videoPrompt']),
-      video_motion_prompt: buildMotionPrompt(c),
+      video_motion_prompt: String(
+        val(c, ['video_motion_prompt', 'videoMotionPrompt', 'motion_prompt'], '')
+      ).trim(),
       surface: val(c, ['surface']),
       lighting: val(c, ['lighting']),
       camera_move: val(c, ['camera_move', 'cameraMove', 'camera']),
@@ -109,7 +83,17 @@ const scored = creations
       last_used_at: String(val(c, ['last_used_at', 'lastUsedAt', 'last_reel_at'], '')),
     };
   })
-  .filter((c) => c.creation_id && c.video_prompt)
+  .filter(
+    (c) =>
+      c.creation_id &&
+      c.video_prompt &&
+      c.video_motion_prompt &&
+      c.camera_move &&
+      c.model_video &&
+      c.duration_seconds &&
+      c.resolution &&
+      c.aspect_ratio
+  )
   .filter((c) => isActive(c.status))
   .sort((a, b) => {
     if (a.times_used !== b.times_used) return a.times_used - b.times_used;
@@ -122,7 +106,8 @@ const scored = creations
 if (!scored.length) {
   const sampleKeys = Object.keys(creations[0] || {}).join(', ');
   throw new Error(
-    'No valid creations (need creation_id or rank + video_prompt). First row keys: ' + sampleKeys
+    'No valid creations (need creation_id + video_prompt + video_motion_prompt + camera_move + model_video + duration_seconds + resolution + aspect_ratio from the sheet). First row keys: ' +
+      sampleKeys
   );
 }
 
@@ -171,6 +156,25 @@ const diversified = scored
     return Number(a.rank) - Number(b.rank);
   });
 const pick = diversified[0];
+
+if (!pick.model_video) {
+  throw new Error('HARD RULE: sheet row missing model_video for ' + pick.creation_id);
+}
+if (!pick.duration_seconds) {
+  throw new Error('HARD RULE: sheet row missing duration_seconds for ' + pick.creation_id);
+}
+if (!pick.resolution) {
+  throw new Error('HARD RULE: sheet row missing resolution for ' + pick.creation_id);
+}
+if (!pick.aspect_ratio) {
+  throw new Error('HARD RULE: sheet row missing aspect_ratio for ' + pick.creation_id);
+}
+if (!pick.camera_move) {
+  throw new Error('HARD RULE: sheet row missing camera_move for ' + pick.creation_id);
+}
+if (!pick.video_motion_prompt) {
+  throw new Error('HARD RULE: sheet row missing video_motion_prompt for ' + pick.creation_id);
+}
 
 function peptideNameForVial(raw) {
   return String(raw || '')
@@ -250,8 +254,14 @@ return [
       scene_brief: pick.scene_brief,
       quality_suffix: pick.quality_suffix,
       quality_var_count: pick.quality_var_count,
+      aspect_ratio: pick.aspect_ratio,
+      duration_seconds: Number(pick.duration_seconds),
+      resolution: pick.resolution,
+      model_still: pick.model_still,
+      model_video: pick.model_video,
+      still_resolution: pick.still_resolution,
       video_prompt: withVialRules(pick.video_prompt, peptideNameForVial(pick.compound_name)),
-      video_motion_prompt: withVialRules(pick.video_motion_prompt, peptideNameForVial(pick.compound_name)),
+      video_motion_prompt: pick.video_motion_prompt,
       surface: pick.surface,
       lighting: pick.lighting,
       camera_move: pick.camera_move,

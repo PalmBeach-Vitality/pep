@@ -1,6 +1,13 @@
 // n8n Code node name: prep_grok_video_start
-// Workflow: Vid_gen_landscape_scenes
+// Workflow: Vid_gen_landscape_scenes -500-peptide-wellness-scenes
 // Mode: Run Once for All Items
+//
+// HARD RULE: every video generation parameter comes from the sheet via pick_creation.
+// This node must not invent camera, motion, model, duration, aspect_ratio, or resolution.
+// Do not append vial lock. Do not truncate. Do not default to push-in.
+// Do not read get_reel_creations — that is the first sheet row, not the picked row.
+// still_url may come from Imagine / save_still_url (not a sheet camera param).
+
 function firstJson(name) {
   try {
     return $(name).first().json || {};
@@ -9,102 +16,138 @@ function firstJson(name) {
   }
 }
 
-function val(obj, names, fallback) {
-  if (fallback === undefined) fallback = '';
+function val(obj, names) {
+  obj = obj || {};
   for (var i = 0; i < names.length; i++) {
     var n = names[i];
-    if (obj && obj[n] !== undefined && obj[n] !== null && String(obj[n]).trim() !== '') {
+    if (obj[n] !== undefined && obj[n] !== null && String(obj[n]).trim() !== '') {
       return obj[n];
     }
-  }
-  return fallback;
-}
-
-function pickHttpsUrl(list) {
-  for (var i = 0; i < list.length; i++) {
-    var s = String(list[i] || '').trim();
-    if (/^https:\/\//i.test(s)) return s;
   }
   return '';
 }
 
+function pickUrl(obj) {
+  if (!obj || typeof obj !== 'object') return '';
+  var candidates = [
+    obj.still_url,
+    obj.reel_still_url,
+    obj.save_still_url,
+    obj.source_still_url,
+    obj.edited_still_url,
+    obj.data && obj.data[0] && obj.data[0].url,
+    obj.url,
+  ];
+  for (var i = 0; i < candidates.length; i++) {
+    var c = candidates[i];
+    if (typeof c === 'string' && /^https:\/\//i.test(c.trim())) return c.trim();
+  }
+  return '';
+}
+
+function requireFromSheet(label, value, creationId) {
+  var s = String(value == null ? '' : value).trim();
+  if (!s) {
+    throw new Error(
+      'HARD RULE: ' +
+        label +
+        ' must come from the sheet (creation_id=' +
+        (creationId || '?') +
+        '). This node will not invent it.'
+    );
+  }
+  return s;
+}
+
+function aspectFromSheet(raw, creationId) {
+  var s = requireFromSheet('aspect_ratio', raw, creationId)
+    .replace(/\u2236/g, ':')
+    .replace(/\s+/g, '');
+  if (/^\d+:\d+$/.test(s)) return s;
+  var n = Number(String(raw).trim());
+  if (Number.isFinite(n) && n > 0 && n < 1) {
+    var totalMins = Math.round(n * 24 * 60);
+    var h = Math.floor(totalMins / 60);
+    var m = totalMins % 60;
+    return h + ':' + String(m).padStart(2, '0');
+  }
+  throw new Error(
+    'HARD RULE: aspect_ratio on the sheet must be like 9:16 (creation_id=' +
+      creationId +
+      ', got ' +
+      raw +
+      ')'
+  );
+}
+
 var input = ($input.first() && $input.first().json) || {};
-var sheet = firstJson('get_reel_creations');
+var pick = firstJson('pick_creation');
 var stillNode = firstJson('save_still_url');
 var editHttp = firstJson('grok_imagine_edit_still');
-var editInstructions = firstJson('still_edit_instructions');
 
-var stillResolved = pickHttpsUrl([
-  val(input, ['still_url', 'source_still_url', 'edited_still_url']),
-  input.data && input.data[0] && input.data[0].url,
-  val(stillNode, ['still_url']),
-  editHttp.data && editHttp.data[0] && editHttp.data[0].url,
-]);
-
-var motion = String(
-  val(input, ['video_motion_prompt']) ||
-    val(stillNode, ['video_motion_prompt']) ||
-    val(sheet, ['video_motion_prompt'], '')
-).trim();
-
-var modelVideo = String(
-  val(input, ['model_video']) ||
-    val(stillNode, ['model_video']) ||
-    val(sheet, ['model_video'], 'grok-imagine-video-1.5')
-).trim() || 'grok-imagine-video-1.5';
-
-var duration = Number(
-  val(input, ['duration_seconds', 'duration']) ||
-    val(stillNode, ['duration_seconds']) ||
-    val(sheet, ['duration_seconds'], 15)
-) || 15;
-
-var resolution = String(
-  val(input, ['resolution']) ||
-    val(stillNode, ['resolution']) ||
-    val(sheet, ['resolution'], '1080p')
-).trim() || '1080p';
-
+var stillResolved =
+  pickUrl(input) ||
+  pickUrl(stillNode) ||
+  pickUrl(editHttp);
 if (!stillResolved) {
   throw new Error('prep_grok_video_start: still_url missing from save_still_url');
 }
-if (!motion) {
-  throw new Error('prep_grok_video_start: video_motion_prompt missing');
+
+var creationId = String(val(pick, ['creation_id']) || val(input, ['creation_id']) || '');
+
+function sheetField(names, label) {
+  var v = val(pick, names);
+  if (!String(v).trim()) v = val(input, names);
+  if (!String(v).trim()) v = val(stillNode, names);
+  return requireFromSheet(label, v, creationId);
 }
 
-var VIAL_LABEL_LOCK =
-  'VIAL LABEL LOCK (MANDATORY): If a vial is visible, keep the vial sticker at two lines only: peptide name, then 10ml. Do not add milligram marks, per-milliliter marks, or extra numbers on the vial.';
-if (!/VIAL LABEL LOCK/i.test(motion)) {
-  motion = (motion + ' ' + VIAL_LABEL_LOCK).trim();
+var motion = sheetField(['video_motion_prompt', 'videoMotionPrompt'], 'video_motion_prompt');
+var modelVideo = sheetField(['model_video', 'modelVideo'], 'model_video');
+var durationRaw = sheetField(
+  ['duration_seconds', 'durationSeconds', 'duration'],
+  'duration_seconds'
+);
+var duration = Number(durationRaw);
+if (!Number.isFinite(duration) || duration <= 0) {
+  throw new Error(
+    'HARD RULE: duration_seconds on the sheet must be a positive number (creation_id=' +
+      creationId +
+      ', got ' +
+      durationRaw +
+      ')'
+  );
 }
-if (motion.length > 700) {
-  var lockIdx = motion.indexOf('VIAL LABEL LOCK');
-  var lock = lockIdx >= 0 ? ' ' + motion.slice(lockIdx) : ' ' + VIAL_LABEL_LOCK;
-  var keep = Math.max(0, 697 - lock.length);
-  motion = motion.slice(0, keep).replace(/\s+\S*$/, '') + '.' + lock;
-}
+var resolution = sheetField(['resolution'], 'resolution');
+var aspect = aspectFromSheet(
+  val(pick, ['aspect_ratio', 'aspectRatio']) ||
+    val(input, ['aspect_ratio', 'aspectRatio']) ||
+    val(stillNode, ['aspect_ratio', 'aspectRatio']),
+  creationId
+);
+var cameraMove = sheetField(['camera_move', 'cameraMove', 'camera'], 'camera_move');
 
 var body = {
   model: modelVideo,
   prompt: motion,
   image: { url: stillResolved },
   duration: duration,
+  aspect_ratio: aspect,
   resolution: resolution,
 };
 
-return [{
-  json: {
-    still_url: stillResolved,
-    video_motion_prompt: motion,
-    model_video: modelVideo,
-    duration_seconds: duration,
-    resolution: resolution,
-    creation_id: String(
-      val(input, ['creation_id']) ||
-        val(stillNode, ['creation_id']) ||
-        val(sheet, ['creation_id'], '')
-    ),
-    still_edit_prompt: String(val(editInstructions, ['still_edit_prompt'], '')),
-    grok_video_body_json: JSON.stringify(body),
-  }
-}];
+return [
+  {
+    json: Object.assign({}, input, {
+      still_url: stillResolved,
+      reel_still_url: stillResolved,
+      video_motion_prompt: motion,
+      model_video: modelVideo,
+      duration_seconds: duration,
+      resolution: resolution,
+      aspect_ratio: aspect,
+      camera_move: cameraMove,
+      grok_video_body_json: JSON.stringify(body),
+    }),
+  },
+];
