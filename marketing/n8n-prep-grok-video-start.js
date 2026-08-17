@@ -18,8 +18,8 @@ function pickUrl(obj) {
 }
 
 var VIAL_LABEL_LOCK =
-  'VIAL LABEL LOCK (MANDATORY): If a vial is visible, keep or set the vial label to peptide name + 10ml only. ' +
-  'FORBIDDEN on the vial: mg, mg/ml, mg/mL, mcg, IU, concentration, dosage. Never add 1000mg or 10mg/mL.';
+  'VIAL LABEL LOCK (MANDATORY): If a vial is visible, keep the vial sticker at two lines only: peptide name, then 10ml. ' +
+  'Do not add milligram marks, per-milliliter marks, or extra numbers on the vial.';
 
 var input = $json || {};
 var stillUrl =

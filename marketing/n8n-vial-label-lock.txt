@@ -1,5 +1,6 @@
 VIAL LABEL LOCK (MANDATORY whenever a vial is visible in an image or video):
-The vial label may show ONLY the peptide name and 10ml.
-Example: "BPC-157" and "10ml".
-FORBIDDEN on the vial (label, glass, cap, carton, hang-tag): mg, mg/ml, mg/mL, mcg, mcg/ml, IU, %, concentration, dosage, strength.
-Never print 1000mg, 10mg/mL, or any mg/ml. Do not invent strength text.
+The vial sticker has exactly two lines and nothing else.
+Line 1: peptide name only (example: BPC-157)
+Line 2: 10ml
+No milligram marks, no per-milliliter marks, no extra numbers, no purity percent, no IU
+on the glass, cap, carton, or hang-tag.

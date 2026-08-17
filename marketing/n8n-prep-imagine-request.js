@@ -7,6 +7,17 @@ const BLUE_NAMES = new Set(['semaglutide', 'tirzepatide', 'retatrutide']);
 const BLUE_TEMPLATE = 'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-blue.png';
 const RED_TEMPLATE = 'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-red.png';
 
+function stripDoseText(raw) {
+  return String(raw || '')
+    .replace(/\d+(?:\.\d+)?\s*(mg|mcg|µg|ug|iu)\s*\/\s*m[lL]/gi, '')
+    .replace(/\b(?:mg|mcg|µg|ug|iu)\s*\/\s*m[lL]\b/gi, '')
+    .replace(/\d+(?:\.\d+)?\s*(mg|mcg|µg|ug|iu)\b/gi, '')
+    .replace(/\b(?:mg|mcg|iu)\b/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\s+([,.;:])/g, '$1')
+    .trim();
+}
+
 function peptideNameForVial(raw) {
   return String(raw || '')
     .replace(/\d+(?:\.\d+)?\s*(mg|mcg|µg|ug|iu)\s*\/\s*m[lL]/gi, '')
@@ -24,11 +35,12 @@ const grok = $('Parse_Grok').item.json || {};
 const sceneCategory = String(prep.scene_category || '');
 const name = String(grok.display_name || prep.compound_name || '');
 const vialName = peptideNameForVial(name) || name;
+const sceneBrief = stripDoseText(String(prep.scene_brief || '')).slice(0, 1400);
+const formDetail = stripDoseText(String(prep.product_form_detail || ''));
 const VIAL_LABEL_LOCK =
-  'VIAL LABEL LOCK (MANDATORY): If a vial is visible, the vial label may show ONLY the peptide name and 10ml. ' +
-  'Print exactly: "' + vialName + '" and "10ml". ' +
-  'FORBIDDEN on the vial (label, glass, cap, carton, hang-tag): mg, mg/ml, mg/mL, mcg, mcg/ml, IU, %, concentration, dosage, strength. ' +
-  'Never print 1000mg, 10mg/mL, or any mg/ml. Do not invent strength text.';
+  'VIAL LABEL LOCK (MANDATORY — HARD): If a vial is visible, the vial sticker has exactly two lines and nothing else. ' +
+  'Line 1 is the peptide name only: "' + vialName + '". Line 2 is exactly: 10ml. ' +
+  'No milligram marks, no per-milliliter marks, no extra numbers, no purity percent, no IU on the glass, cap, carton, or hang-tag.';
 const id = String(prep.compound_id || '');
 const isPen = sceneCategory === 'pen_3ml_scene';
 const isBlue = BLUE_IDS.has(id) || BLUE_NAMES.has(name.trim().toLowerCase());
@@ -40,9 +52,9 @@ const colorRule = isBlue
 const today = (typeof $now !== 'undefined' && $now.toISODate)
   ? $now.toISODate()
   : new Date().toISOString().slice(0, 10);
-const bullets = [grok.figma_bullet_1, grok.figma_bullet_2, grok.figma_bullet_3].filter(Boolean).join(' | ');
-const headline = String(grok.figma_headline || grok.display_name || prep.compound_name || '');
-const subhead = String(grok.figma_subhead || '');
+const bullets = stripDoseText([grok.figma_bullet_1, grok.figma_bullet_2, grok.figma_bullet_3].filter(Boolean).join(' | '));
+const headline = stripDoseText(String(grok.figma_headline || grok.display_name || prep.compound_name || ''));
+const subhead = stripDoseText(String(grok.figma_subhead || ''));
 
 const overlay = [
   'OVERLAY TEXT (required, sharp, perfectly spelled) as clean premium type over the photoreal pharma lab photo — do not replace the photo with a flat poster:',
@@ -77,10 +89,10 @@ if (isPen) {
       'Keep the premium catalog look — expensive, refined, photoreal. Do not redesign the pen. Do not shorten the barrel. Do not add a pocket clip. Do not change proportions, cap style, or dial style. Keep accent color exactly ' + accentShort + '.',
       colorRule,
       'ONLY change the pen label text to this compound name in large ' + accentShort + ' sans-serif: ' + vialName + '.',
-      'Secondary pen label line in smaller ' + accentShort + ' text: 3ml pen. Do not print mg or mg/ml on the pen.',
+      'Secondary pen label line in smaller ' + accentShort + ' text: 3ml pen. Do not print milligram or per-milliliter marks on the pen.',
       VIAL_LABEL_LOCK,
       'Place that same locked longer pen mid-ground inside a photoreal pharmaceutical manufacturing cleanroom (GMP fill-finish / aseptic suite). NOT the template gray studio void. NOT a spa, bathroom, marble lifestyle set.',
-      'FOLLOW THIS SCENE BRIEF EXACTLY: ' + String(prep.scene_brief || '') + '.',
+      'FOLLOW THIS SCENE BRIEF EXACTLY: ' + sceneBrief + '.',
       'scene_id=' + String(prep.scene_id || '') + '; scene_category=pen_3ml_scene.',
       'Wide environmental FULL PHARMA LAB SCENE. Deep focus. Architecture + process equipment readable. Pen stays readable but not an extreme macro.',
       overlay,
@@ -98,13 +110,13 @@ if (isPen) {
       'Look like GMP fill-finish / aseptic processing: ISO-classified suite, HEPA ceiling terminals, flush cleanroom walls, conductive flooring, stainless sanitary equipment, RABS/isolators, validated process equipment.',
       'NOT a sci-fi neon biotech set. NOT a university teaching lab. NOT a chemistry classroom. NOT a generic startup loft lab. NOT a graphic poster background.',
       'Wide environmental FULL PHARMA LAB SCENE showing the whole cleanroom volume. Deep focus. Architecture + process equipment readable.',
-      'FOLLOW THIS SCENE BRIEF EXACTLY: ' + String(prep.scene_brief || '') + '.',
+      'FOLLOW THIS SCENE BRIEF EXACTLY: ' + sceneBrief + '.',
       'scene_id=' + String(prep.scene_id || '') + '; scene_category=' + sceneCategory + '.',
       'Product lock: ' + String(prep.compound_id || '') + ' / ' + vialName + '.',
-      'Form detail: ' + String(prep.product_form_detail || '') + '.',
+      'Form detail: ' + formDetail + '.',
       VIAL_LABEL_LOCK,
-      'If scene_category is vial_10ml_scene: one 10mL sterile injectable clear glass vial with rubber stopper + aluminum crimp seal only (NO black twist/screw caps), small mid-ground on a clean pharma bench inside the cleanroom. Vial label = ' + vialName + ' + 10ml only.',
-      'If scene_category is lab_scene: pure pharmaceutical cleanroom; optional distant 10mL crimp-seal vial labeled ' + vialName + ' and 10ml only; never a close-up; never mg/ml on that vial.',
+      'If scene_category is vial_10ml_scene: one 10mL sterile injectable clear glass vial with rubber stopper + aluminum crimp seal only (NO black twist/screw caps), small mid-ground on a clean pharma bench inside the cleanroom. Vial sticker = "' + vialName + '" on line 1 and 10ml on line 2.',
+      'If scene_category is lab_scene: pure pharmaceutical cleanroom; optional distant 10mL crimp-seal vial with the same two-line sticker; never a close-up.',
       overlay,
     ].join(' '),
   };

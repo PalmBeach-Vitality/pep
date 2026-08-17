@@ -70,10 +70,10 @@ const HARD_SINGLE_HERO =
   ' SINGLE HERO PRODUCT RULE (MANDATORY — CRITICAL — COUNT = 1): The finished image must contain exactly ONE research product container total — either ONE vial OR ONE pen — never both, never two, never three. PRODUCT COUNT MUST EQUAL 1. Forbidden: second vial, background vial, foreground+background pair, large+small vial, open+capped pair, mirrored duplicate, row/rack/cluster of vials or pens. Background = architecture only. ONE object. ONE hero. COUNT = 1. Period.';
 
 const HARD_STILL_EDIT =
-  'CRITICAL COUNT FIX: Keep exactly ONE sealed Palm Beach Vitality hero product (one vial OR one pen). DELETE every extra vial/pen. Also DELETE any weighing scale, digital scale, platform scale, or metal tray under the product — place the single hero directly on the table/surface. After the edit count exactly 1 product and zero scales. If a vial is visible, the vial label must be peptide name + 10ml only — remove any mg, mg/ml, mcg, IU, or concentration from the vial. Do not restyle lighting, camera, or environment.';
+  'CRITICAL COUNT FIX: Keep exactly ONE sealed Palm Beach Vitality hero product (one vial OR one pen). DELETE every extra vial/pen. Also DELETE any weighing scale, digital scale, platform scale, or metal tray under the product — place the single hero directly on the table/surface. After the edit count exactly 1 product and zero scales. If a vial is visible, the vial sticker is peptide name on line 1 and 10ml on line 2 — no milligram or per-milliliter marks. Do not restyle lighting, camera, or environment.';
 
 const VIAL_LABEL_LOCK =
-  ' VIAL LABEL LOCK (MANDATORY): If a vial is visible, the vial label may show ONLY the peptide name and 10ml. FORBIDDEN on the vial: mg, mg/ml, mg/mL, mcg, IU, %, concentration, dosage. Never print 1000mg or 10mg/mL.';
+  ' VIAL LABEL LOCK (MANDATORY): If a vial is visible, the vial sticker has exactly two lines: peptide name, then 10ml. No milligram marks, no per-milliliter marks, no extra numbers on glass, cap, or carton.';
 
 function hardenStillPrompt(text) {
   let t = String(text || '').trim();

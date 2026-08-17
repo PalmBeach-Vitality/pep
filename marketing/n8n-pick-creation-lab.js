@@ -55,7 +55,7 @@ function buildMotionPrompt(row) {
   const compound = String(val(row, ['compound_name', 'compoundName'], '')).trim();
   const peptide = peptideNameForVial(compound);
   const labelRule = peptide
-    ? `Keep any on-subject vial label as '${peptide}' and '10ml' only. Never mg/ml on the vial. `
+    ? `Keep any on-subject vial sticker as '${peptide}' on line 1 and 10ml on line 2. No milligram or per-milliliter marks. `
     : `Do not add product compound labels onto the subject. `;
   return (
     `Photoreal vertical 9:16 laboratory research catalog film of ${name}. ` +
@@ -192,9 +192,8 @@ const VIAL_CLOSURE_RULE =
   "twist lids, NO plastic twist closures — crimped metal + rubber only.";
 
 const VIAL_LABEL_LOCK =
-  "VIAL LABEL LOCK (MANDATORY): If a vial is visible, the vial label may show ONLY the peptide name and 10ml. " +
-  "FORBIDDEN on the vial (label, glass, cap, carton): mg, mg/ml, mg/mL, mcg, IU, %, concentration, dosage, strength. " +
-  "Never print 1000mg, 10mg/mL, or any mg/ml.";
+  "VIAL LABEL LOCK (MANDATORY): If a vial is visible, the vial sticker has exactly two lines: peptide name, then 10ml. " +
+  "No milligram marks, no per-milliliter marks, no extra numbers on glass, cap, or carton.";
 
 function withVialRules(prompt, peptide) {
   const p = String(prompt || '').trim();

@@ -11,14 +11,20 @@
 
 {{ (() => {
   const pick = (() => { try { return $('pick_creation').item.json || {}; } catch (e) { return {}; } })();
-  const raw = String($json.display_name || $json.compound_name || $json.figma_headline || pick.compound_name || '');
-  const peptide = raw
+  const stripDose = (s) => String(s || '')
     .replace(/\d+(?:\.\d+)?\s*(mg|mcg|µg|ug|iu)\s*\/\s*m[lL]/gi, '')
+    .replace(/\b(?:mg|mcg|µg|ug|iu)\s*\/\s*m[lL]\b/gi, '')
     .replace(/\d+(?:\.\d+)?\s*(mg|mcg|µg|ug|iu)\b/gi, '')
+    .replace(/\b(?:mg|mcg|iu)\b/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  const raw = String($json.display_name || $json.compound_name || $json.figma_headline || pick.compound_name || '');
+  const peptide = stripDose(raw)
     .replace(/\b\d+(?:\.\d+)?\s*m[lL]\b/gi, '')
     .replace(/\b(vial|pen|sterile|multi-?use)\b/gi, '')
     .replace(/\s{2,}/g, ' ')
-    .trim() || raw;
+    .trim() || stripDose(raw);
+  const scene = stripDose(String($json.scene_brief || pick.scene_brief || '')).slice(0, 1400);
   return JSON.stringify({
     model: 'grok-imagine-image-2.0',
     aspect_ratio: '9:16',
@@ -26,11 +32,11 @@
     n: 1,
     prompt: [
       'Photoreal vertical 9:16 catalog still for Palm Beach Vitality. Full environment, not a void packshot, not extreme macro.',
-      'Scene: ' + String($json.scene_brief || pick.scene_brief || '').slice(0, 1400) + '.',
+      'Scene: ' + scene + '.',
       'Product: ' + peptide + ' (' + String($json.compound_id || pick.compound_id || '') + ').',
       'If a vial is visible: 10mL clear glass, rubber stopper, aluminum crimp seal only. No black twist caps, screw caps, or droppers.',
-      'VIAL LABEL LOCK (MANDATORY): If a vial is visible, the vial label may show ONLY the peptide name and 10ml. Print exactly: "' + peptide + '" and "10ml". FORBIDDEN on the vial (label, glass, cap, carton): mg, mg/ml, mg/mL, mcg, IU, %, concentration, dosage, strength. Never print 1000mg or any mg/ml.',
-      'If a pen is visible: sleek elongated matte pearl-gray 3mL PBV pen, clear left cap, no pocket clip. BLUE accents only for Semaglutide/Tirzepatide/Retatrutide; RED accents for all other peptides. Pen label = peptide name + 3ml pen. No mg/ml on the pen.',
+      'VIAL LABEL LOCK (MANDATORY — HARD): If a vial is visible, the vial sticker has exactly two lines. Line 1 is the peptide name only: "' + peptide + '". Line 2 is exactly: 10ml. No milligram marks, no per-milliliter marks, no extra numbers on glass, cap, or carton.',
+      'If a pen is visible: sleek elongated matte pearl-gray 3mL PBV pen, clear left cap, no pocket clip. BLUE accents only for Semaglutide/Tirzepatide/Retatrutide; RED accents for all other peptides. Pen label = peptide name + 3ml pen. No milligram or per-milliliter marks on the pen.',
       'Premium clean set. No people, hands, needles, clinics, gyms, spa marble, hazard posters, or nicknames (no KLOW, Wolverine, GLOW). Prefer no on-image text besides the vial/pen product label lock above.',
       'Cinematic photoreal catalog still, not an illustration or poster.'
     ].join(' ')
