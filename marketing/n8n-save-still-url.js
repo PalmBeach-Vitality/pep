@@ -1,49 +1,56 @@
-// n8n Code node name: save_still_url
-// After: grok_imagine_reel_still  (or GROK_Imagine)
-// Before: grok_video  (or grok_video_start / prep_grok_video_start)
-// Mode: Run Once for Each Item
-// Why: grok_video was sending image.url = null. This node pulls the Imagine
-// URL from every common response shape and refuses to continue if missing.
+function firstJson(name) {
+  try {
+    return $(name).first().json || {};
+  } catch (e) {
+    return {};
+  }
+}
 
 function pickUrl(obj) {
   if (!obj || typeof obj !== 'object') return '';
-  const candidates = [
-    obj.data?.[0]?.url,
-    obj.data?.[0]?.image_url,
-    obj.data?.[0]?.image?.url,
+  var candidates = [
+    obj.data && obj.data[0] && obj.data[0].url,
+    obj.data && obj.data[0] && obj.data[0].image_url,
+    obj.data && obj.data[0] && obj.data[0].image && obj.data[0].image.url,
     obj.url,
     obj.image_url,
-    obj.output?.[0]?.url,
-    obj.images?.[0]?.url,
+    obj.output && obj.output[0] && obj.output[0].url,
+    obj.images && obj.images[0] && obj.images[0].url,
     obj.reel_still_url,
     obj.still_url,
+    obj.save_still_url,
   ];
-  for (const c of candidates) {
-    if (typeof c === 'string' && c.startsWith('http')) return c;
+  for (var i = 0; i < candidates.length; i++) {
+    var c = candidates[i];
+    if (typeof c === 'string' && /^https:\/\//i.test(c.trim())) return c.trim();
   }
   return '';
 }
 
-let stillUrl = '';
-const sources = ['grok_imagine_reel_still', 'GROK_Imagine', 'grok_imagine_pen_edit'];
-for (const name of sources) {
-  try {
-    stillUrl = pickUrl($(name).item.json);
-    if (stillUrl) break;
-  } catch (e) {}
-}
-if (!stillUrl) stillUrl = pickUrl($json);
+var input = ($json && typeof $json === 'object') ? $json : {};
+var stillUrl =
+  pickUrl(firstJson('grok_imagine_edit_still')) ||
+  pickUrl(firstJson('grok_imagine_reel_still')) ||
+  pickUrl(firstJson('GROK_Imagine')) ||
+  pickUrl(input);
 
 if (!stillUrl) {
-  throw new Error('save_still_url: no Imagine image URL found. Execute grok_imagine_reel_still first and confirm data[0].url is an https URL.');
+  throw new Error('save_still_url: no https Imagine URL. Run grok_imagine_reel_still first.');
 }
 
-const prior = $json || {};
+var pick = firstJson('pick_creation');
+var sheet = firstJson('get_reel_creations');
+
 return [{
-  json: {
-    ...prior,
-    reel_still_url: stillUrl,
+  json: Object.assign({}, input, {
     still_url: stillUrl,
+    reel_still_url: stillUrl,
     save_still_url: stillUrl,
-  },
+    creation_id: String(input.creation_id || pick.creation_id || sheet.creation_id || ''),
+    video_prompt: String(input.video_prompt || pick.video_prompt || sheet.video_prompt || ''),
+    video_motion_prompt: String(input.video_motion_prompt || pick.video_motion_prompt || sheet.video_motion_prompt || ''),
+    scene_brief: String(input.scene_brief || pick.scene_brief || sheet.scene_brief || ''),
+    compound_id: String(input.compound_id || pick.compound_id || sheet.compound_id || ''),
+    compound_name: String(input.compound_name || pick.compound_name || sheet.compound_name || ''),
+  }),
 }];
