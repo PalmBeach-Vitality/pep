@@ -113,26 +113,24 @@ Edits only (not new nodes): `Prep_day_variant`, `Save_render_URL`, `Sheets_write
 
 ### Replace Body (fx ON)
 
+xAI Imagine **rejects prompts over 8000 characters**. Do not dump `video_prompt`, Grok captions, or `imagine_body_string` into this still.
+
+Paste from: `marketing/n8n-grok-imagine-reel-still-landscape.txt`
+
 ```text
 {{ JSON.stringify({
   model: 'grok-imagine-image-2.0',
   aspect_ratio: '9:16',
+  resolution: '2k',
   n: 1,
   prompt: [
-    'Photoreal vertical 9:16 product catalog still for Palm Beach Vitality.',
-    'Subject: ' + String($('Limit').item.json.product_form || $('Parse_Grok').item.json.product_form || 'research vial') + ' of ' + String($('Parse_Grok').item.json.display_name || $('Limit').item.json.compound_name || 'research compound') + ' as laboratory research material on a clear acrylic riser.',
-    'Environment: dark premium American research lab, cool electric-blue rim lighting, soft haze, realistic glass refraction, shallow depth of field.',
-    'Today video format: ' + String($('Prep_day_variant').item.json.daily_video_format || '') + '.',
-    'Motion intent for later animation (compose the still for this): ' + String($('Prep_day_variant').item.json.daily_motion_brief || '') + '.',
-    'TYPOGRAPHY RULES: Use ONLY these exact strings. Do not invent other words.',
-    'Exact headline: ' + String($('Parse_Grok').item.json.figma_headline || $('Parse_Grok').item.json.display_name || '') + '.',
-    'Exact subhead: ' + String($('Parse_Grok').item.json.figma_subhead || '') + '.',
-    'Brand wordmark exactly: PALM BEACH VITALITY',
-    'Footer exactly: FOR LABORATORY RESEARCH USE ONLY. NOT FOR HUMAN USE.',
-    'Tiny date exactly: ' + $now.toISODate() + '.',
-    'No people, no hands, no needles, no injection, no clinic, no gym, no lifestyle, no before/after, no wellness icons.',
-    'No nicknames (no KLOW, Wolverine, GLOW). No purity percentages unless in input. No FDA approval claims.',
-    'Look like a high-end e-commerce lab catalog photo, not an illustration, not a flat graphic poster.'
+    'Photoreal vertical 9:16 catalog still for Palm Beach Vitality. Full environment, not a void packshot, not extreme macro.',
+    'Scene: ' + String($json.scene_brief || '').slice(0, 1400) + '.',
+    'Product: ' + String($json.display_name || $json.compound_name || $json.figma_headline || '') + ' (' + String($json.compound_id || '') + ').',
+    'If a vial is visible: 10mL clear glass, rubber stopper, aluminum crimp seal only. No black twist caps, screw caps, or droppers.',
+    'If a pen is visible: sleek elongated matte pearl-gray 3mL PBV pen, clear left cap, no pocket clip. BLUE accents only for Semaglutide/Tirzepatide/Retatrutide; RED accents for all other peptides.',
+    'Premium clean set. No people, hands, needles, clinics, gyms, spa marble, hazard posters, or nicknames (no KLOW, Wolverine, GLOW). Prefer no on-image text.',
+    'Cinematic photoreal catalog still, not an illustration or poster.'
   ].join(' ')
 }) }}
 ```
