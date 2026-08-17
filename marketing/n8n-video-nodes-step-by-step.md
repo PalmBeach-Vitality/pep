@@ -127,7 +127,7 @@ Paste from: `marketing/n8n-grok-imagine-reel-still-landscape.txt`
     'Photoreal vertical 9:16 catalog still for Palm Beach Vitality. Full environment, not a void packshot, not extreme macro.',
     'Scene: ' + String($json.scene_brief || '').slice(0, 1400) + '.',
     'Product: ' + String($json.display_name || $json.compound_name || $json.figma_headline || '') + ' (' + String($json.compound_id || '') + ').',
-    'If a vial is visible: 10mL clear glass, rubber stopper, aluminum crimp seal only. No black twist caps, screw caps, or droppers.',
+    'If a vial is visible: 10mL clear glass, rubber stopper, aluminum crimp seal only. No black twist caps, screw caps, or droppers. VIAL LABEL LOCK: peptide name + 10ml only. FORBIDDEN on the vial: mg, mg/ml, concentration, dosage.',
     'If a pen is visible: sleek elongated matte pearl-gray 3mL PBV pen, clear left cap, no pocket clip. BLUE accents only for Semaglutide/Tirzepatide/Retatrutide; RED accents for all other peptides.',
     'Premium clean set. No people, hands, needles, clinics, gyms, spa marble, hazard posters, or nicknames (no KLOW, Wolverine, GLOW). Prefer no on-image text.',
     'Cinematic photoreal catalog still, not an illustration or poster.'
