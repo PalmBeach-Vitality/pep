@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Every VO is an easy science pitch with studies + COA + store CTA."""
+"""Every VO is hook-first easy science with studies + COA + store CTA. 20 × 30s."""
 
 from __future__ import annotations
 
@@ -7,13 +7,14 @@ import csv
 from pathlib import Path
 
 SRC = Path("/workspace/marketing/sheets/150-pb-pep-scenes.csv")
+POOL = Path("/workspace/marketing/sheets/pep-blocking-pool.csv")
 CTA = "Visit us at palmbeach-vitality.store."
 COA = (
     "Palm Beach Vitality research peptides are backed by a COA with every single order, "
     "American made delivering >99% purity 100% of the time."
 )
-TARGET_MIN = 112
-TARGET_MAX = 125
+TARGET_MIN = 65
+TARGET_MAX = 74
 BANNED = [
     "for laboratory research use only",
     "not for human use or consumption",
@@ -37,7 +38,10 @@ def tokens(text: str) -> list[str]:
 def main() -> None:
     with SRC.open(newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
-    assert len(rows) == 150
+    assert len(rows) == 20, len(rows)
+    assert len({r["creation_id"] for r in rows}) == 20
+    assert len({r["compound_name"] for r in rows}) == 20
+    assert len({r["surface"] for r in rows}) == 20
     secs = []
     for r in rows:
         vo = r["voice_over"]
@@ -49,16 +53,28 @@ def main() -> None:
         for b in BANNED:
             assert b not in low, f"{cid} {b}"
         assert "palm beach pep" in low, cid
+        assert "i'm palm beach pep" in low or "im palm beach pep" in low, cid
         assert "studies have shown" in low, cid
         assert "beneficial to" in low, cid
         assert "recent research studies" in low, cid
         assert COA in vo, cid
         assert vo.index(COA) < vo.index(CTA), cid
+        assert r["duration_seconds"] == "30", cid
+        assert r["resolution"] == "1080p", cid
+        assert r["workflow"] == "vid_gen_palm_beach_pep", cid
+        assert "Palm Beach Pep" in r["scene_brief"], cid
         secs.append(n / 2.51)
-    ghk = next(x for x in rows if x["creation_id"] == "PEP-013")
+    first = rows[0]
+    with POOL.open(newline="", encoding="utf-8") as f:
+        pool = list(csv.DictReader(f))
+    by_id = {r["id"]: r for r in pool if r.get("type") == "body"}
+    for active in ("walking", "running", "dancing", "sports_ready", "hiking"):
+        assert by_id[active]["active"].upper() == "TRUE", active
+    for inactive in ("sitting", "standing", "stopping", "turning"):
+        assert by_id[inactive]["active"].upper() == "FALSE", inactive
     print("ok rows", len(rows))
     print("sec min", round(min(secs), 1), "max", round(max(secs), 1))
-    print("PEP-013", ghk["voice_over"])
+    print(first["creation_id"], first["voice_over"])
 
 
 if __name__ == "__main__":

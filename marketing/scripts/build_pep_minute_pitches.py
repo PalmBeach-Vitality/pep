@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
-"""Build easy science pitches: how it works + studies + COA + store CTA.
+"""OLD 150-row ~50s builder. Live 20×30s 1080p builder is build_20_pep_scenes.py.
 
-Measured Pep TTS rate: ~2.51 words/sec.
-OmniHuman talking clips cap at ~50s, so 116 words ≈ 46s and 125 words ≈ 50s.
-Last sentence: Visit us at palmbeach-vitality.store.
-COA line sits immediately before that CTA.
-No FDA / unique-set / laboratory-research-use-only.
+Kept for git history. Do not run this against the live sheet.
 """
 
 from __future__ import annotations

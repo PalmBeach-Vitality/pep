@@ -71,7 +71,7 @@ return [
     json: {
       creation_id: first.creation_id || clip.creation_id || '',
       beat_count: 1,
-      resolution: '720p',
+      resolution: '1080p',
       model_video: 'fal-omnihuman-v1.5',
       reel_still_url: stillFinal,
       reel_still_url_a: stillFinal,
@@ -79,7 +79,7 @@ return [
       lipsync_video_url: url,
       lipsync_video_url_a: url,
       stitch_clip_urls: [url],
-      stitch_note: 'One 50s talking clip. Same sheet pitch. Audio is already in the mp4.',
+      stitch_note: 'One 30s talking clip at 1080p. Same sheet pitch. Audio is already in the mp4.',
     },
   },
 ];

@@ -1,6 +1,6 @@
 # Pep n8n — FULL paste codes (no excerpts)
 
-Talking model is **OmniHuman v1.5** on `pep_lipsync_fal` (image + audio). Not sync-3. Not Kling. Resolution **720p** (55–60s audio). Unique scene + same easy wellness pitch every execution.
+**Stale dump.** Live talking is **one ~30s 1080p OmniHuman clip**. Paste from the live files, not this dump: `n8n-pep-prep-beats.js`, `n8n-pep-split-beats.js`, `n8n-pep-gather-clips.js`, `n8n-pep-prep-lipsync.js`. Canvas steps: `marketing/n8n-pep-60s-1080-execute.md`.
 
 Wire:
 ```text

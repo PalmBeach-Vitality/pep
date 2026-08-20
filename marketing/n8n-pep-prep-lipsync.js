@@ -58,10 +58,10 @@ const omniPrompt = omniFromBeats || [
   'Palm Beach Pep talks with the audio. Mouth on the white 10ml label moves with speech.',
   'EYES: keep the same two cartoon ovals from the still — same size, same round pupils, same catchlights, same lash state as the still from 00:00. Copy the still. Do not invent new lashes. Do not grow lashes after a blink. Eyes SHOULD blink, glance, and look around naturally while he talks. That is good. HARD FAIL: morphing the eye shape, warping or smearing pupils, crossing the eyes, growing human eyelids, or growing new lashes mid-clip. Lashes are OK only if they already exist on this still from the first second. If the still has no lashes, keep zero lashes the whole clip. Mid-clip lash grow-in is the fail.',
   'LABEL: keep the vial type exactly 10ml. Do not add a letter after the l. Do not change, smear, or animate the type.',
-  'If the still is mid-stride, WALK AND TALK AT THE SAME TIME — continue the walk, do not freeze standing. If the still is standing or sitting, talk in that pose.',
+  'If the still is mid-stride, WALK OR JOG AND TALK AT THE SAME TIME — continue the locomotion, do not freeze standing. If the still is dancing, keep grooving in place with planted sneakers. If the still is a sport pose, keep that sport motion while talking. If the still is standing or sitting, talk in that pose.',
   'Stay mid-ground, full body visible, same backdrop.',
-  'FEET: sneakers stay on the ground. Each walk step plants. HARD FAIL hover.',
-  'ARMS: walk swing at hip height if walking, otherwise relaxed near the hips. Tiny talk motion only.',
+  'FEET: sneakers stay on the ground. Each walk or jog step plants. Dance and sport stay planted. HARD FAIL hover.',
+  'ARMS: walk/jog swing at hip height if moving, dance groove or sport guard otherwise. Tiny talk motion only.',
   'HARD FAIL: mid-clip lash grow-in, warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting, waving, thumbs-up, hat-tip.',
   'Do not restyle Pep.',
 ].join(' ');
@@ -74,6 +74,6 @@ return {
   reel_still_url: imageUrl,
   tts_audio_url: audioUrl,
   omnihuman_prompt: omniPrompt,
-  omnihuman_resolution: '720p',
+  omnihuman_resolution: '1080p',
   fal_lipsync_endpoint: 'fal-ai/bytedance/omnihuman/v1.5',
 };

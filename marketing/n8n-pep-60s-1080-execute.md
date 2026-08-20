@@ -1,6 +1,6 @@
-# One 50s talking clip — nodes Sal must add or change
+# One 30s talking clip at 1080p — nodes Sal must add or change
 
-1080p audio cap is **30s**. This pitch is **~50–60s**, so `pep_lipsync_fal` Resolution must be **720p**. **One talking clip.** Pep **walks and talks** on walk and stand scenes. Sit / turn / stop follow that row. Sheet `voice_over`, lipsync, normal eyes. No extra scene cuts.
+VO is **~26–30s** (65–74 words), so `pep_lipsync_fal` Resolution is **1080p**. OmniHuman 1080p audio cap is **30s**. **One talking clip.** Pep **moves while talking** (walk, jog, dance, hike, sport). Sheet `voice_over`, lipsync, normal eyes. No extra scene cuts.
 
 Leave `(loop_pep_beats)` on the canvas. Split now emits **1 item**, so the loop runs once and then `done`.
 
@@ -29,7 +29,7 @@ if_complaince (true)
             → sheets_update_creation
 ```
 
-`pep_lipsync_fal` stays **720p**. Leave Kling disconnected.
+`pep_lipsync_fal` is **1080p**. Leave Kling disconnected.
 
 ---
 
@@ -37,7 +37,7 @@ if_complaince (true)
 
 Mode: **Run Once for Each Item**. Replace the JS with `marketing/n8n-pep-prep-beats.js`.
 
-OUTPUT must show `beat_items` (length **1**), `beat_count` **1**, `pep_body_action` (`walking` on walk and stand scenes), and `tts_text` = sheet pitch. Last sentence: `Visit us at palmbeach-vitality.store.` No FDA / unique-set / laboratory-research-use-only.
+OUTPUT must show `beat_items` (length **1**), `beat_count` **1**, `pep_body_action` (`walking` / `running` / `dancing` / `hiking` / `sports_ready`), and `tts_text` = sheet pitch. Last sentence: `Visit us at palmbeach-vitality.store.` No FDA / unique-set / laboratory-research-use-only.
 
 ---
 
@@ -74,7 +74,7 @@ With 1 item the loop fires once, then done. You will not see badges `1` `2` `3` 
 
 JSON Body fx **ON**. Delete any `{ "text": ... }` first. Paste `marketing/n8n-pep-tts-body.txt` as the **entire** field (`={{ JSON.stringify({` … `}) }}`). Do **not** wrap it in another `{ }`. Preview must be one JSON object whose `text` is the pitch.
 
-Request preview: intro + product + studies line + `Visit us at palmbeach-vitality.store.` ~146 words. Easy, upbeat, wellness. `text` is `tts_speak` (pronunciation map). Semaglutide must read as `SEM-uh-GLOO-tide`.
+Request preview: hook + product + studies line + COA + `Visit us at palmbeach-vitality.store.` **65–74 words**. Easy, educational. `text` is `tts_speak` (pronunciation map). Semaglutide must read as `SEM-uh-GLOO-tide`.
 
 ---
 
@@ -168,15 +168,15 @@ Wire: `loop_pep_beats` (**done**) → `gather_pep_clips` → `sheets_update_crea
 
 ---
 
-## 11. CHANGE `pep_lipsync_fal` Resolution to `720p`
+## 11. CHANGE `pep_lipsync_fal` Resolution to `1080p`
 
-1080p audio max is **30s**. This VO is **~50–60s**. Resolution **must** be **720p** or fal 422s.
+VO is **~26–30s**. 1080p audio max is **30s**. Resolution **must** be **1080p**.
 
 | # | Parameter Name or ID dropdown (fx OFF) | Value fx | Value |
 |---|---|---|---|
 | 1 | **Image [string]** (`image_url`) | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
 | 2 | **Audio [string]** (`audio_url`) | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
-| 3 | **Resolution** (`resolution`) | OFF | `720p` |
+| 3 | **Resolution** (`resolution`) | OFF | `1080p` |
 | 4 | **Prompt [string]** (`prompt`) | **ON** | `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}` |
 
 | Parameter | fx | Value |
@@ -209,4 +209,4 @@ This is **one** talking mp4. Audio is already in the file. No concat. No extra V
 
 **NEVER PIN:** `grok_imagine_reel_still`, `tts_pep_voice_over`, `pep_lipsync_fal`
 
-One Test workflow = 1 still + 1 TTS + 1 OmniHuman **720p**. QC still first: same lash state as master from frame one, type exactly `10ml`.
+One Test workflow = 1 still + 1 TTS + 1 OmniHuman **1080p**. QC still first: same lash state as master from frame one, type exactly `10ml`.

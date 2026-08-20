@@ -3,9 +3,7 @@
 ## Goal
 For each scene cut: **ElevenLabs VO → OmniHuman talking clip → final MP4**.
 
-One workflow: `(split_pep_beats)` runs the talking chain **twice** (two scene cuts, unique pose each) → `gather_pep_clips`.
-These are **separate scenes**, not one smooth 60s blend. Hard cut if you concat.
-Spoken VO is **intro + product only** on **every** clip. Last sentence always: `Visit us at palmbeach-vitality.store.` No compliance/disclaimer.
+**Stale in places.** Live path is **one 30s 1080p talking clip**. Do **not** concat two cuts. Spoken VO is hook + easy science + studies + COA + `Visit us at palmbeach-vitality.store.` (~65–74 words).
 
 ## Order (locked)
 1. `tts_pep_voice_over` (ElevenLabs) → fal CDN `file_url` on `fal_upload_tts_initiate`
@@ -13,8 +11,8 @@ Spoken VO is **intro + product only** on **every** clip. Last sentence always: `
 3. fal OmniHuman v1.5 (`pep_lipsync_fal`) → `lipsync_video_url`
 
 ## Node: `tts_pep_voice_over` (ElevenLabs — preferred)
-**Per-scene text:** the **same** easy wellness pitch on all four `(split_pep_beats)` items (~146 words, 55–60s). Last sentence: `Visit us at palmbeach-vitality.store.`
-Do **not** send this into 1080p OmniHuman — use **720p**.
+**Per-scene text:** the same easy educational pitch (~65–74 words, ~30s). Last sentence: `Visit us at palmbeach-vitality.store.`
+Send this into **1080p** OmniHuman (audio must stay ≤30s).
 Do **not** speak FDA / not-for-human-use / laboratory-research-use-only.
 
 ### ElevenLabs TTS (HTTP Request) — locked for Pep

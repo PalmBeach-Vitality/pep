@@ -4,10 +4,9 @@
 // Uses: Prep_day_variant → Limit (EXACT names)
 // Mode: Run Once for Each Item
 // Do NOT return [{ json: ... }]
-// ONE talking clip. Walk-and-talk (default) or stand/sit from the scene row.
-// Same ~50s sheet pitch, 720p OmniHuman.
-// Easy science pitch: how this peptide works + studies line + COA line + store CTA.
-// OmniHuman caps near 50s. No extra scene cuts.
+// ONE talking clip. Action first: walk, jog, dance, hike, or sport — not freeze-standing.
+// Same ~30s sheet pitch, 1080p OmniHuman (30s audio cap).
+// Hook first, then easy science + studies line + COA line + store CTA.
 
 function nodeJson(name) {
   try {
@@ -121,8 +120,8 @@ function extractProductPitch(raw) {
     throw new Error('Product pitch must include the COA line before the store CTA: Palm Beach Vitality research peptides are backed by a COA with every single order, American made delivering >99% purity 100% of the time.');
   }
   const n = wordsOf(t).length;
-  if (n < 112 || n > 125) {
-    throw new Error(`Spoken VO is ${n} words (~${(n / 2.51).toFixed(1)}s). Need 112–125 words (~45–50s at Pep TTS rate). Re-import 150-pb-pep-scenes.`);
+  if (n < 65 || n > 74) {
+    throw new Error(`Spoken VO is ${n} words (~${(n / 2.51).toFixed(1)}s). Need 65–74 words (~26–29.5s at Pep TTS rate) so 1080p OmniHuman does not 422. Re-import 150-pb-pep-scenes.`);
   }
   return t;
 }
@@ -265,6 +264,30 @@ const BODY_ACTIONS = [
     brief: 'walking mid-stride toward camera, sneakers on the ground',
   },
   {
+    id: 'running',
+    still: 'POSE: JOGGING toward camera, slight 3/4. Mid-stride, one sneaker forward, one back. BOTH sneakers touching the ground with contact shadows. Athletic lean. Mouth open. HARD FAIL hover. Not thumbs-up.',
+    motion: 'jog toward camera, each step plants hard, talking the whole time',
+    brief: 'jogging toward camera, sneakers on the ground',
+  },
+  {
+    id: 'dancing',
+    still: 'POSE: DANCING two-step / groove in place, slight 3/4. Knees soft, hat brim alive, BOTH sneakers planted on the set with contact shadows. Mouth open mid-word. HARD FAIL hover, moonwalk, floating. Not thumbs-up.',
+    motion: 'groove and two-step in place while talking, sneakers stay planted, hat brim bounces',
+    brief: 'dancing in place, sneakers planted',
+  },
+  {
+    id: 'sports_ready',
+    still: 'POSE: athletic SPORTS stance for this set (boxer shuffle, bike pedals, turf bounce, kettlebell aisle coach). BOTH sneakers contact the set. Full body. Mouth open. HARD FAIL hover. Not master thumbs-up. Gloves not a salute.',
+    motion: 'keep the sport motion of this set while talking: shuffle, pedal, or planted athletic bounce. Sneakers stay on the set',
+    brief: 'sports motion on this set while talking',
+  },
+  {
+    id: 'hiking',
+    still: 'POSE: HIKING mid-stride on trail dirt or rock, slight 3/4 toward camera. One sneaker forward uphill. BOTH sneakers on the ground with contact shadows. Mouth open. HARD FAIL hover.',
+    motion: 'hike toward camera, planted trail steps, talking the whole time',
+    brief: 'hiking toward camera',
+  },
+  {
     id: 'sitting',
     still: 'POSE: SITTING on a set-appropriate perch in this environment (bench, rock, dock edge, stool). Seat and sneakers contact the set. Full body visible. Talking. Not the master thumbs-up freeze. HARD FAIL: hovering.',
     motion: 'stay seated on the perch, sneakers on the set, shift weight, talk',
@@ -331,6 +354,16 @@ const GESTURES = [
     still: 'HANDS: one glove taps or frames the 10ml label. Other glove down. NO thumbs-up.',
     motion: 'glance at the 10ml label and tap it once, keep talking',
   },
+  {
+    id: 'dance_groove',
+    still: 'HANDS: white gloves groove at hip-to-chest height, small musical bounce. Not above the brim. NO thumbs-up. NO salute.',
+    motion: 'gloves groove with the dance, stay close to the body',
+  },
+  {
+    id: 'sport_guard',
+    still: 'HANDS: athletic guard at chest, or on handlebars/hips for the sport. Never a thumbs-up. Never a high wave.',
+    motion: 'keep a compact sport guard while talking',
+  },
 ];
 
 const ANGLES = [
@@ -350,11 +383,19 @@ const bodyPool = sheetBodies.length ? sheetBodies : BODY_ACTIONS;
 const gesturePool = sheetGestures.length ? sheetGestures : GESTURES;
 
 function bodyById(pool, id) {
-  return pool.find((b) => String(b.id).toLowerCase() === id) || BODY_ACTIONS.find((b) => b.id === id);
+  const hit = pool.find((b) => String(b.id).toLowerCase() === id);
+  if (hit) return hit;
+  const activeSocial = ['walking', 'running', 'dancing', 'sports_ready', 'hiking'];
+  if (!activeSocial.includes(id)) return undefined;
+  return BODY_ACTIONS.find((b) => b.id === id);
 }
 
 function gestureById(pool, id) {
-  return pool.find((g) => String(g.id).toLowerCase() === id) || GESTURES.find((g) => g.id === id);
+  const hit = pool.find((g) => String(g.id).toLowerCase() === id);
+  if (hit) return hit;
+  const activeSocial = ['walk_swing', 'dance_groove', 'sport_guard', 'hip_rest', 'palms_out', 'label_glance'];
+  if (!activeSocial.includes(id)) return undefined;
+  return GESTURES.find((g) => g.id === id);
 }
 
 function sceneMotionHint() {
@@ -372,25 +413,27 @@ function sceneMotionHint() {
 function pickTalkBody(pool) {
   const hint = sceneMotionHint();
   const walking = bodyById(pool, 'walking');
-  const standing = bodyById(pool, 'standing');
-  const sitting = bodyById(pool, 'sitting');
-  const stopping = bodyById(pool, 'stopping');
-  const turning = bodyById(pool, 'turning');
-  const pep = hint.match(/\bpep\s+(walks|walking|stands|standing|sits|sitting|turns|turning|stops|stopping)\b/);
+  const running = bodyById(pool, 'running');
+  const dancing = bodyById(pool, 'dancing');
+  const sports = bodyById(pool, 'sports_ready');
+  const hiking = bodyById(pool, 'hiking');
+  const pep = hint.match(/\bpep\s+(walks|walking|jogs|jogging|runs|running|dances|dancing|hikes|hiking|pedals|pedaling|boxes|boxing|trains|training|stands|standing|sits|sitting|turns|turning|stops|stopping)\b/);
   if (pep) {
     const v = pep[1];
     if (/walk/.test(v) && walking) return walking;
-    if (/sit/.test(v) && sitting) return sitting;
-    if (/stand/.test(v) && walking) return walking; // stand rows walk-and-talk; do not freeze
-    if (/turn/.test(v) && turning) return turning;
-    if (/stop/.test(v) && (stopping || walking)) return stopping || walking;
+    if (/jog|run/.test(v) && running) return running;
+    if (/danc/.test(v) && dancing) return dancing;
+    if (/hike/.test(v) && hiking) return hiking;
+    if (/pedal|box|train/.test(v) && sports) return sports;
+    if (/sit|stand|turn|stop/.test(v) && walking) return walking; // freeze poses remap to walk
   }
-  if (/\bsit(?:s|ting)?\b|\bseated\b/.test(hint) && sitting) return sitting;
+  if (/\bdanc(?:e|es|ing)|groove|two-step\b/.test(hint) && dancing) return dancing;
+  if (/\b(?:jog|jogs|jogging|run|runs|running|sprint)\b/.test(hint) && running) return running;
+  if (/\bhike|hiking|trail\b/.test(hint) && hiking) return hiking;
+  if (/\b(?:pedal|bike|box(?:es|ing)?|shuffle|assault|kettlebell|battle.?rope|spin)\b/.test(hint) && sports) return sports;
   if (/\bwalk(?:s|ing)?\b|\bstroll\b/.test(hint) && walking) return walking;
-  if (/\bstops?\b|\bstopping\b/.test(hint) && (stopping || walking)) return stopping || walking;
-  if (/\bturns?\b|\bturning\b/.test(hint) && turning) return turning;
-  if (/\bstand(?:s|ing)?\b/.test(hint) && walking) return walking;
-  return walking || standing;
+  if (/\bsit(?:s|ting)?\b|\bseated\b/.test(hint) && walking) return walking;
+  return walking || running || dancing || sports || hiking;
 }
 
 function bodyId(body) {
@@ -401,12 +444,34 @@ function isWalkingBody(body) {
   return bodyId(body) === 'walking';
 }
 
+function isJogBody(body) {
+  return bodyId(body) === 'running';
+}
+
+function isHikeBody(body) {
+  return bodyId(body) === 'hiking';
+}
+
+function isDanceBody(body) {
+  return bodyId(body) === 'dancing';
+}
+
+function isSportBody(body) {
+  return bodyId(body) === 'sports_ready';
+}
+
 function isLocomotionBody(body) {
   const id = bodyId(body);
-  return id === 'walking' || id === 'stopping' || id === 'turning';
+  return id === 'walking' || id === 'running' || id === 'hiking' || id === 'stopping' || id === 'turning';
 }
 
 function pickTalkGesture(body, pool) {
+  if (isDanceBody(body)) {
+    return gestureById(pool, 'dance_groove') || pickUnique(pool, 1)[0];
+  }
+  if (isSportBody(body)) {
+    return gestureById(pool, 'sport_guard') || pickUnique(pool, 1)[0];
+  }
   if (isLocomotionBody(body)) {
     return gestureById(pool, 'walk_swing') || pickUnique(pool, 1)[0];
   }
@@ -450,12 +515,20 @@ const setText = cleanSetText(surface, sceneBrief);
 function packBlocking(body, gesture, angleRow) {
   const angle = angleText(angleRow);
   const walking = isWalkingBody(body);
+  const jogging = isJogBody(body);
+  const hiking = isHikeBody(body);
+  const dancing = isDanceBody(body);
+  const sporting = isSportBody(body);
   const locomotion = isLocomotionBody(body);
   const sitting = /sit/i.test(String(body.id || ''));
-  const handsStill = locomotion
-    ? 'HANDS: both white gloves in a natural walk swing at hip height. Neither glove raised. NO thumbs-up. NO pointing. NO counting.'
-    : 'HANDS: white gloves relaxed near the hips or hanging naturally. No pointing, no counting, no waving.';
-  const feetStill = walking
+  const handsStill = dancing
+    ? 'HANDS: white gloves groove at hip height. Neither glove above the brim. NO thumbs-up. NO pointing. NO counting.'
+    : sporting
+      ? 'HANDS: compact sport guard at chest or on handlebars/hips. NO thumbs-up. NO pointing. NO counting. NO salute.'
+      : locomotion
+        ? 'HANDS: both white gloves in a natural walk or jog swing at hip height. Neither glove raised. NO thumbs-up. NO pointing. NO counting.'
+        : 'HANDS: white gloves relaxed near the hips or hanging naturally. No pointing, no counting, no waving.';
+  const feetStill = locomotion
     ? 'FEET: mid-stride. One sneaker forward, one back. BOTH sneakers touching the ground of this set with contact shadows. HARD FAIL hover.'
     : 'FEET: both white sneakers firmly on the ground of this set. Contact shadows. HARD FAIL hover.';
   const poseStill = [
@@ -467,9 +540,17 @@ function packBlocking(body, gesture, angleRow) {
   ].join(' ');
   const poseMotion = walking
     ? `${body.motion}; WALK AND TALK at the same time; gloves swing at hip height; each step plants; ${angle}; talking mouth the whole clip`
-    : locomotion
-      ? `${body.motion}; keep talking; gloves at hip height; sneakers on the ground; ${angle}; talking mouth the whole clip`
-      : `${body.motion}; relaxed gloves near the hips; sneakers stay on the ground; ${angle}; talking mouth the whole clip`;
+    : jogging
+      ? `${body.motion}; JOG AND TALK at the same time; gloves swing; each step plants; ${angle}; talking mouth the whole clip`
+      : hiking
+        ? `${body.motion}; HIKE AND TALK at the same time; planted trail steps; ${angle}; talking mouth the whole clip`
+        : dancing
+          ? `${body.motion}; DANCE AND TALK at the same time; sneakers stay planted; hat brim bounces; ${angle}; talking mouth the whole clip`
+          : sporting
+            ? `${body.motion}; keep the sport motion AND TALK; sneakers on the set; ${angle}; talking mouth the whole clip`
+            : locomotion
+              ? `${body.motion}; keep talking; gloves at hip height; sneakers on the ground; ${angle}; talking mouth the whole clip`
+              : `${body.motion}; relaxed gloves near the hips; sneakers stay on the ground; ${angle}; talking mouth the whole clip`;
   const eyeLock = 'EYES: keep the same two cartoon ovals from the still — same size, same round pupils, same catchlights, same lash state as the still from 00:00. Copy the still. Do not invent new lashes. Do not grow lashes after a blink. Eyes SHOULD blink, glance, and look around naturally while he talks. That is good. HARD FAIL: morphing the eye shape, warping or smearing pupils, crossing the eyes, growing human eyelids, or growing new lashes mid-clip. Lashes are OK only if they already exist on this still from the first second. If the still has no lashes, keep zero lashes the whole clip. Mid-clip lash grow-in is the fail.';
   const labelLock = 'LABEL: keep the vial type exactly 10ml. Do not add a letter after the l. Do not change, smear, or animate the type.';
   const omniWalk = [
@@ -481,6 +562,54 @@ function packBlocking(body, gesture, angleRow) {
     setText + '.',
     'LEGS: continuous walk cycle. Each sneaker plants on the ground with a contact shadow. HARD FAIL: hovering, floating, sliding, moonwalk, walking on air, standing still the whole clip.',
     'ARMS: natural walk swing at hip height, close to the body. Tiny talk motion only. No raised gloves.',
+    'HARD FAIL: standing frozen, mid-clip lash grow-in, warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting fingers, waving, salutes, T-pose, thumbs-up, hat-tip.',
+    'Do not change the backdrop. Do not restyle Pep.',
+  ];
+  const omniJog = [
+    'ANIMATE THIS STILL ONLY. The input image is already the correct Pep. Do not redesign the face, eyes, label, hat, or body.',
+    'JOG AND TALK AT THE SAME TIME. Palm Beach Pep keeps jogging while the mouth on the white 10ml label talks with the audio. Do not freeze standing. Continue the jog from the mid-stride still for the whole clip.',
+    eyeLock,
+    labelLock,
+    'Stay mid-ground, full body visible. Easy jog through this exact set. Do not run out of frame. Camera holds. Keep the same Pep scale.',
+    setText + '.',
+    'LEGS: continuous jog cycle. Each sneaker plants on the ground with a contact shadow. HARD FAIL: hovering, floating, sliding, moonwalk, walking on air, standing still the whole clip.',
+    'ARMS: natural jog swing at hip height, close to the body. Tiny talk motion only. No raised gloves.',
+    'HARD FAIL: standing frozen, mid-clip lash grow-in, warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting fingers, waving, salutes, T-pose, thumbs-up, hat-tip.',
+    'Do not change the backdrop. Do not restyle Pep.',
+  ];
+  const omniHike = [
+    'ANIMATE THIS STILL ONLY. The input image is already the correct Pep. Do not redesign the face, eyes, label, hat, or body.',
+    'HIKE AND TALK AT THE SAME TIME. Palm Beach Pep keeps hiking while the mouth on the white 10ml label talks with the audio. Do not freeze standing. Continue the hike from the still.',
+    eyeLock,
+    labelLock,
+    'Stay mid-ground, full body visible. Planted trail steps through this exact set. Do not walk out of frame. Camera holds.',
+    setText + '.',
+    'LEGS: hiking steps. Each sneaker plants on dirt or rock with a contact shadow. HARD FAIL: hovering, floating, sliding, moonwalk, standing still the whole clip.',
+    'ARMS: natural hike swing at hip height. No raised gloves.',
+    'HARD FAIL: standing frozen, mid-clip lash grow-in, warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting fingers, waving, salutes, T-pose, thumbs-up, hat-tip.',
+    'Do not change the backdrop. Do not restyle Pep.',
+  ];
+  const omniDance = [
+    'ANIMATE THIS STILL ONLY. The input image is already the correct Pep. Do not redesign the face, eyes, label, hat, or body.',
+    'DANCE AND TALK AT THE SAME TIME. Palm Beach Pep grooves / two-steps in place while the mouth on the white 10ml label talks with the audio. Hat brim can bounce. Do not freeze standing. Do not moonwalk. Do not float.',
+    eyeLock,
+    labelLock,
+    'Stay mid-ground, full body visible. Groove in this exact set. Do not dance out of frame. Camera holds. Keep the same Pep scale.',
+    setText + '.',
+    'FEET: both sneakers stay planted on the set with contact shadows while the knees and hips groove. HARD FAIL: hovering, floating, sliding, moonwalk, standing frozen the whole clip.',
+    'ARMS: groove at hip height, close to the body. Tiny talk motion only. No raised gloves. No salute.',
+    'HARD FAIL: standing frozen, mid-clip lash grow-in, warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting fingers, waving, salutes, T-pose, thumbs-up, hat-tip.',
+    'Do not change the backdrop. Do not restyle Pep.',
+  ];
+  const omniSport = [
+    'ANIMATE THIS STILL ONLY. The input image is already the correct Pep. Do not redesign the face, eyes, label, hat, or body.',
+    'KEEP THE SPORT MOTION AND TALK AT THE SAME TIME. Palm Beach Pep keeps this set\'s athletic motion (shuffle, pedal, or planted bounce) while the mouth on the white 10ml label talks with the audio. Do not freeze standing.',
+    eyeLock,
+    labelLock,
+    'Stay mid-ground, full body visible. Stay in this exact set:',
+    setText + '.',
+    'FEET: sneakers stay in contact with the set — pedals, canvas, turf, or floor. HARD FAIL: hovering, floating, sliding, moonwalk, standing frozen the whole clip.',
+    'ARMS: compact sport guard or handlebars/hips. Tiny talk motion only. No raised gloves. No salute.',
     'HARD FAIL: standing frozen, mid-clip lash grow-in, warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting fingers, waving, salutes, T-pose, thumbs-up, hat-tip.',
     'Do not change the backdrop. Do not restyle Pep.',
   ];
@@ -514,7 +643,15 @@ function packBlocking(body, gesture, angleRow) {
     'HARD FAIL: mid-clip lash grow-in, warped eyes, 10mlz, extra label letters, wild arm swings, rubber-band limbs, pointing, counting fingers, waving, salutes, T-pose, thumbs-up, hat-tip.',
     'Do not change the backdrop. Do not restyle Pep.',
   ];
-  const omnihuman_prompt = (walking ? omniWalk : locomotion ? omniMove : omniStand).join(' ');
+  const omnihuman_prompt = (
+    walking ? omniWalk
+      : jogging ? omniJog
+        : hiking ? omniHike
+          : dancing ? omniDance
+            : sporting ? omniSport
+              : locomotion ? omniMove
+                : omniStand
+  ).join(' ');
   return { body, gesture, angle, poseStill, poseMotion, omnihuman_prompt };
 }
 
@@ -526,7 +663,7 @@ const poseStill = packs[0].poseStill;
 const poseMotion = packs[0].poseMotion;
 
 const beatMeta = {
-  a: { name: 'talking', window: 'one 50s clip', extra: `${body.id} while talking; ${motion}; preserve Pep identity; no thumbs-up; no new text; no mid-clip lash grow-in` },
+  a: { name: 'talking', window: 'one 30s clip', extra: `${body.id} while talking; ${motion}; preserve Pep identity; no thumbs-up; no new text; no mid-clip lash grow-in` },
 };
 
 const beats = {};
@@ -570,7 +707,7 @@ return {
   compound_id: compoundId,
   compound_name: compound,
   pep_ref_url: pepRefUrl,
-  target_duration_seconds: 60,
+  target_duration_seconds: 30,
   beat_count: 1,
   pep_body_action: body.id,
   pep_hand_gesture: gesture.id,
@@ -594,7 +731,7 @@ return {
   scene_brief: sceneBrief,
   set_text: setText,
   aspect_ratio: '9:16',
-  resolution: '720p',
+  resolution: '1080p',
   model_still: 'grok-imagine-image',
   model_video: 'fal-omnihuman-v1.5',
 };

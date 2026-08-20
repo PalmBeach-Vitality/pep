@@ -18,7 +18,7 @@ You are helping **Salvatore (Sal)**, Designer at Palm Beach Vitality. Fewest ste
 | Workflow (keep separate) | `vid_gen_palm_beach_pep` |
 | Do **not** merge into | `vid_gen_landscape_scenes`, vial/lab, `custom_vid_gen1.5-idea-to-video-pbv-log` |
 | Aspect | **9:16** always |
-| Cadence | **Once weekly.** One talking clip per week is the intended cost. |
+| Cadence | **20 unique 30s clips to start.** One talking clip per Test workflow. |
 
 **Product:** Palm Beach Pep = anthropomorphic **10mL crimp-seal glass vial** mascot.
 
@@ -37,7 +37,7 @@ Stills: Grok **EDIT only** `POST https://api.x.ai/v1/images/edits`. **Never** `/
 - This handoff
 - `marketing/AGENT_RULEBOOK.md`
 - `marketing/n8n-pep-60s-1080-execute.md`
-- `marketing/n8n-pep-prep-beats.js` (1 beat, walk-and-talk)
+- `marketing/n8n-pep-prep-beats.js` (1 beat, move-and-talk: walk / jog / dance / hike / sport)
 - `marketing/n8n-pep-split-beats.js` (1 item)
 - `marketing/n8n-pep-gather-clips.js` (plain Code, 1 clip)
 - `marketing/n8n-pep-prep-lipsync.js`
@@ -46,13 +46,13 @@ Stills: Grok **EDIT only** `POST https://api.x.ai/v1/images/edits`. **Never** `/
 - `marketing/n8n-pep-character-lock.md` (eyes / 10ml / master)
 - `marketing/n8n-pep-pronunciation.md`
 
-**Stale in places (do not follow 2-cut / 1080p talking):**
+**Stale in places (do not follow 2-cut / 50s 720p talking):**
 
-- `marketing/n8n-vid-gen-palm-beach-pep-weekly-plan.md` still says **two ~30s 1080p cuts**
-- Parts of `marketing/n8n-vid-gen-palm-beach-pep-execute.md` still say 2 `beat_items` and OmniHuman **1080p**
+- `marketing/n8n-vid-gen-palm-beach-pep-weekly-plan.md` still says **two** ~30s cuts
+- Parts of `marketing/n8n-vid-gen-palm-beach-pep-execute.md` still say 2 `beat_items` / 50s talking
 - `marketing/n8n-pep-save-outputs.txt` still mentions Kling `video_url` / 4 beats
 
-Locked talking path is **one ~50s 720p OmniHuman clip**. Loop stays on the canvas. Split emits **1 item**. Loop runs once, then `done`.
+Locked talking path is **one ~30s 1080p OmniHuman clip**. Loop stays on the canvas. Split emits **1 item**. Loop runs once, then `done`. Tab `150-pb-pep-scenes` still has that name; it now holds **20 rows**.
 
 ---
 
@@ -133,35 +133,40 @@ Also delete matching fields on `Prep_day_variant` if they still exist.
 
 `Prep_day_variant`: **Include Other Input Fields ON**. Must pass `voice_over` through. Missing `voice_over` was a real fail.
 
-### Scene briefs (150 rows, 30 each)
+### Scene briefs (20 rows)
 
-`Palm Beach Pep walks|sits|stands|stops mid-stride|turns toward camera` mid-ground + unique `surface`.
+`Palm Beach Pep walks|jogs|dances|hikes|pedals|boxes|trains` mid-ground + unique `surface`. Action in `scene_brief`. Standing / sitting / stopping / turning are **inactive**.
 
 `prep_pep_beats` body pick:
 
 | Scene verb | `pep_body_action` | OmniHuman |
 |---|---|---|
 | walks | `walking` | **WALK AND TALK** the whole clip |
-| stands | **`walking`** (stand freeze remapped) | **WALK AND TALK** |
-| sits | `sitting` | sit and talk |
-| stops | `stopping` | two planted steps then talk |
-| turns | `turning` | turn while talking |
+| jogs | `running` | **JOG AND TALK** |
+| dances | `dancing` | **DANCE AND TALK** (planted sneakers) |
+| hikes | `hiking` | **HIKE AND TALK** |
+| pedals / boxes / trains | `sports_ready` | **SPORT MOTION AND TALK** |
+| stands / sits / stops / turns | **`walking`** (freeze remapped) | **WALK AND TALK** |
 | unmatched | `walking` | walk and talk |
 
-Walk / stop / turn gloves = `walk_swing` at hip height. Sit = `hip_rest`. No pointing / counting / waving (those made OmniHuman arms weird).
+Walk / jog / hike gloves = `walk_swing`. Dance = `dance_groove`. Sport = `sport_guard`. No pointing / counting / waving (those made OmniHuman arms weird).
 
 ---
 
 ## Spoken VO (locked)
 
-Spoken lines come **only** from `150-pb-pep-scenes.voice_over`. Easy science pitch:
+Spoken lines come **only** from `150-pb-pep-scenes.voice_over`. **20 unique clips.** Easy science, hook first:
 
-1. Pep intro + how **this** peptide works
+1. Hook + Pep intro + how **this** peptide works
 2. Required: `Studies have shown X has been beneficial to X in recent research studies.`
 3. Immediately before last sentence: `Palm Beach Vitality research peptides are backed by a COA with every single order, American made delivering >99% purity 100% of the time.`
 4. Last sentence exactly: `Visit us at palmbeach-vitality.store.`
 
-Word count **112–125** (~45–50s at ~2.51 wps). OmniHuman truncates audio longer than ~50s at 720p (1080p cap is 30s — that is why talking is **720p**).
+Word count **65–74** (~26–29.5s at ~2.51 wps). OmniHuman **1080p** audio cap is **30s**. Longer audio 422s at 1080p.
+
+Sal reviews scripts in `marketing/n8n-pep-20-vo-review.md` before treating them as final.
+
+Builder: `marketing/scripts/build_20_pep_scenes.py`.
 
 **Never speak:** FDA, unique-set, laboratory-research-use-only, not for human use. Those stay on **captions** (`caption_lock` / `grok_api`).
 
@@ -179,7 +184,7 @@ https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-s
 
 Must start `={{ JSON.stringify({`. Do **not** wrap in another `{ }`. A leftover `={{` inside a JSON object caused `Unexpected token '='`.
 
-Builder: `marketing/scripts/build_pep_minute_pitches.py`.
+Builder: `marketing/scripts/build_20_pep_scenes.py` (live 20×30s). `marketing/scripts/build_pep_minute_pitches.py` is the old 150-row 50s builder.
 
 ---
 
@@ -219,12 +224,12 @@ If the still is clean and the mp4 grows lashes or warps eyes → remint **`pep_l
 - Model: `fal-ai/bytedance/omnihuman/v1.5` on `pep_lipsync_fal`
 - Image: `={{ $('save_still_url').item.json.reel_still_url }}` (xAI URL, not Catbox)
 - Audio: `={{ $('fal_upload_tts_initiate').item.json.file_url }}` (not Catbox; fal cannot fetch `files.catbox.moe`)
-- Resolution: **`720p`** (not 1080p)
+- Resolution: **`1080p`** (VO must stay ≤30s)
 - Prompt: `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}` — a JS **string**. Do **not** use `$json.omnihuman_prompt` (undefined on this fal node)
 - Exactly **4** parameters. No fifth. Do not send `video_url` (that is sync-3 / Kling lipsync)
 - Wait for Completion **ON**. Poll **5s**. Max Wait **`1200`**
-- Walk prompts must say **WALK AND TALK AT THE SAME TIME**. Do not “hold the still pose” on walk rows. Stay mid-ground. Do not walk out of frame. Each step plants.
-- Cost: **$0.16 / second** ≈ **$8 per ~50s clip**. Stills are ~$0.05–$0.10. Sal is fine with weekly OmniHuman cost. Do not remint a published pass.
+- Motion prompts must say **WALK / JOG / DANCE / HIKE / SPORT AND TALK**. Do not “hold the still pose”. Stay mid-ground. Do not walk out of frame. Each step plants. Dance/sport sneakers stay planted.
+- Cost: **$0.16 / second** ≈ **$4.80 per 30s 1080p clip**. Stills are ~$0.05–$0.10. Do not remint a published pass.
 
 fal usage charts default **UTC**. Eastern in August is EDT (UTC−4). No account timezone setting.
 
@@ -328,7 +333,7 @@ Captions + compliance **only**. Do not send talking-path still/VO through a fals
 |---|---|---|---|
 | 1 | **Image [string]** (`image_url`) | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
 | 2 | **Audio [string]** (`audio_url`) | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
-| 3 | **Resolution** (`resolution`) | OFF | `720p` |
+| 3 | **Resolution** (`resolution`) | OFF | `1080p` |
 | 4 | **Prompt [string]** (`prompt`) | ON | `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}` |
 
 If n8n errors `No path back to node` on `$('save_still_url')`, fall back to `$json.lipsync_image_in` / `$json.lipsync_audio_in` from `prep_pep_lipsync`.
@@ -379,7 +384,7 @@ Live names you must not invent replacements for: `if_complaince`, `ai_vid_genera
 - Still: `https://imgen.x.ai/xai-imgen/xai-tmp-imgen-acf05663-98d2-979f-b566-4422d1ad57c5-bb649ec0.jpeg`
 - Video: `https://v3b.fal.media/files/b/0aa66471/DYEnhEHwuvDXj9I4QTfjS_video.mp4`
 
-Next weekly product run: UNPIN stills, mint a **walk** still for that row’s `surface`, QC, then OmniHuman. One Test workflow = 1 still + 1 TTS + 1 OmniHuman 720p.
+Next product run: UNPIN stills, mint a **motion** still for that row’s `surface` (walk / jog / dance / hike / sport), QC, then OmniHuman. One Test workflow = 1 still + 1 TTS + 1 OmniHuman **1080p**.
 
 ---
 
@@ -395,7 +400,8 @@ Tell Sal immediately when new Imagine models hit the API.
 
 ## Tests
 
-`node marketing/scripts/test_pep_60s_nodes.js` — syntax + contracts for one 50s talking clip (walk-and-talk strings, 720p, gather 1 clip, TTS `tts_speak`).
+`node marketing/scripts/test_pep_60s_nodes.js` — syntax + contracts for one 30s 1080p talking clip (action bodies, 1080p, gather 1 clip, TTS `tts_speak`).
+`python3 marketing/scripts/test_pep_60s_split.py` — 20 rows, 65–74 words, unique sets.
 
 ---
 
@@ -404,13 +410,14 @@ Tell Sal immediately when new Imagine models hit the API.
 | File | Use |
 |---|---|
 | `marketing/AGENT_RULEBOOK.md` | Always-on Sal rules |
-| `marketing/n8n-pep-60s-1080-execute.md` | Canvas paste order for the 50s 720p path |
+| `marketing/n8n-pep-60s-1080-execute.md` | Canvas paste order for the 30s 1080p path |
 | `marketing/n8n-pep-lipsync-setup.md` | fal upload + OmniHuman node params |
 | `marketing/n8n-pep-character-lock.md` | Master / edits / QC |
 | `marketing/n8n-pep-pronunciation.md` | Spoken names |
 | `marketing/n8n-pep-stitch-notes.md` | Do not dissolve A+B into one 60s film (legacy; current path is one clip) |
-| `marketing/n8n-pep-omnihuman-keeper.txt` | Older keeper clip notes (resolution in that file may say 1080p — live talking is 720p) |
-| `marketing/scripts/build_pep_minute_pitches.py` | Rebuild all 150 VOs |
+| `marketing/n8n-pep-omnihuman-keeper.txt` | Older keeper clip notes |
+| `marketing/scripts/build_20_pep_scenes.py` | Rebuild the 20 VOs / sets / blocking pool |
+| `marketing/n8n-pep-20-vo-review.md` | Sal’s VO review list |
 | `marketing/n8n-node-reference.md` | Prefer official nodes over HTTP |
 
 ---
@@ -419,8 +426,8 @@ Tell Sal immediately when new Imagine models hit the API.
 
 1. Confirm n8n MCP tools are actually present.
 2. Open workflow **`vid_gen_palm_beach_pep`**. Do not rename nodes.
-3. If Sal has not pasted walk-and-talk yet: paste `prep_pep_beats`, grok still body lock, `prep_pep_lipsync` (select all, delete, paste).
-4. UNPIN `grok_imagine_reel_still`, `save_still_url`, `tts_pep_voice_over`, `pep_lipsync_fal` for a new weekly walk clip.
+3. If Sal has not pasted the 30s/1080p motion path yet: paste `prep_pep_beats`, grok still body lock, `prep_pep_lipsync`, `split_pep_beats`, `gather_pep_clips` (select all, delete, paste). Set `pep_lipsync_fal` Resolution to **`1080p`**.
+4. UNPIN `grok_imagine_reel_still`, `save_still_url`, `tts_pep_voice_over`, `pep_lipsync_fal` for a new motion clip.
 5. Do **not** remint the boardwalk pass.
-6. QC still vs master before OmniHuman: `10ml`, no lashes unless on master, planted sneakers, mid-stride if walking, mouth open, correct `surface`.
-7. One Test workflow when Sal is ready to spend ~$8.
+6. QC still vs master before OmniHuman: `10ml`, no lashes unless on master, planted sneakers, motion pose matching the row, mouth open, correct `surface`.
+7. One Test workflow when Sal is ready to spend ~$4.80.

@@ -1,6 +1,6 @@
 # Agent rulebook (Sal / Palm Beach Vitality)
 
-A **new Cloud Agent with n8n MCP** must read `marketing/n8n-pep-n8n-mcp-agent-handoff.md` first. That file is the full Pep lock. This rulebook is the always-on short list. If weekly-plan or older execute docs say two 1080p cuts, **ignore them**. Live path is **one ~50s 720p OmniHuman talking clip**.
+A **new Cloud Agent with n8n MCP** must read `marketing/n8n-pep-n8n-mcp-agent-handoff.md` first. That file is the full Pep lock. This rulebook is the always-on short list. If weekly-plan or older execute docs say two cuts or 50s/720p talking, **ignore them**. Live path is **one ~30s 1080p OmniHuman talking clip** (hook first, then easy science).
 
 ## Least actions
 Always pick the **fewest steps that still work**. One sheet column or one node paste beats five remaps. Do not invent extra n8n changes, extra tabs, extra pins, or extra Test workflow runs. Full node params only for the node(s) Sal actually has to touch.
@@ -12,18 +12,18 @@ Time is limited. Treat Sal’s time as the scarce resource: shorter replies, few
 - **Workflow:** `vid_gen_palm_beach_pep` only. Keep separate from landscape / vial / lab / `custom_vid_gen1.5-idea-to-video-pbv-log`.
 - **Branch:** `cursor/palm-beach-pep-scenes-8510`.
 - **n8n MCP ≠ environment.** You cannot add n8n to a running Cloud Agent via environment.json / snapshot. Enable n8n in that agent’s **MCP dropdown** on cursor.com/agents. The old Palm Beach Pep run `bc-798ad8de-924a-4da6-904a-3ee3007a8510` cannot receive n8n after the fact.
-- **Cadence:** once weekly. One talking clip. OmniHuman is **$0.16/s** ≈ **$8 per ~50s**. Stills are cents. Sal accepts weekly OmniHuman cost. **Do not remint a published pass.**
+- **Cadence:** 20 unique clips to start, then build. OmniHuman is **$0.16/s** ≈ **$4.80 per 30s 1080p**. Stills are cents. **Do not remint a published pass.**
 - **Do not remint boardwalk pass:** still `https://imgen.x.ai/xai-imgen/xai-tmp-imgen-cce5f5b2-265c-9932-911a-b5c99e071ed6-bb7d3fba.jpeg` · clip `https://v3b.fal.media/files/b/0aa673c0/QJXLAo2E80avVgXRZv2pw_video.mp4` (49.8s).
-- **Talking clip = OmniHuman v1.5 720p**, not Kling, not 1080p (1080p audio cap is 30s). Model `fal-ai/bytedance/omnihuman/v1.5` on `pep_lipsync_fal`. Max Wait **1200**. Prompt `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}`. Audio `$('fal_upload_tts_initiate').item.json.file_url`. **No** `save_tts_audio_url`.
-- **Walk and talk:** walk and stand rows mint a mid-stride still; OmniHuman keeps walking while he talks. Sit / turn / stop follow the scene brief. Do **not** pin an old standing still into a walk clip. Last two published-style clips froze standing because `prep_pep_beats` forced standing + “hold pose” — that lock is removed.
+- **Talking clip = OmniHuman v1.5 1080p**, not Kling. VO is **~30s** (65–74 words) so 1080p does not 422. Model `fal-ai/bytedance/omnihuman/v1.5` on `pep_lipsync_fal`. Max Wait **1200**. Prompt `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}`. Audio `$('fal_upload_tts_initiate').item.json.file_url`. **No** `save_tts_audio_url`.
+- **Move while talking:** walk, jog, dance, hike, or sport from the scene brief. Standing / sitting / stopping / turning are **inactive** in `pep-blocking-pool` (boring for social). Do **not** pin an old standing still into a motion clip.
 - **Stills:** Grok **EDIT only** (`/v1/images/edits` + master). Never `/generations`. Master `https://files.catbox.moe/2yfdbi.jpg`. Label type exactly `10ml` (HARD FAIL `10mlz`). Eyes = master ovals, **same lash state from frame one** (master has none). **HARD FAIL mid-clip lash grow-in.** Blinks/glances are good. Mouth open mid-word. No thumbs-up. Both sneakers planted (HARD FAIL hover). Set = sheet `surface` — “Palm Beach” is hat brand, not the location; do not default to beach.
-- **VO:** tab `150-pb-pep-scenes` column `voice_over` only. 112–125 words. Studies line + COA line + `Visit us at palmbeach-vitality.store.` Never speak FDA / unique-set / lab-only. Captions still use `caption_lock`. ElevenLabs reads `tts_speak`. TTS body is entire `={{ JSON.stringify({...}) }}` from `marketing/n8n-pep-tts-body.txt`. Semaglutide = **SEM-uh-GLOO-tide**. COA spoken as certificate of analysis.
+- **VO:** tab `150-pb-pep-scenes` column `voice_over` only. **20 rows.** 65–74 words (~26–29.5s). Hook first, then easy science. Studies line + COA line + `Visit us at palmbeach-vitality.store.` Never speak FDA / unique-set / lab-only. Captions still use `caption_lock`. ElevenLabs reads `tts_speak`. TTS body is entire `={{ JSON.stringify({...}) }}` from `marketing/n8n-pep-tts-body.txt`. Semaglutide = **SEM-uh-GLOO-tide**. COA spoken as certificate of analysis. Review file: `marketing/n8n-pep-20-vo-review.md`.
 - **Dropped sheet columns:** `pep_script`, `disclaimer_short`. Do not put them back. Live sheet may still have them until Sal deletes or re-imports.
 - **Pin:** unique weekly run NEVER PIN `grok_imagine_reel_still`, `tts_pep_voice_over`, `pep_lipsync_fal`. Unique backgrounds = still **unpinned**. After a **good** still, PIN `grok_imagine_reel_still` + `save_still_url` only to retry OmniHuman.
 - **Paste:** select all, delete, paste. `gather_pep_clips` is a plain Code node (no IIFE). Leftover JS caused `incoming` already declared and `Invalid regular expression`. `save_still_url`: only `reel_still_url` = `={{ $json.data[0].url }}`, Include Other Input Fields **OFF**.
 - **Canvas spelling `if_complaince` is intentional.** Do not rename. Kling chain stays disconnected. Loop stays; split emits 1 item.
 - **Catbox:** master may be Catbox. OmniHuman image and TTS audio must **not** be Catbox — fal cannot fetch `files.catbox.moe`. Use xAI still URL + fal TTS `file_url`.
-- **Hands:** walk swing at hips for walk; relaxed hips otherwise. No pointing / counting / waving (weird OmniHuman arms).
+- **Hands:** walk/jog swing at hips for locomotion; dance groove or sport guard for those bodies. No pointing / counting / waving (weird OmniHuman arms).
 - **fal charts are UTC.** August Eastern is EDT (UTC−4).
 
 ## Spreadsheets
@@ -49,7 +49,7 @@ Second Pep tab (blocking / pose pool, Sal-named):
 
 `https://github.com/PalmBeach-Vitality/pep/blob/cursor/palm-beach-pep-scenes-8510/marketing/sheets/pep-blocking-pool.csv`
 
-Spoken Pep lines come **only** from tab `150-pb-pep-scenes` column `voice_over`. Easy science pitch: how **this** peptide works + **Studies have shown X has been beneficial to X in recent research studies.** + **Palm Beach Vitality research peptides are backed by a COA with every single order, American made delivering >99% purity 100% of the time.** + close. About **45–50 seconds** (112–125 words) so the OmniHuman clip is not truncated. Last sentence: **`Visit us at palmbeach-vitality.store.`** One talking clip. ElevenLabs reads `tts_speak` (pronunciation map in `prep_pep_beats`). Captions keep the chemical name. See `marketing/n8n-pep-pronunciation.md`. `pep_lipsync_fal` Resolution **`720p`**. Never speak compliance/disclaimer. Captions still carry research-use framing.
+Spoken Pep lines come **only** from tab `150-pb-pep-scenes` column `voice_over`. **20 unique 30s clips.** Hook first, then easy science: how **this** peptide works + **Studies have shown X has been beneficial to X in recent research studies.** + **Palm Beach Vitality research peptides are backed by a COA with every single order, American made delivering >99% purity 100% of the time.** + close. About **26–30 seconds** (65–74 words) so 1080p OmniHuman does not 422. Last sentence: **`Visit us at palmbeach-vitality.store.`** One talking clip. ElevenLabs reads `tts_speak` (pronunciation map in `prep_pep_beats`). Captions keep the chemical name. See `marketing/n8n-pep-pronunciation.md`. `pep_lipsync_fal` Resolution **`1080p`**. Never speak compliance/disclaimer. Captions still carry research-use framing.
 
 Scene rotation columns on that same tab: `times_used`, `last_used_at`. `sort_rotation` is `times_used` ASC then `last_used_at` ASC. `sheets_update_creation` writes both.
 
@@ -73,13 +73,13 @@ Use the same blob URL form as above. Raw GitHub URLs are fine for direct downloa
 - **#1 PRIORITY — Pep character lock:** Pep must match master `https://files.catbox.moe/2yfdbi.jpg` exactly every still. Use `/v1/images/edits` + `<IMAGE_0>` master. Never `/generations` for Pep. QC still vs master before video: same two cartoon eyes (**same lash state as master from frame one**), label type exactly `10ml` (discard `10mlz`). Talking-clip lashes are OK if they exist from 1s or are absent the whole clip; **HARD FAIL mid-clip lash grow-in**. See `marketing/n8n-pep-character-lock.md` and `marketing/n8n-pep-grok-still-body-lock.txt`
 - **SET LOCK:** Background is tab `150-pb-pep-scenes` column `surface` for that row. “Palm Beach” is the hat brand, not the location. Do not default to a shoreline unless `surface` is a shoreline.
 - **n8n-MCP agent handoff (full lock):** `marketing/n8n-pep-n8n-mcp-agent-handoff.md`
-- Pep plan: `marketing/n8n-vid-gen-palm-beach-pep-weekly-plan.md` (**stale** 2×1080p cuts — do not follow)
-- Pep execute guide: `marketing/n8n-vid-gen-palm-beach-pep-execute.md` (node names useful; 2-cut / 1080p talking is **stale**)
+- Pep plan: `marketing/n8n-vid-gen-palm-beach-pep-weekly-plan.md` (**stale** 2-cut talking — do not follow)
+- Pep execute guide: `marketing/n8n-vid-gen-palm-beach-pep-execute.md` (node names useful; 2-cut / 50s talking is **stale**)
 - Pep character lock: `marketing/n8n-pep-character-lock.md`
 - Pep video stack: `marketing/n8n-pep-elevenlabs-video.md` (ElevenLabs cartoon intent → fal Kling I2V + ElevenLabs TTS; keep exact node names)
 - Pep fal + Kling setup: `marketing/n8n-pep-fal-kling-setup.md`
 - Pep lip-sync now: `marketing/n8n-pep-lipsync-setup.md`
-- **One workflow (talking path):** still → `prep_pep_lipsync` → `pep_lipsync_fal` (OmniHuman v1.5, **720p**, ~50s) → `save_lipsync_video_url` → `(gather_pep_clips)` → sheets. **One talking clip.** Pep **walks and talks** on walk and stand rows. Sit / turn / stop still follow that row’s brief. Sheet `voice_over`, no extra scene cuts. Do **not** rename lipsync. Do **not** wire `kling_video_request`. Canvas has **no** `save_tts_audio_url`; audio is `fal_upload_tts_initiate.file_url`. Canvas steps: `marketing/n8n-pep-60s-1080-execute.md`.
+- **One workflow (talking path):** still → `prep_pep_lipsync` → `pep_lipsync_fal` (OmniHuman v1.5, **1080p**, ~30s) → `save_lipsync_video_url` → `(gather_pep_clips)` → sheets. **One talking clip.** Pep **moves while talking** (walk / jog / dance / hike / sport). Sheet `voice_over`, no extra scene cuts. Do **not** rename lipsync. Do **not** wire `kling_video_request`. Canvas has **no** `save_tts_audio_url`; audio is `fal_upload_tts_initiate.file_url`. Canvas steps: `marketing/n8n-pep-60s-1080-execute.md`.
 - **Talking recipe (locked):** Talking clip = **`pep_lipsync_fal`** OmniHuman v1.5. Dropdown: **Image [string]**, **Audio [string]**, **Resolution**, **Prompt [string]**. Prompt Value fx ON is `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}` (a JS string). Do **not** use `$json.omnihuman_prompt` (undefined). Max Wait **`1200`**. Random Pep blocking comes from tab `pep-blocking-pool` via `(get_blocking_pool)` into `prep_pep_beats`.
 
 ## Social / Imagine

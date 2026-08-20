@@ -32,8 +32,8 @@ if (!/backed by a COA/i.test(tts_text) || !/>99%/.test(tts_text) || !/american m
   throw new Error('tts_text must include the COA / American made / >99% purity line before the store CTA.');
 }
 const wc = tts_text.split(/\s+/).filter(Boolean).length;
-if (wc < 112 || wc > 125) {
-  throw new Error(`tts_text is ${wc} words. Need 112–125 to fit the 50s OmniHuman clip.`);
+if (wc < 65 || wc > 74) {
+  throw new Error(`tts_text is ${wc} words. Need 65–74 to fit the 30s 1080p OmniHuman clip.`);
 }
 const low = tts_text.toLowerCase();
 if (
@@ -71,9 +71,9 @@ return [
       omnihuman_prompt: omnihuman_prompt,
       beat_brief: pack.beat_brief || src.beat_a_brief,
       beat_motion: pack.beat_motion || src.beat_a_motion,
-      target_duration_seconds: 60,
+      target_duration_seconds: 30,
       beat_count: 1,
-      resolution: '720p',
+      resolution: '1080p',
     },
   },
 ];

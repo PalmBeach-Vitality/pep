@@ -11,7 +11,7 @@ OmniHuman is **image + audio → talking video**. It does **not** take a Kling `
 
 TTS public URL = `$('fal_upload_tts_initiate').item.json.file_url` (fal CDN). **Catbox is blocked by fal** for audio/video inputs. Master Catbox URL is OK only as Pep still *reference* for Grok EDIT.
 
-Audio must be under **60s at 720p** (1080p caps at 30s). Same easy wellness pitch on every scene cut via `(split_pep_beats)`. Do not speak compliance/disclaimer.
+Audio must be under **30s at 1080p**. Same easy educational pitch via `(split_pep_beats)`. Do not speak compliance/disclaimer.
 
 Canvas steps: `marketing/n8n-pep-60s-1080-execute.md`.
 
@@ -128,7 +128,7 @@ Do **not** also add a `xi-api-key` header on the node. The credential already se
   }
   const n = text.split(/\s+/).filter(Boolean).length;
   if (n < 112 || n > 125) {
-    throw new Error(`Spoken VO is ${n} words (~${(n / 2.51).toFixed(1)}s). Need 112–125 words. Re-import 150-pb-pep-scenes.`);
+    throw new Error(`Spoken VO is ${n} words (~${(n / 2.51).toFixed(1)}s). Need 65–74 words. Re-import 150-pb-pep-scenes.`);
   }
   return JSON.stringify({
     text: text,
@@ -265,7 +265,7 @@ Wire: `save_still_url` → `prep_pep_lipsync` → `pep_lipsync_fal`
 
 Paste the full file `marketing/n8n-pep-prep-lipsync.js`.
 
-**Expect OUTPUT fields:** `lipsync_image_in` (xAI still URL), `lipsync_audio_in` (fal CDN), `omnihuman_prompt`, `omnihuman_resolution` = `720p`.
+**Expect OUTPUT fields:** `lipsync_image_in` (xAI still URL), `lipsync_audio_in` (fal CDN), `omnihuman_prompt`, `omnihuman_resolution` = `1080p`.
 
 ---
 
@@ -279,7 +279,7 @@ This is the official fal.ai community node (`@fal-ai/n8n-nodes-fal`), not HTTP R
 |---|---|---|---|
 | 1 | **Image [string]** (`image_url`) | ON | `={{ $('save_still_url').item.json.reel_still_url }}` |
 | 2 | **Audio [string]** (`audio_url`) | ON | `={{ $('fal_upload_tts_initiate').item.json.file_url }}` |
-| 3 | **Resolution** (`resolution`) | OFF | `720p` |
+| 3 | **Resolution** (`resolution`) | OFF | `1080p` |
 | 4 | **Prompt [string]** (`prompt`) | **ON** | `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}` |
 
 Prompt Value must be a **string**. `String(...)` keeps it a string. Do **not** use `={{ $json.omnihuman_prompt }}` (that is `undefined` on this fal node). Confirm `prep_pep_lipsync` OUTPUT has `omnihuman_prompt` before Test workflow.
@@ -361,7 +361,7 @@ Then **Test workflow** once. Wait up to ~1200s. QC: unique scene, unique VO, mou
 - [ ] `pep_lipsync_fal` Model = **OmniHuman / Omnihuman v1.5** (not sync-3 / VEED / Kling lipsync / LatentSync)
 - [ ] `image_url` = `={{ $('save_still_url').item.json.reel_still_url }}`
 - [ ] `audio_url` = `={{ $('fal_upload_tts_initiate').item.json.file_url }}` — **not hardcoded**
-- [ ] `resolution` = `720p`
+- [ ] `resolution` = `1080p`
 - [ ] Wait for Completion **ON**, Max Wait Time = `1200`
 - [ ] `pep_lipsync_fal` Prompt Value fx ON = `={{ String($('prep_pep_lipsync').item.json.omnihuman_prompt) }}`
 - [ ] `prep_pep_beats` Mode = Run Once for Each Item, returns a plain object

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Syntax + contract checks for one 50s talking clip.
+// Syntax + contract checks for one 30s 1080p talking clip.
 
 const fs = require('fs');
 const path = require('path');
@@ -41,12 +41,17 @@ mustInclude('n8n-pep-prep-beats.js', [
   'pickUnique',
   'pickTalkBody',
   'WALK AND TALK AT THE SAME TIME',
+  'JOG AND TALK AT THE SAME TIME',
+  'DANCE AND TALK AT THE SAME TIME',
+  'KEEP THE SPORT MOTION AND TALK AT THE SAME TIME',
   'extractProductPitch',
   'studies have shown',
   'Visit us at palmbeach-vitality.store.',
   'beat_count: 1',
   "const BEAT_IDS = ['a']",
-  "resolution: '720p'",
+  "resolution: '1080p'",
+  'target_duration_seconds: 30',
+  'Need 65–74 words',
   'cleanSetText',
   'BOTH sneakers firmly on the ground',
   'EYES: keep the same two cartoon ovals from the still',
@@ -56,8 +61,14 @@ mustInclude('n8n-pep-prep-beats.js', [
   'same lash state as the still from 00:00',
   'Mid-clip lash grow-in is the fail',
   'Do not freeze standing',
-  '\\bpep\\s+(walks|walking|stands|standing|sits|sitting|turns|turning|stops|stopping)\\b',
+  '\\bpep\\s+(walks|walking|jogs|jogging|runs|running|dances|dancing|hikes|hiking|pedals|pedaling|boxes|boxing|trains|training|stands|standing|sits|sitting|turns|turning|stops|stopping)\\b',
   'isLocomotionBody',
+  "id: 'running'",
+  "id: 'dancing'",
+  "id: 'sports_ready'",
+  "id: 'hiking'",
+  "id: 'dance_groove'",
+  "id: 'sport_guard'",
 ]);
 mustNotInclude('n8n-pep-prep-beats.js', [
   'function splitVoice',
@@ -68,6 +79,8 @@ mustNotInclude('n8n-pep-prep-beats.js', [
   'disclaimer_short',
   'const bodies = [standing]',
   'Hold the still pose',
+  "resolution: '720p'",
+  'Need 112–125 words',
 ]);
 mustInclude('n8n-pep-split-beats.js', [
   'Run Once for All Items',
@@ -77,22 +90,25 @@ mustInclude('n8n-pep-split-beats.js', [
   'Visit us at palmbeach-vitality.store.',
   'packs.length !== 1',
   'studies have shown',
-  "resolution: '720p'",
+  "resolution: '1080p'",
   'backed by a COA',
+  'Need 65–74',
 ]);
 mustInclude('n8n-pep-gather-clips.js', [
   'Expected 1 OmniHuman clip',
   'lipsync_video_url_a',
   'stitch_clip_urls',
   '.all(0, run)',
-  "resolution: '720p'",
+  "resolution: '1080p'",
   'beat_count: 1',
+  'One 30s talking clip at 1080p',
 ]);
 mustNotInclude('n8n-pep-gather-clips.js', [
   'Expected 4 OmniHuman clips',
   'lipsync_video_url_d',
   'const incoming',
   'gatherPepClips',
+  "resolution: '720p'",
 ]);
 mustInclude('n8n-pep-merge-tts-binary.js', [
   'Run Once for Each Item',
@@ -102,8 +118,8 @@ mustInclude('n8n-pep-merge-tts-binary.js', [
 mustInclude('n8n-pep-prep-lipsync.js', [
   "fromNode('split_pep_beats', ['beat'])",
   "fromNode('split_pep_beats', ['omnihuman_prompt'])",
-  "omnihuman_resolution: '720p'",
-  'WALK AND TALK AT THE SAME TIME',
+  "omnihuman_resolution: '1080p'",
+  'WALK OR JOG AND TALK AT THE SAME TIME',
   'EYES: keep the same two cartoon ovals from the still',
   'Eyes SHOULD blink, glance, and look around naturally',
   'ANIMATE THIS STILL ONLY',
@@ -113,7 +129,9 @@ mustInclude('n8n-pep-prep-lipsync.js', [
 ]);
 mustInclude('n8n-pep-grok-still-body-lock.txt', [
   'Scene brief:',
-  'If this pose is walking',
+  'If this pose is walking, jogging, or hiking',
+  'If dancing:',
+  'If sports:',
   'CRITICAL #4 — FEET',
   'CRITICAL #5 — EYES',
   'CRITICAL #6 — LABEL TYPE',
@@ -138,7 +156,7 @@ const beat_items = [{
   tts_text: pitch,
   pose_still: 'POSE standing',
   omnihuman_prompt: 'omni a',
-  pep_body_action: 'standing',
+  pep_body_action: 'walking',
 }];
 if (beat_items.length !== 1) throw new Error('need 1 beat_item');
 if (!beat_items[0].tts_text.endsWith('Visit us at palmbeach-vitality.store.')) {
@@ -147,9 +165,8 @@ if (!beat_items[0].tts_text.endsWith('Visit us at palmbeach-vitality.store.')) {
 
 mustInclude('n8n-pep-60s-1080-execute.md', [
   'n8n-pep-tts-body.txt',
-  '| 3 | **Resolution** (`resolution`) | OFF | `720p` |',
+  '| 3 | **Resolution** (`resolution`) | OFF | `1080p` |',
   'One talking clip',
-  'walks and talks',
 ]);
 mustNotInclude('n8n-pep-60s-1080-execute.md', [
   'still 1080p',
@@ -164,7 +181,7 @@ mustInclude('AGENT_RULEBOOK.md', [
   'n8n-pep-n8n-mcp-agent-handoff.md',
   'if_complaince',
   'Do not remint boardwalk pass',
-  'Walk and talk',
+  '1080p',
 ]);
 mustInclude('n8n-pep-n8n-mcp-agent-handoff.md', [
   'vid_gen_palm_beach_pep',
@@ -173,6 +190,8 @@ mustInclude('n8n-pep-n8n-mcp-agent-handoff.md', [
   'NEVER PIN',
   'select all, delete, paste',
   'SEM-uh-GLOO-tide',
+  '65–74',
+  '1080p',
 ]);
 mustInclude('n8n-pep-prep-beats.js', [
   'SEM-uh-GLOO-tide',
@@ -184,20 +203,21 @@ mustInclude('n8n-pep-prep-beats.js', [
 
 function pickTalkBodyId(hint) {
   const h = String(hint || '').toLowerCase();
-  const pep = h.match(/\bpep\s+(walks|walking|stands|standing|sits|sitting|turns|turning|stops|stopping)\b/);
+  const pep = h.match(/\bpep\s+(walks|walking|jogs|jogging|runs|running|dances|dancing|hikes|hiking|pedals|pedaling|boxes|boxing|trains|training|stands|standing|sits|sitting|turns|turning|stops|stopping)\b/);
   if (pep) {
     const v = pep[1];
     if (/walk/.test(v)) return 'walking';
-    if (/sit/.test(v)) return 'sitting';
-    if (/stand/.test(v)) return 'walking';
-    if (/turn/.test(v)) return 'turning';
-    if (/stop/.test(v)) return 'stopping';
+    if (/jog|run/.test(v)) return 'running';
+    if (/danc/.test(v)) return 'dancing';
+    if (/hike/.test(v)) return 'hiking';
+    if (/pedal|box|train/.test(v)) return 'sports_ready';
+    if (/sit|stand|turn|stop/.test(v)) return 'walking';
   }
-  if (/\bsit(?:s|ting)?\b|\bseated\b/.test(h)) return 'sitting';
+  if (/\bdanc(?:e|es|ing)|groove|two-step\b/.test(h)) return 'dancing';
+  if (/\b(?:jog|jogs|jogging|run|runs|running|sprint)\b/.test(h)) return 'running';
+  if (/\bhike|hiking|trail\b/.test(h)) return 'hiking';
+  if (/\b(?:pedal|bike|box(?:es|ing)?|shuffle|assault|kettlebell|battle.?rope|spin)\b/.test(h)) return 'sports_ready';
   if (/\bwalk(?:s|ing)?\b|\bstroll\b/.test(h)) return 'walking';
-  if (/\bstops?\b|\bstopping\b/.test(h)) return 'stopping';
-  if (/\bturns?\b|\bturning\b/.test(h)) return 'turning';
-  if (/\bstand(?:s|ing)?\b/.test(h)) return 'walking';
   return 'walking';
 }
 if (pickTalkBodyId('Palm Beach Pep walks mid-ground in this unique set') !== 'walking') {
@@ -206,17 +226,35 @@ if (pickTalkBodyId('Palm Beach Pep walks mid-ground in this unique set') !== 'wa
 if (pickTalkBodyId('Palm Beach Pep stands mid-ground talking') !== 'walking') {
   throw new Error('stand scene must walk-and-talk, not freeze standing');
 }
-if (pickTalkBodyId('Palm Beach Pep sits mid-ground') !== 'sitting') {
-  throw new Error('sit scene must pick sitting');
+if (pickTalkBodyId('Palm Beach Pep sits mid-ground') !== 'walking') {
+  throw new Error('sit scene must remap to walking for social clips');
 }
-if (pickTalkBodyId('Palm Beach Pep turns toward camera') !== 'turning') {
-  throw new Error('turn scene must pick turning');
+if (pickTalkBodyId('Palm Beach Pep turns toward camera') !== 'walking') {
+  throw new Error('turn scene must remap to walking');
 }
-if (pickTalkBodyId('Palm Beach Pep stops mid-stride mid-ground') !== 'stopping') {
-  throw new Error('stop scene must pick stopping');
+if (pickTalkBodyId('Palm Beach Pep stops mid-stride mid-ground') !== 'walking') {
+  throw new Error('stop scene must remap to walking');
+}
+if (pickTalkBodyId('Palm Beach Pep jogs mid-ground') !== 'running') {
+  throw new Error('jog scene must pick running');
+}
+if (pickTalkBodyId('Palm Beach Pep dances mid-ground') !== 'dancing') {
+  throw new Error('dance scene must pick dancing');
+}
+if (pickTalkBodyId('Palm Beach Pep hikes mid-ground') !== 'hiking') {
+  throw new Error('hike scene must pick hiking');
+}
+if (pickTalkBodyId('Palm Beach Pep pedals mid-ground') !== 'sports_ready') {
+  throw new Error('pedal scene must pick sports_ready');
+}
+if (pickTalkBodyId('Palm Beach Pep boxes mid-ground') !== 'sports_ready') {
+  throw new Error('box scene must pick sports_ready');
+}
+if (pickTalkBodyId('Palm Beach Pep trains mid-ground') !== 'sports_ready') {
+  throw new Error('train scene must pick sports_ready');
 }
 if (pickTalkBodyId('') !== 'walking') {
   throw new Error('default body must be walking');
 }
 
-console.log('ok one 50s talking-clip node contracts');
+console.log('ok one 30s 1080p talking-clip node contracts');
