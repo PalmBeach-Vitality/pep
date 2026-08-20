@@ -160,6 +160,20 @@ mustInclude('n8n-pep-tts-body.txt', [
   'eleven_multilingual_v2',
   'tts_speak',
 ]);
+mustInclude('AGENT_RULEBOOK.md', [
+  'n8n-pep-n8n-mcp-agent-handoff.md',
+  'if_complaince',
+  'Do not remint boardwalk pass',
+  'Walk and talk',
+]);
+mustInclude('n8n-pep-n8n-mcp-agent-handoff.md', [
+  'vid_gen_palm_beach_pep',
+  'WALK AND TALK',
+  'QJXLAo2E80avVgXRZv2pw_video.mp4',
+  'NEVER PIN',
+  'select all, delete, paste',
+  'SEM-uh-GLOO-tide',
+]);
 mustInclude('n8n-pep-prep-beats.js', [
   'SEM-uh-GLOO-tide',
   'tts_speak: voiceSpeak',
