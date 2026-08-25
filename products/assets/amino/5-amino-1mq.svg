@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="176" viewBox="0 0 720 176" role="img" aria-label="5-Amino-1MQ amino acid chain">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FDFBF7"/>
+      <stop offset="100%" stop-color="#F0E9D8"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#bg)"/>
+  <text x="28" y="32" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700" fill="#0A1628">5-Amino-1MQ — Amino Acid Chain</text>
+  <text x="28" y="52" font-family="Inter, Arial, sans-serif" font-size="11" fill="#0D9488">Not a peptide — small molecule NNMT inhibitor (5-amino-1-methylquinolinium)</text>
+<line x1="36" y1="72" x2="128" y2="72" stroke="#99f6e4" stroke-width="4" stroke-linecap="round"/>
+<circle cx="36" cy="72" r="18" fill="#0f766e" stroke="#0A1628" stroke-width="1.2"/>
+<text x="36" y="76" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="8" font-weight="700" fill="#ffffff">NN</text>
+<circle cx="82" cy="72" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="82" y="76" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="8" font-weight="700" fill="#ffffff">MT</text>
+<circle cx="128" cy="72" r="18" fill="#b45309" stroke="#0A1628" stroke-width="1.2"/>
+<text x="128" y="76" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="8" font-weight="700" fill="#ffffff">Inh</text>
+  <text x="28" y="162" font-family="Inter, Arial, sans-serif" font-size="10" fill="#64748b">N→C orientation · research diagram · color by residue class</text>
+</svg>
