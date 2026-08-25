@@ -5,10 +5,15 @@
 //
 // Round-robin product format: pen → vial → pen → vial.
 // Lab rows stay in the sheet but are never picked.
-// last_used_date is ISO date only, so same-day pen and vial
-// rows cannot be ordered. Persist last pick in workflow static data.
-// Within the chosen category: unused rows first (empty last_used_date),
-// then oldest last_used_date, then rotation_order.
+//
+// last_used_date is ISO date only, so same-day pen/vial rows cannot
+// be ordered by recency. staticData alone is unreliable on manual/
+// unpublished runs, so stagger from same-day sheet counts instead.
+//
+// Primary: among eligible rows used TODAY, pick the underrepresented
+// category. Ties (incl. 0–0) default to pen, then optional staticData.
+// Sheet dates update only after a successful Buffer run. Within the
+// chosen category: unused first, then oldest date, then rotation_order.
 
 function catOf(row) {
   return String((row && row.scene_category) || '').trim();
@@ -21,6 +26,14 @@ function usedDate(row) {
 function rot(row) {
   var n = Number(row && row.rotation_order);
   return isFinite(n) ? n : 9999;
+}
+
+function todayISO() {
+  try {
+    return $now.toISODate();
+  } catch (e) {
+    return new Date().toISOString().slice(0, 10);
+  }
 }
 
 var STAGGER = ['pen_3ml_scene', 'vial_10ml_scene'];
@@ -46,22 +59,45 @@ if (!eligible.length) {
   throw new Error('pick_image_scene: no Active pen_3ml_scene or vial_10ml_scene rows');
 }
 
-var dated = eligible
-  .filter(function (r) {
-    return usedDate(r);
-  })
-  .slice()
-  .sort(function (a, b) {
-    return usedDate(b).localeCompare(usedDate(a));
-  });
+var today = todayISO();
+var countToday = { pen_3ml_scene: 0, vial_10ml_scene: 0 };
+eligible.forEach(function (r) {
+  if (usedDate(r) === today) {
+    var c = catOf(r);
+    if (countToday[c] !== undefined) countToday[c] += 1;
+  }
+});
 
-var staticData = $getWorkflowStaticData('global');
-var lastCat = String(staticData.last_image_category || '').trim();
-if (STAGGER.indexOf(lastCat) === -1) {
-  lastCat = dated.length ? catOf(dated[0]) : '';
+var lastCat = '';
+var nextCat = '';
+var staggerSource = '';
+
+if (countToday.pen_3ml_scene !== countToday.vial_10ml_scene) {
+  // Rebalance: pick whichever format was used less today.
+  nextCat =
+    countToday.pen_3ml_scene < countToday.vial_10ml_scene
+      ? 'pen_3ml_scene'
+      : 'vial_10ml_scene';
+  lastCat = NEXT_CAT[nextCat];
+  staggerSource = 'same_day_count';
+} else {
+  // Tie (including both 0): best-effort staticData, else start with pen.
+  var staticData = $getWorkflowStaticData('global');
+  lastCat = String(staticData.last_image_category || '').trim();
+  if (STAGGER.indexOf(lastCat) === -1) {
+    lastCat = '';
+    nextCat = 'pen_3ml_scene';
+    staggerSource = 'tie_default_pen';
+  } else {
+    nextCat = NEXT_CAT[lastCat] || 'pen_3ml_scene';
+    staggerSource = 'tie_staticData';
+  }
 }
-var nextCat = NEXT_CAT[lastCat] || 'pen_3ml_scene';
-staticData.last_image_category = nextCat;
+
+// Best-effort only — do not rely on this alone.
+try {
+  $getWorkflowStaticData('global').last_image_category = nextCat;
+} catch (e) {}
 
 function inCat(cat) {
   return eligible.filter(function (r) {
@@ -92,6 +128,9 @@ return [
     json: Object.assign({}, pick, {
       pick_last_category: lastCat,
       pick_next_category: nextCat,
+      pick_stagger_source: staggerSource,
+      pick_today_pen_count: countToday.pen_3ml_scene,
+      pick_today_vial_count: countToday.vial_10ml_scene,
     }),
   },
 ];
