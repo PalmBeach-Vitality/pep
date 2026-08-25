@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Palm Beach Peptides — Premium American-Made Peptides</title>
+  <meta name="description" content="Palm Beach Peptides supplies researchers, clinics, and brands with verified, pharmacy-grade American-made peptides. 99.9% purity, COA on every order.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              950: '#050A14',
+              900: '#0A1628',
+              800: '#0F1F38',
+              700: '#162A4A',
+              600: '#1E3A5F',
+            },
+            teal: {
+              400: '#2DD4BF',
+              500: '#14B8A6',
+              600: '#0D9488',
+              700: '#0F766E',
+            },
+            gold: {
+              400: '#FBBF24',
+              500: '#D4AF37',
+              600: '#B8962E',
+            },
+            sand: {
+              50: '#FDFBF7',
+              100: '#F8F4EC',
+              200: '#F0E9D8',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Playfair Display', 'Georgia', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .hero-gradient {
+      background: linear-gradient(135deg, #050A14 0%, #0A1628 40%, #0F1F38 70%, #0A1628 100%);
+    }
+    .glass {
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .card-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px -12px rgba(13, 148, 136, 0.15);
+    }
+    .stat-number {
+      background: linear-gradient(135deg, #2DD4BF, #D4AF37);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%);
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.4);
+    }
+    .btn-outline {
+      border: 1.5px solid rgba(45, 212, 191, 0.5);
+      transition: all 0.3s ease;
+    }
+    .btn-outline:hover {
+      background: rgba(13, 148, 136, 0.1);
+      border-color: #2DD4BF;
+    }
+    .nav-link {
+      position: relative;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1.5px;
+      background: #2DD4BF;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(45,212,191,0.3), transparent);
+    }
+  </style>
+</head>
+<body class="bg-sand-50 text-navy-900 antialiased">
+
+  <!-- Top Bar -->
+  <div class="bg-navy-950 text-white text-xs py-2">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+      <span class="text-teal-400 font-medium tracking-wide">🇺🇸 USA Manufactured · 99.9% Purity · COA on Every Order</span>
+      <div class="hidden sm:flex gap-6 text-gray-300">
+        <a href="wholesale/index.html" class="hover:text-teal-400 transition">Wholesale Accounts</a>
+        <a href="contact/index.html" class="hover:text-teal-400 transition">Support</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-sand-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-20">
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-navy-900 to-teal-700 flex items-center justify-center shadow-lg">
+            <span class="text-white font-bold text-lg tracking-tighter">PB</span>
+          </div>
+          <div>
+            <div class="font-display font-bold text-xl text-navy-900 leading-none tracking-tight group-hover:text-teal-700 transition">Palm Beach</div>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-teal-600 font-semibold">Peptides</div>
+          </div>
+        </a>
+
+        <!-- Desktop Nav -->
+        <nav class="hidden lg:flex items-center gap-8">
+          <a href="products/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Products</a>
+          <a href="about/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">About</a>
+          <a href="research/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Research</a>
+          <a href="faq/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">FAQ</a>
+          <a href="wholesale/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Wholesale</a>
+          <a href="contact/index.html" class="nav-link text-sm font-medium text-navy-800 hover:text-teal-600">Contact</a>
+          <a href="contact/index.html#pricing" class="btn-primary text-white text-sm font-semibold px-5 py-2.5 rounded-lg shadow-md">
+            Get Pricing
+          </a>
+        </nav>
+
+        <!-- Mobile menu button -->
+        <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-md text-navy-800 hover:bg-sand-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Nav -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-sand-200">
+      <div class="px-4 py-4 space-y-1">
+        <a href="products/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50 hover:text-teal-700">Products</a>
+        <a href="about/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50 hover:text-teal-700">About</a>
+        <a href="research/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50 hover:text-teal-700">Research</a>
+        <a href="faq/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50 hover:text-teal-700">FAQ</a>
+        <a href="wholesale/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50 hover:text-teal-700">Wholesale</a>
+        <a href="contact/index.html" class="block px-3 py-2.5 rounded-lg text-navy-800 font-medium hover:bg-teal-50 hover:text-teal-700">Contact</a>
+        <a href="contact/index.html#pricing" class="block mt-2 text-center btn-primary text-white font-semibold px-5 py-3 rounded-lg">Get Pricing</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero-gradient relative overflow-hidden">
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute top-20 left-10 w-72 h-72 bg-teal-500 rounded-full blur-[120px]"></div>
+      <div class="absolute bottom-10 right-10 w-96 h-96 bg-gold-500 rounded-full blur-[140px]"></div>
+    </div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass text-teal-400 text-xs font-semibold tracking-wider uppercase mb-6">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
+          American-Made Peptides
+        </div>
+        <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1] mb-6">
+          Precision.<br>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-gold-400">Purity.</span><br>
+          Palm Beach Made.
+        </h1>
+        <p class="text-lg sm:text-xl text-gray-300 leading-relaxed mb-8 max-w-2xl">
+          Supplying researchers, clinics, and supplement brands with verified, domestic-grade peptides. Every vial backed by a Certificate of Analysis.
+        </p>
+        <div class="flex flex-wrap gap-4 mb-12">
+          <a href="products/index.html" class="btn-primary text-white font-semibold px-7 py-3.5 rounded-xl shadow-lg">
+            View Full Catalog
+          </a>
+          <a href="wholesale/index.html" class="btn-outline text-teal-300 font-semibold px-7 py-3.5 rounded-xl">
+            Request Wholesale Pricing
+          </a>
+        </div>
+        <!-- Trust Badges -->
+        <div class="flex flex-wrap gap-6 sm:gap-8">
+          <div class="flex items-center gap-2 text-sm text-gray-300">
+            <svg class="w-5 h-5 text-teal-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            USA Manufactured
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-300">
+            <svg class="w-5 h-5 text-teal-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            3rd Party Tested
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-300">
+            <svg class="w-5 h-5 text-teal-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            COA on Every Order
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-300">
+            <svg class="w-5 h-5 text-teal-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            B2B Wholesale Available
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Compounds -->
+  <section class="py-20 lg:py-28 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <p class="text-teal-600 font-semibold text-sm tracking-widest uppercase mb-3">Featured Compounds</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-bold text-navy-900 mb-4">Pharmacy-Grade Peptides, Verified.</h2>
+        <p class="text-gray-600 text-lg">Every compound synthesized domestically, independently verified, and shipped with full documentation.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+        <!-- BPC-157 -->
+        <div class="card-hover bg-sand-50 rounded-2xl p-6 lg:p-8 border border-sand-200">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <span class="inline-block px-2.5 py-1 bg-teal-100 text-teal-700 text-xs font-bold rounded-md mb-3">Growth Factors</span>
+              <h3 class="font-display text-2xl font-bold text-navy-900">BPC-157</h3>
+              <p class="text-sm text-gray-500 mt-1">Body Protection Compound-157</p>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-bold text-teal-600">99.9%</div>
+              <div class="text-xs text-gray-500">Purity</div>
+            </div>
+          </div>
+          <p class="text-gray-600 text-sm leading-relaxed mb-5">Widely studied for tissue repair, gut healing, and regeneration research. A foundational research peptide.</p>
+          <div class="flex flex-wrap gap-2 mb-5">
+            <span class="text-xs px-2.5 py-1 bg-white border border-sand-200 rounded-full text-gray-600">Lyophilized</span>
+            <span class="text-xs px-2.5 py-1 bg-white border border-sand-200 rounded-full text-gray-600">Liquid Vial</span>
+            <span class="text-xs px-2.5 py-1 bg-white border border-sand-200 rounded-full text-gray-600">Injectable Pen</span>
+          </div>
+          <a href="products/index.html#bpc-157" class="inline-flex items-center text-sm font-semibold text-teal-700 hover:text-teal-600">
+            View Specs
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Semaglutide -->
+        <div class="card-hover bg-sand-50 rounded-2xl p-6 lg:p-8 border border-sand-200">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <span class="inline-block px-2.5 py-1 bg-gold-400/20 text-gold-600 text-xs font-bold rounded-md mb-3">Metabolic</span>
+              <h3 class="font-display text-2xl font-bold text-navy-900">Semaglutide</h3>
+              <p class="text-sm text-gray-500 mt-1">GLP-1 Receptor Agonist</p>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-bold text-teal-600">99.9%</div>
+              <div class="text-xs text-gray-500">Purity</div>
+            </div>
+          </div>
+          <p class="text-gray-600 text-sm leading-relaxed mb-5">High-demand research compound for metabolic and glycemic regulation studies. Consistent pharmacy-grade quality.</p>
+          <div class="flex flex-wrap gap-2 mb-5">
+            <span class="text-xs px-2.5 py-1 bg-white border border-sand-200 rounded-full text-gray-600">Lyophilized</span>
+            <span class="text-xs px-2.5 py-1 bg-white border border-sand-200 rounded-full text-gray-600">Liquid Vial</span>
+            <span class="text-xs px-2.5 py-1 bg-white border border-sand-200 rounded-full text-gray-600">Injectable Pen</span>
+          </div>
+          <a href="products/index.html#semaglutide" class="inline-flex items-center text-sm font-semibold text-teal-700 hover:text-teal-600">
+            View Specs
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Semax -->
+        <div class="card-hover bg-sand-50 rounded-2xl p-6 lg:p-8 border border-sand-200">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <span class="inline-block px-2.5 py-1 bg-navy-100 text-navy-700 text-xs font-bold rounded-md mb-3">Cognitive</span>
+              <h3 class="font-display text-2xl font-bold text-navy-900">Semax</h3>
+              <p class="text-sm text-gray-500 mt-1">ACTH-Derived Heptapeptide</p>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-bold text-teal-600">99.9%</div>
+              <div class="text-xs text-gray-500">Purity</div>
+            </div>
+          </div>
+          <p class="text-gray-600 text-sm leading-relaxed mb-5">Studied for cognitive enhancement, neuroprotection, and nootropic research applications.</p>
+          <div class="flex flex-wrap gap-2 mb-5">
+            <span class="text-xs px-2.5 py-1 bg-white border border-sand-200 rounded-full text-gray-600">Lyophilized</span>
+            <span class="text-xs px-2.5 py-1 bg-white border border-sand-200 rounded-full text-gray-600">Liquid Vial</span>
+            <span class="text-xs px-2.5 py-1 bg-white border border-sand-200 rounded-full text-gray-600">Injectable Pen</span>
+          </div>
+          <a href="products/index.html#semax" class="inline-flex items-center text-sm font-semibold text-teal-700 hover:text-teal-600">
+            View Specs
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="text-center mt-12">
+        <a href="products/index.html" class="btn-primary inline-flex items-center text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg">
+          View Full Catalog
+          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-7xl mx-auto"></div>
+
+  <!-- Why Us -->
+  <section class="py-20 lg:py-28 bg-sand-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <p class="text-teal-600 font-semibold text-sm tracking-widest uppercase mb-3">Why Palm Beach Peptides</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-bold text-navy-900 mb-4">The Standard Others Measure Against.</h2>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-2xl p-7 border border-sand-200 text-center card-hover">
+          <div class="stat-number text-4xl font-extrabold mb-2">99%+</div>
+          <h3 class="font-bold text-navy-900 mb-2">Purity Guaranteed</h3>
+          <p class="text-sm text-gray-600">Every batch is independently verified. We publish the numbers — no exceptions.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-7 border border-sand-200 text-center card-hover">
+          <div class="stat-number text-4xl font-extrabold mb-2">USA</div>
+          <h3 class="font-bold text-navy-900 mb-2">Domestic Manufacturing</h3>
+          <p class="text-sm text-gray-600">Synthesized and packaged in American facilities under strict quality controls.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-7 border border-sand-200 text-center card-hover">
+          <div class="stat-number text-4xl font-extrabold mb-2">COA</div>
+          <h3 class="font-bold text-navy-900 mb-2">On Every Order</h3>
+          <p class="text-sm text-gray-600">Certificate of Analysis included with every shipment. Full transparency, always.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-7 border border-sand-200 text-center card-hover">
+          <div class="stat-number text-4xl font-extrabold mb-2">B2B</div>
+          <h3 class="font-bold text-navy-900 mb-2">Wholesale Support</h3>
+          <p class="text-sm text-gray-600">Dedicated account management, volume pricing, and flexible fulfillment for partners.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Research Library Teaser -->
+  <section class="py-20 lg:py-28 bg-navy-900 text-white relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute top-0 right-0 w-96 h-96 bg-teal-500 rounded-full blur-[150px]"></div>
+    </div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <p class="text-teal-400 font-semibold text-sm tracking-widest uppercase mb-3">Research Library</p>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold mb-5">Knowledge Is Part of the Product.</h2>
+          <p class="text-gray-300 text-lg leading-relaxed mb-8">
+            We don't just ship peptides — we support the science behind them. Our research library gives B2B buyers the context to make informed sourcing decisions.
+          </p>
+          <a href="research/index.html" class="btn-primary inline-flex items-center text-white font-semibold px-7 py-3.5 rounded-xl">
+            Explore Research Library
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
+        </div>
+        <div class="space-y-4">
+          <a href="research/index.html" class="block glass rounded-xl p-5 hover:bg-white/10 transition group">
+            <div class="flex items-start gap-4">
+              <span class="text-teal-400 font-bold text-lg">01</span>
+              <div>
+                <h4 class="font-semibold text-white group-hover:text-teal-300 transition">Peptide Stability & Storage</h4>
+                <p class="text-sm text-gray-400 mt-1">Best practices for maintaining compound integrity from synthesis to application.</p>
+              </div>
+            </div>
+          </a>
+          <a href="research/index.html" class="block glass rounded-xl p-5 hover:bg-white/10 transition group">
+            <div class="flex items-start gap-4">
+              <span class="text-teal-400 font-bold text-lg">02</span>
+              <div>
+                <h4 class="font-semibold text-white group-hover:text-teal-300 transition">Understanding Purity Standards</h4>
+                <p class="text-sm text-gray-400 mt-1">What HPLC purity percentages mean and why they matter for your research.</p>
+              </div>
+            </div>
+          </a>
+          <a href="research/index.html" class="block glass rounded-xl p-5 hover:bg-white/10 transition group">
+            <div class="flex items-start gap-4">
+              <span class="text-teal-400 font-bold text-lg">03</span>
+              <div>
+                <h4 class="font-semibold text-white group-hover:text-teal-300 transition">B2B Sourcing Guide</h4>
+                <p class="text-sm text-gray-400 mt-1">How to evaluate domestic peptide suppliers — a framework for procurement teams.</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Wholesale CTA -->
+  <section class="py-20 lg:py-28 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-gradient-to-br from-navy-900 to-navy-800 rounded-3xl p-8 sm:p-12 lg:p-16 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-teal-500/20 rounded-full blur-[100px]"></div>
+        <div class="relative grid lg:grid-cols-2 gap-10 items-center">
+          <div>
+            <p class="text-teal-400 font-semibold text-sm tracking-widest uppercase mb-3">Wholesale Program</p>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Partner With Us.</h2>
+            <p class="text-gray-300 text-lg mb-8">Volume pricing, dedicated account support, and flexible fulfillment for clinics, distributors, and supplement brands. Let's build something together.</p>
+            <a href="wholesale/index.html" class="btn-primary inline-flex items-center text-white font-semibold px-7 py-3.5 rounded-xl">
+              Request Wholesale Pricing
+            </a>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="glass rounded-xl p-5">
+              <div class="text-teal-400 font-bold text-sm mb-1">Minimum Order</div>
+              <div class="text-white font-medium">Flexible MOQs for new partners</div>
+            </div>
+            <div class="glass rounded-xl p-5">
+              <div class="text-teal-400 font-bold text-sm mb-1">Turnaround</div>
+              <div class="text-white font-medium">Overnight shipping to all 50 states</div>
+            </div>
+            <div class="glass rounded-xl p-5">
+              <div class="text-teal-400 font-bold text-sm mb-1">Documentation</div>
+              <div class="text-white font-medium">COA, SDS & compliance docs included</div>
+            </div>
+            <div class="glass rounded-xl p-5">
+              <div class="text-teal-400 font-bold text-sm mb-1">Account Support</div>
+              <div class="text-white font-medium">Dedicated rep for wholesale accounts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mailing List -->
+  <section class="py-16 bg-sand-100 border-y border-sand-200">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+      <h2 class="font-display text-2xl sm:text-3xl font-bold text-navy-900 mb-3">First Access to New Compounds</h2>
+      <p class="text-gray-600 mb-8">Join B2B buyers, clinicians, and research professionals who receive early notice of new peptide additions, wholesale pricing updates, and research library articles.</p>
+      <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onsubmit="event.preventDefault(); alert('Thanks for joining! (Demo only)');">
+        <input type="email" required placeholder="Enter your work email" class="flex-1 px-5 py-3.5 rounded-xl border border-sand-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-navy-900">
+        <button type="submit" class="btn-primary text-white font-semibold px-7 py-3.5 rounded-xl whitespace-nowrap">Join</button>
+      </form>
+      <p class="text-xs text-gray-500 mt-4">No spam. Unsubscribe at any time. B2B communications only.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-navy-950 text-gray-400 pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
+        <div class="lg:col-span-2">
+          <a href="index.html" class="flex items-center gap-3 mb-5">
+            <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-teal-600 to-navy-700 flex items-center justify-center">
+              <span class="text-white font-bold text-sm">PB</span>
+            </div>
+            <div>
+              <div class="font-display font-bold text-lg text-white leading-none">Palm Beach</div>
+              <div class="text-[9px] uppercase tracking-[0.2em] text-teal-500 font-semibold">Peptides</div>
+            </div>
+          </a>
+          <p class="text-sm leading-relaxed mb-5 max-w-xs">Premium American-made peptides for researchers, clinics, and brands. Precision. Purity. Transparency.</p>
+          <p class="text-xs text-gray-500">Based in Palm Beach County, Florida</p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4">Products</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="products/index.html" class="hover:text-teal-400 transition">Full Catalog</a></li>
+            <li><a href="products/index.html#growth" class="hover:text-teal-400 transition">Growth Factors</a></li>
+            <li><a href="products/index.html#metabolic" class="hover:text-teal-400 transition">Metabolic</a></li>
+            <li><a href="products/index.html#cognitive" class="hover:text-teal-400 transition">Cognitive</a></li>
+            <li><a href="products/index.html#stacks" class="hover:text-teal-400 transition">Stacks</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4">Company</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="about/index.html" class="hover:text-teal-400 transition">About Us</a></li>
+            <li><a href="research/index.html" class="hover:text-teal-400 transition">Research Library</a></li>
+            <li><a href="wholesale/index.html" class="hover:text-teal-400 transition">Wholesale</a></li>
+            <li><a href="faq/index.html" class="hover:text-teal-400 transition">FAQ</a></li>
+            <li><a href="contact/index.html" class="hover:text-teal-400 transition">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4">Legal</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="#" class="hover:text-teal-400 transition">Terms of Service</a></li>
+            <li><a href="#" class="hover:text-teal-400 transition">Privacy Policy</a></li>
+            <li><a href="#" class="hover:text-teal-400 transition">Shipping Policy</a></li>
+            <li><a href="#" class="hover:text-teal-400 transition">Research Use Only</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-navy-800 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p class="text-xs text-gray-500">© 2026 Palm Beach Peptides. All rights reserved.</p>
+        <p class="text-xs text-gray-500 text-center sm:text-right max-w-md">All products are intended for research purposes only. Not for human consumption. Not evaluated by the FDA.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    btn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+    });
+  </script>
+</body>
+</html>
