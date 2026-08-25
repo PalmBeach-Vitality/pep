@@ -3,10 +3,10 @@
 // Mode: Run Once for All Items
 // After: filter_active  Before: Limit
 //
-// Round-robin product format so pens cannot starve vials/labs:
-//   pen_3ml_scene      → next vial_10ml_scene
-//   vial_10ml_scene    → next lab_scene
-//   lab_scene          → next pen_3ml_scene
+// Round-robin product format: pen → vial → pen → vial.
+// Lab rows stay in the sheet but are never picked.
+// last_used_date is ISO date only, so same-day pen and vial
+// rows cannot be ordered. Persist last pick in workflow static data.
 // Within the chosen category: unused rows first (empty last_used_date),
 // then oldest last_used_date, then rotation_order.
 
@@ -23,9 +23,10 @@ function rot(row) {
   return isFinite(n) ? n : 9999;
 }
 
+var STAGGER = ['pen_3ml_scene', 'vial_10ml_scene'];
 var NEXT_CAT = {
   pen_3ml_scene: 'vial_10ml_scene',
-  vial_10ml_scene: 'lab_scene',
+  vial_10ml_scene: 'pen_3ml_scene',
   lab_scene: 'pen_3ml_scene',
 };
 
@@ -37,7 +38,15 @@ if (!rows.length) {
   throw new Error('pick_image_scene: no Active rows from 3-image-scenes-150');
 }
 
-var dated = rows
+var eligible = rows.filter(function (r) {
+  return STAGGER.indexOf(catOf(r)) !== -1;
+});
+
+if (!eligible.length) {
+  throw new Error('pick_image_scene: no Active pen_3ml_scene or vial_10ml_scene rows');
+}
+
+var dated = eligible
   .filter(function (r) {
     return usedDate(r);
   })
@@ -46,22 +55,27 @@ var dated = rows
     return usedDate(b).localeCompare(usedDate(a));
   });
 
-var lastCat = dated.length ? catOf(dated[0]) : '';
-var nextCat = NEXT_CAT[lastCat] || 'vial_10ml_scene';
+var staticData = $getWorkflowStaticData('global');
+var lastCat = String(staticData.last_image_category || '').trim();
+if (STAGGER.indexOf(lastCat) === -1) {
+  lastCat = dated.length ? catOf(dated[0]) : '';
+}
+var nextCat = NEXT_CAT[lastCat] || 'pen_3ml_scene';
+staticData.last_image_category = nextCat;
 
 function inCat(cat) {
-  return rows.filter(function (r) {
+  return eligible.filter(function (r) {
     return catOf(r) === cat;
   });
 }
 
 var pool = inCat(nextCat);
 if (!pool.length) {
-  pool = rows.filter(function (r) {
-    return catOf(r) && catOf(r) !== lastCat;
+  pool = eligible.filter(function (r) {
+    return catOf(r) !== lastCat;
   });
 }
-if (!pool.length) pool = rows;
+if (!pool.length) pool = eligible;
 
 pool.sort(function (a, b) {
   var au = usedDate(a) ? 1 : 0;
