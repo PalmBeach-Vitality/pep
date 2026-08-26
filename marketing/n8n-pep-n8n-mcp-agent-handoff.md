@@ -128,6 +128,7 @@ CSV in repo:
 
 - `pep_script` — unused old “lab only / not for people” copy. Never spoken.
 - `disclaimer_short` — unused. Spoken VO is `voice_over` only. Caption research-use stays on `caption_lock`.
+- `reel_still_url` / `video_still_url` / `videro_still_url` — unused on the sheet. Stills stay on canvas node `save_still_url`. Do not write them back.
 
 Also delete matching fields on `Prep_day_variant` if they still exist.
 
@@ -308,7 +309,6 @@ Tab `150-pb-pep-scenes`. Match `creation_id`. Mapping: `marketing/n8n-pep-sheets
 |---|---|
 | `last_used_at` | `={{ $now.toISO() }}` |
 | `times_used` | `={{ Number($('Limit').item.json.times_used \|\| $('Prep_day_variant').item.json.times_used \|\| 0) + 1 }}` |
-| `reel_still_url` | `={{ $('gather_pep_clips').item.json.reel_still_url }}` |
 | `video_url` | `={{ $('gather_pep_clips').item.json.video_url }}` |
 | `model_video` | `={{ $('gather_pep_clips').item.json.model_video \|\| 'fal-omnihuman-v1.5' }}` |
 

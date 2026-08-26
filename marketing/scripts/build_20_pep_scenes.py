@@ -35,7 +35,7 @@ FIELDS = [
     "framing", "scene_brief", "quality_var_count", "quality_suffix", "aspect_ratio",
     "duration_seconds", "resolution", "model_still", "model_video", "still_resolution",
     "video_prompt", "video_motion_prompt", "status", "times_used", "last_used_at",
-    "reel_still_url", "video_url", "surface", "lighting", "camera_move", "color_grade",
+    "video_url", "surface", "lighting", "camera_move", "color_grade",
     "hero_style", "source_id", "vibe", "theme", "workflow", "voice_over", "product_description",
 ]
 
@@ -431,7 +431,6 @@ def make_row(i: int, s: dict) -> dict:
         "status": "Active",
         "times_used": "0",
         "last_used_at": "",
-        "reel_still_url": "",
         "video_url": "",
         "surface": s["surface"],
         "lighting": s["lighting"],

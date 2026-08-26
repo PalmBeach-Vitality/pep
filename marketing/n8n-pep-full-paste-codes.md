@@ -672,6 +672,5 @@ Paste `marketing/n8n-pep-gather-clips.js` into `(gather_pep_clips)` (All Items).
 |---|---|---|---|
 | `last_used_at` | String | ON | `={{ $now.toISO() }}` |
 | `times_used` | Number | ON | `={{ Number($('Limit').item.json.times_used \|\| $('Prep_day_variant').item.json.times_used \|\| 0) + 1 }}` |
-| `reel_still_url` | String | ON | `={{ $('gather_pep_clips').item.json.reel_still_url }}` |
 | `video_url` | String | ON | `={{ $('gather_pep_clips').item.json.video_url }}` |
 | `model_video` | String | ON | `={{ $('gather_pep_clips').item.json.model_video \|\| 'fal-omnihuman-v1.5' }}` |

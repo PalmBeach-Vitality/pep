@@ -177,12 +177,24 @@ mustInclude('n8n-pep-tts-body.txt', [
   'eleven_multilingual_v2',
   'tts_speak',
 ]);
+mustInclude('n8n-pep-sheets-update.txt', [
+  'video_url',
+  'last_used_at',
+  'times_used',
+  'model_video',
+]);
+mustNotInclude('n8n-pep-sheets-update.txt', [
+  'reel_still_url',
+  'video_still_url',
+  'videro_still_url',
+]);
 mustInclude('AGENT_RULEBOOK.md', [
   'n8n-pep-n8n-mcp-agent-handoff.md',
   'if_complaince',
   'Do not remint boardwalk pass',
   '1080p',
   'HUMAN_SCRIPT_AGENT.md',
+  'videro_still_url',
 ]);
 mustInclude('n8n-pep-n8n-mcp-agent-handoff.md', [
   'vid_gen_palm_beach_pep',
@@ -194,6 +206,7 @@ mustInclude('n8n-pep-n8n-mcp-agent-handoff.md', [
   '65–74',
   '1080p',
   'HUMAN_SCRIPT_AGENT.md',
+  'videro_still_url',
 ]);
 mustInclude('n8n-pep-prep-beats.js', [
   'SEM-uh-GLOO-tide',

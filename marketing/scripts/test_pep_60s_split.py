@@ -67,6 +67,9 @@ def main() -> None:
         assert "Palm Beach Pep" in r["scene_brief"], cid
         assert "don't scroll" not in low, cid
         secs.append(n / 2.51)
+    header = rows[0].keys()
+    for dropped in ("reel_still_url", "video_still_url", "videro_still_url", "pep_script", "disclaimer_short"):
+        assert dropped not in header, dropped
     assert len(set(firsts)) == 20, firsts
     first = rows[0]
     with POOL.open(newline="", encoding="utf-8") as f:
