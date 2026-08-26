@@ -43,6 +43,7 @@ def main() -> None:
     assert len({r["compound_name"] for r in rows}) == 20
     assert len({r["surface"] for r in rows}) == 20
     secs = []
+    firsts = []
     for r in rows:
         vo = r["voice_over"]
         cid = r["creation_id"]
@@ -54,6 +55,7 @@ def main() -> None:
             assert b not in low, f"{cid} {b}"
         assert "palm beach pep" in low, cid
         assert "i'm palm beach pep" in low or "im palm beach pep" in low, cid
+        firsts.append(vo.split(".")[0].strip().lower())
         assert "studies have shown" in low, cid
         assert "beneficial to" in low, cid
         assert "recent research studies" in low, cid
@@ -63,7 +65,9 @@ def main() -> None:
         assert r["resolution"] == "1080p", cid
         assert r["workflow"] == "vid_gen_palm_beach_pep", cid
         assert "Palm Beach Pep" in r["scene_brief"], cid
+        assert "don't scroll" not in low, cid
         secs.append(n / 2.51)
+    assert len(set(firsts)) == 20, firsts
     first = rows[0]
     with POOL.open(newline="", encoding="utf-8") as f:
         pool = list(csv.DictReader(f))

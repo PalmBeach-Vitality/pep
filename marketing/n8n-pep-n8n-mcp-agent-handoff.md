@@ -155,9 +155,9 @@ Walk / jog / hike gloves = `walk_swing`. Dance = `dance_groove`. Sport = `sport_
 
 ## Spoken VO (locked)
 
-Spoken lines come **only** from `150-pb-pep-scenes.voice_over`. **20 unique clips.** Easy science, hook first:
+Spoken lines come **only** from `150-pb-pep-scenes.voice_over`. **20 unique clips.** Human Script Agent (`marketing/HUMAN_SCRIPT_AGENT.md`) writes the hook + science. Locked close:
 
-1. Hook + Pep intro + how **this** peptide works
+1. Hook + Pep intro + how **this** peptide works (unique opener, no cloned "Don't scroll")
 2. Required: `Studies have shown X has been beneficial to X in recent research studies.`
 3. Immediately before last sentence: `Palm Beach Vitality research peptides are backed by a COA with every single order, American made delivering >99% purity 100% of the time.`
 4. Last sentence exactly: `Visit us at palmbeach-vitality.store.`
@@ -401,7 +401,8 @@ Tell Sal immediately when new Imagine models hit the API.
 ## Tests
 
 `node marketing/scripts/test_pep_60s_nodes.js` — syntax + contracts for one 30s 1080p talking clip (action bodies, 1080p, gather 1 clip, TTS `tts_speak`).
-`python3 marketing/scripts/test_pep_60s_split.py` — 20 rows, 65–74 words, unique sets.
+`python3 marketing/scripts/test_pep_60s_split.py` — 20 rows, 65–74 words, unique sets, unique openers.
+`python3 marketing/scripts/test_human_scripts.py` — 30s + 60s human-script lint (banned vocab, word buckets, locked close).
 
 ---
 
@@ -409,6 +410,7 @@ Tell Sal immediately when new Imagine models hit the API.
 
 | File | Use |
 |---|---|
+| `marketing/HUMAN_SCRIPT_AGENT.md` | 30–60s spoken VO identity, parameters, goals |
 | `marketing/AGENT_RULEBOOK.md` | Always-on Sal rules |
 | `marketing/n8n-pep-60s-1080-execute.md` | Canvas paste order for the 30s 1080p path |
 | `marketing/n8n-pep-lipsync-setup.md` | fal upload + OmniHuman node params |
@@ -417,7 +419,9 @@ Tell Sal immediately when new Imagine models hit the API.
 | `marketing/n8n-pep-stitch-notes.md` | Do not dissolve A+B into one 60s film (legacy; current path is one clip) |
 | `marketing/n8n-pep-omnihuman-keeper.txt` | Older keeper clip notes |
 | `marketing/scripts/build_20_pep_scenes.py` | Rebuild the 20 VOs / sets / blocking pool |
-| `marketing/n8n-pep-20-vo-review.md` | Sal’s VO review list |
+| `marketing/scripts/build_pep_60s_human.py` | Review-only 60s human scripts |
+| `marketing/n8n-pep-20-vo-review.md` | Sal’s 30s VO review list |
+| `marketing/n8n-pep-60s-human-vo.md` | Sal’s 60s VO review list (do not import) |
 | `marketing/n8n-node-reference.md` | Prefer official nodes over HTTP |
 
 ---

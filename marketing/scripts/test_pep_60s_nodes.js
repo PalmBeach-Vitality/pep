@@ -182,6 +182,7 @@ mustInclude('AGENT_RULEBOOK.md', [
   'if_complaince',
   'Do not remint boardwalk pass',
   '1080p',
+  'HUMAN_SCRIPT_AGENT.md',
 ]);
 mustInclude('n8n-pep-n8n-mcp-agent-handoff.md', [
   'vid_gen_palm_beach_pep',
@@ -192,6 +193,7 @@ mustInclude('n8n-pep-n8n-mcp-agent-handoff.md', [
   'SEM-uh-GLOO-tide',
   '65–74',
   '1080p',
+  'HUMAN_SCRIPT_AGENT.md',
 ]);
 mustInclude('n8n-pep-prep-beats.js', [
   'SEM-uh-GLOO-tide',

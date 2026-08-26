@@ -1,28 +1,33 @@
 #!/usr/bin/env python3
-"""20 unique 30s Pep clips: hook first, easy science, studies, COA, CTA.
+"""20 unique 30s Pep clips: human hook, easy science, locked studies + COA + CTA.
 
 TTS rate ~2.51 wps. 65–74 words ≈ 26–29.5s so 1080p OmniHuman (30s audio cap) does not 422.
+Human Script Agent: marketing/HUMAN_SCRIPT_AGENT.md
 """
 
 from __future__ import annotations
 
 import csv
-import re
+import sys
 from pathlib import Path
 
 ROOT = Path("/workspace/marketing")
+sys.path.insert(0, str(ROOT / "scripts"))
+from human_script_lib import (  # noqa: E402
+    CTA,
+    COA,
+    WPS,
+    assemble,
+    lint_script,
+    wc,
+)
+
 SCENES = ROOT / "sheets" / "150-pb-pep-scenes.csv"
 POOL = ROOT / "sheets" / "pep-blocking-pool.csv"
 REVIEW = ROOT / "n8n-pep-20-vo-review.md"
 
-CTA = "Visit us at palmbeach-vitality.store."
-COA = (
-    "Palm Beach Vitality research peptides are backed by a COA with every single order, "
-    "American made delivering >99% purity 100% of the time."
-)
 TARGET_MIN = 65
 TARGET_MAX = 74
-WPS = 2.51
 
 FIELDS = [
     "creation_id", "rank", "category", "material_detail", "compound_id", "compound_name",
@@ -40,17 +45,8 @@ MATERIAL = (
 )
 
 
-def wc(text: str) -> int:
-    return len([w for w in text.split() if w])
-
-
-def studies(say: str, benefit: str) -> str:
-    return f"Studies have shown {say} has been beneficial to {benefit} in recent research studies."
-
-
 def pitch(hook: str, science: str, say: str, benefit: str) -> str:
-    parts = [hook, science, studies(say, benefit), COA, CTA]
-    return re.sub(r"\s+", " ", " ".join(parts)).strip()
+    return assemble(hook, science, say, benefit)
 
 
 # 20 unique products. Hook first. Easy science. Action matched to set.
@@ -65,8 +61,8 @@ SCENES_DATA = [
         grade="sunlit coastal grade, soft aqua highlights",
         vibe="Coastal", theme="Beach & Ocean", suffix="boardwalk-walk",
         angle="eye-level", direction="front",
-        hook="Don't scroll. I'm Palm Beach Pep, walking this boardwalk.",
-        science="BPC-157 is a short chain from a gut protein. Labs study it as a local repair signal for lining and tendon.",
+        hook="Salt on these boards. I'm Palm Beach Pep.",
+        science="BPC-157 is a short gut-protein fragment labs watch as a local lining and tendon repair signal.",
         say="BPC-157", benefit="gut lining and tendon-repair research",
         desc="BPC-157 research vial. 10mL sterile crimp-seal format.",
     ),
@@ -80,8 +76,8 @@ SCENES_DATA = [
         grade="crisp athletic grade, cool turf greens",
         vibe="Powerful", theme="Resilience & Strength", suffix="turf-jog",
         angle="low-angle", direction="front",
-        hook="Don't scroll. I'm Palm Beach Pep, jogging this turf.",
-        science="TB-500 is a piece of thymosin beta-4. Labs study how it helps cells crawl into a repair zone, not as a stimulant.",
+        hook="Hash marks, empty lane. I'm Palm Beach Pep.",
+        science="TB-500 is a thymosin beta-4 piece labs study when cells need a track to crawl into a repair zone.",
         say="TB-500", benefit="cell-migration and recovery research",
         desc="TB-500 research vial for laboratory research.",
     ),
@@ -95,8 +91,8 @@ SCENES_DATA = [
         grade="warm honey grade, pink petal highlights",
         vibe="Warm", theme="Nature Regeneration", suffix="blossom-dance",
         angle="eye-level", direction="slight-right",
-        hook="Hat bouncing — I'm Palm Beach Pep, dancing this path.",
-        science="GHK-Cu is three amino acids holding a copper ion. Labs study it for collagen talk in skin and connective tissue.",
+        hook="Petals in the air. I'm Palm Beach Pep, and this hat's bouncing.",
+        science="GHK-Cu is three amino acids holding copper. Labs watch collagen talk in skin.",
         say="GHK-Cu", benefit="collagen remodeling and skin-repair research",
         desc="GHK-Cu copper-tripeptide research vial.",
     ),
@@ -110,8 +106,8 @@ SCENES_DATA = [
         grade="bright coastal grade, clean contrast",
         vibe="Fresh", theme="Fat Loss & Metabolism", suffix="bikepath-walk",
         angle="eye-level", direction="slight-left",
-        hook="Keep up. I'm Palm Beach Pep, on this bike path.",
-        science="Semaglutide copies the meal hormone GLP-1. After food it helps insulin when sugar is high and slows emptying.",
+        hook="Keep the pace. I'm Palm Beach Pep.",
+        science="Semaglutide copies GLP-1, the meal hormone. After food it helps insulin when sugar is high and slows emptying.",
         say="Semaglutide", benefit="appetite and metabolic-marker research",
         desc="Semaglutide research vial.",
     ),
@@ -125,8 +121,8 @@ SCENES_DATA = [
         grade="dramatic coastal grade, deep blues",
         vibe="Epic", theme="Beach & Ocean", suffix="seastack-walk",
         angle="low-angle", direction="front",
-        hook="Big water, bigger walk. I'm Palm Beach Pep.",
-        science="Tirzepatide talks to two meal-hormone receptors, GIP and GLP-1. One molecule, two knocks, studied for insulin and appetite.",
+        hook="That water's loud. I'm Palm Beach Pep.",
+        science="Tirzepatide knocks two meal-hormone receptors, GIP and GLP-1. One molecule. Labs watch insulin and appetite on both.",
         say="Tirzepatide", benefit="dual-incretin metabolic research",
         desc="Tirzepatide research vial.",
     ),
@@ -140,8 +136,8 @@ SCENES_DATA = [
         grade="open-air grade, warm rock and cool water",
         vibe="Epic", theme="Mountains", suffix="cliff-hike",
         angle="low-angle", direction="slight-right",
-        hook="Trail dust. I'm Palm Beach Pep, hiking this cliff.",
-        science="Retatrutide talks to three receptors: GIP, GLP-1, and glucagon. Two say the meal arrived. The third is studied for energy spend.",
+        hook="Cliff dirt under the sneakers. I'm Palm Beach Pep.",
+        science="Retatrutide talks to GIP, GLP-1, and glucagon. Two say the meal arrived. The third is studied for energy spend.",
         say="Retatrutide", benefit="triple-agonist metabolic research",
         desc="Retatrutide research vial.",
     ),
@@ -155,8 +151,8 @@ SCENES_DATA = [
         grade="clean daylight grade, warm wood and rubber",
         vibe="Bright", theme="Fat Loss & Metabolism", suffix="fitpark-jog",
         angle="eye-level", direction="front",
-        hook="Morning miles. I'm Palm Beach Pep, jogging this park.",
-        science="AOD-9604 is a tiny tail-piece of growth hormone. Labs study the fat-breakdown note, not the whole hormone orchestra.",
+        hook="Morning rubber chips. I'm Palm Beach Pep, jogging this park.",
+        science="AOD-9604 is a tail-piece of growth hormone. Labs follow the fat-breakdown note from that fragment.",
         say="AOD-9604", benefit="fat-metabolism and lipolysis research",
         desc="AOD-9604 research vial.",
     ),
@@ -170,8 +166,8 @@ SCENES_DATA = [
         grade="pastoral grade, saturated blooms",
         vibe="Bright", theme="Focus & Clarity", suffix="meadow-walk",
         angle="eye-level", direction="slight-left",
-        hook="Lights on. I'm Palm Beach Pep, walking this meadow.",
-        science="Semax is an ACTH-fragment analog. Labs study BDNF talk — the brain's learning signal — not caffeine and not amphetamine.",
+        hook="Keep moving. Wildflowers, wide sky. I'm Palm Beach Pep.",
+        science="Semax is an ACTH-fragment analog. Labs study BDNF, the brain's learning signal, in cognition models.",
         say="Semax", benefit="BDNF and cognitive-research endpoints",
         desc="Semax research product.",
     ),
@@ -185,8 +181,8 @@ SCENES_DATA = [
         grade="golden hour grade, soft water highlights",
         vibe="Zen", theme="Focus & Clarity", suffix="yoga-groove",
         angle="eye-level", direction="slight-right",
-        hook="Easy groove. I'm Palm Beach Pep, on this deck.",
-        science="Selank is a tuftsin analog. Labs study the brain's calm-down GABA conversation, not a knockout sedative.",
+        hook="Easy morning. Water's still. I'm Palm Beach Pep, on this deck.",
+        science="Selank is a tuftsin analog. Labs watch the brain's GABA calm-down conversation.",
         say="Selank", benefit="calm-focus and GABA-pathway research",
         desc="Selank research vial.",
     ),
@@ -200,8 +196,8 @@ SCENES_DATA = [
         grade="clean athletic grade, warm wood and iron",
         vibe="Powerful", theme="Resilience & Strength", suffix="gym-walk",
         angle="eye-level", direction="front",
-        hook="Gym lights up. I'm Palm Beach Pep, walking this floor.",
-        science="Ipamorelin knocks the ghrelin receptor and asks for a short growth-hormone pulse. Quieter than older GHRPs. Not a steroid.",
+        hook="Daylight off the racks. I'm Palm Beach Pep.",
+        science="Ipamorelin knocks the ghrelin receptor and asks for a short growth-hormone pulse. Quieter than older GHRPs.",
         say="Ipamorelin", benefit="selective growth-hormone pulse research",
         desc="Ipamorelin research vial.",
     ),
@@ -215,8 +211,8 @@ SCENES_DATA = [
         grade="moody gym grade, warm metal highlights",
         vibe="Powerful", theme="Resilience & Strength", suffix="kettlebell-sport",
         angle="low-angle", direction="oblique right",
-        hook="Coach mode. I'm Palm Beach Pep, in this rack aisle.",
-        science="CJC with no DAC is a GHRH analog. It asks the pituitary for a growth-hormone pulse, then clears.",
+        hook="Iron and wood. I'm Palm Beach Pep.",
+        science="CJC with no DAC is a GHRH analog. It asks the pituitary for a growth-hormone pulse, then it clears.",
         say="CJC (no DAC)", benefit="growth-hormone pulse and recovery research",
         desc="CJC (no DAC) research vial.",
     ),
@@ -230,8 +226,8 @@ SCENES_DATA = [
         grade="desert gold grade, long shadows",
         vibe="Dramatic", theme="Desert", suffix="mesa-hike",
         angle="low-angle", direction="front",
-        hook="Sunset rock. I'm Palm Beach Pep, hiking this mesa.",
-        science="Tesamorelin is a stabilized GHRH analog. It asks the pituitary for GH, then IGF-1. Labs have watched body-composition markers on that path.",
+        hook="Sandstone's warm. I'm Palm Beach Pep, hiking this mesa.",
+        science="Tesamorelin is a stabilized GHRH analog. Pituitary asks for GH, then IGF-1. Labs have watched body-composition markers.",
         say="Tesamorelin", benefit="IGF-1 and visceral-fat research",
         desc="Tesamorelin research vial.",
     ),
@@ -245,8 +241,8 @@ SCENES_DATA = [
         grade="lush green grade, dewy highlights",
         vibe="Lush", theme="Nature Regeneration", suffix="greenhouse-walk",
         angle="eye-level", direction="slight-left",
-        hook="Misted glass. I'm Palm Beach Pep, walking this aisle.",
-        science="KPV is three amino acids from alpha-MSH. Labs study the calm-inflammation half, not the tanning half.",
+        hook="Ferns in the mist. I'm Palm Beach Pep.",
+        science="KPV is three amino acids from alpha-MSH. Labs study the calm-inflammation half in gut and skin models.",
         say="KPV", benefit="gut and skin inflammation-pathway research",
         desc="KPV research vial.",
     ),
@@ -260,8 +256,8 @@ SCENES_DATA = [
         grade="cool energy grade, electric blues",
         vibe="Cool", theme="Energy & Cellular Power", suffix="spin-sport",
         angle="slightly elevated", direction="slight-right",
-        hook="Cadence up. I'm Palm Beach Pep, on this bike.",
-        science="NAD+ is the shuttle cells use to move electrons and make ATP. Battery coin, not caffeine.",
+        hook="Blue wash, empty bikes. I'm Palm Beach Pep.",
+        science="NAD+ is the shuttle cells use to move electrons and make ATP. The redox coin mitochondria spend.",
         say="NAD+", benefit="cellular-energy and mitochondrial research",
         desc="NAD+ research vial.",
     ),
@@ -275,8 +271,8 @@ SCENES_DATA = [
         grade="high-contrast athletic grade",
         vibe="Powerful", theme="Resilience & Strength", suffix="ropes-sport",
         angle="low-angle", direction="front",
-        hook="Two repair stories. I'm Palm Beach Pep, on this turf.",
-        science="BPC-157 is a local repair signal. TB-500 is studied for helping cells migrate. Neighborhood restore plus a crawl path.",
+        hook="Ropes on the turf. I'm Palm Beach Pep.",
+        science="BPC-157 is a local repair signal. TB-500 is studied for helping cells migrate. Two jobs, one walk.",
         say="BPC-157 and TB-500", benefit="tissue-repair and cell-migration research",
         desc="BPC-157 / TB-500 research stack vial.",
     ),
@@ -290,8 +286,8 @@ SCENES_DATA = [
         grade="warm night grade, amber lanterns",
         vibe="Warm", theme="Stacks & Synergy", suffix="lantern-dance",
         angle="eye-level", direction="slight-right",
-        hook="Night palms. I'm Palm Beach Pep, dancing this boardwalk.",
-        science="Three jobs. BPC-157 repairs locally. TB-500 helps cells migrate. GHK-Cu is copper for collagen talk.",
+        hook="Lanterns on the planks. I'm Palm Beach Pep.",
+        science="BPC-157 repairs locally. TB-500 helps cells migrate. GHK-Cu is copper for collagen talk.",
         say="BPC-157, TB-500, and GHK-Cu", benefit="repair, migration, and collagen research",
         desc="Glow stack research vial.",
     ),
@@ -305,8 +301,8 @@ SCENES_DATA = [
         grade="loft grade, warm brick",
         vibe="Powerful", theme="Energy & Cellular Power", suffix="loft-jog",
         angle="eye-level", direction="front",
-        hook="Mito-message. I'm Palm Beach Pep, jogging this loft.",
-        science="MOTS-C is a short peptide written in mitochondrial DNA. Labs study AMPK, the cell's fuel gauge. Exercise-mimetic note, not a stimulant.",
+        hook="Brick loft, medicine balls. I'm Palm Beach Pep.",
+        science="MOTS-C is a short peptide written in mitochondrial DNA. Labs study AMPK, the cell's fuel gauge.",
         say="MOTS-C", benefit="AMPK and metabolic-homeostasis research",
         desc="MOTS-C research vial.",
     ),
@@ -320,7 +316,7 @@ SCENES_DATA = [
         grade="industrial athletic grade, cool window light",
         vibe="Powerful", theme="Resilience & Strength", suffix="assault-sport",
         angle="low-angle", direction="oblique right",
-        hook="Two knocks. I'm Palm Beach Pep, on this assault bike.",
+        hook="Assault bike, rubber floor. I'm Palm Beach Pep.",
         science="CJC asks for a short GH pulse. Ipamorelin knocks ghrelin. Together they shape a natural pulse.",
         say="CJC (no DAC) and Ipamorelin", benefit="combined growth-hormone pulse research",
         desc="CJC (no DAC)/Ipamorelin research vial.",
@@ -335,8 +331,8 @@ SCENES_DATA = [
         grade="punchy gym grade, warm canvas",
         vibe="Powerful", theme="Resilience & Strength", suffix="ring-sport",
         angle="low-angle", direction="front",
-        hook="Shuffle, don't freeze. I'm Palm Beach Pep, in this ring.",
-        science="SS-31 parks on cardiolipin in the mitochondrial wall. Labs study cleaner ATP when that membrane stays tidy. A wrench, not caffeine.",
+        hook="Canvas corner. I'm Palm Beach Pep, still moving.",
+        science="SS-31 parks on cardiolipin in the mitochondrial wall. Labs study cleaner ATP when that membrane stays tidy.",
         say="SS-31", benefit="mitochondrial-membrane and bioenergetics research",
         desc="SS-31 research vial.",
     ),
@@ -350,8 +346,8 @@ SCENES_DATA = [
         grade="misty water grade, cool silvers",
         vibe="Fresh", theme="Lakes & Water", suffix="dock-jog",
         angle="eye-level", direction="front",
-        hook="Dock boards. I'm Palm Beach Pep, jogging this lake.",
-        science="Sermorelin is the first twenty-nine amino acids of GHRH. It asks the pituitary for a GH pulse, then clears. Not injecting GH.",
+        hook="Mist on the lake. I'm Palm Beach Pep.",
+        science="Sermorelin is the first twenty-nine amino acids of GHRH. It asks the pituitary for a GH pulse, then clears.",
         say="Sermorelin", benefit="pituitary growth-hormone pulse research",
         desc="Sermorelin research vial.",
     ),
@@ -399,6 +395,9 @@ def hero(s: dict) -> str:
 def make_row(i: int, s: dict) -> dict:
     vo = pitch(s["hook"], s["science"], s["say"], s["benefit"])
     n = wc(vo)
+    problems = lint_script(vo, duration=30)
+    if problems:
+        raise SystemExit(f"{s['creation_id']} {s['compound_name']} {n} words: {'; '.join(problems)}\n{vo}")
     if not (TARGET_MIN <= n <= TARGET_MAX):
         raise SystemExit(f"{s['creation_id']} {s['compound_name']} is {n} words (need {TARGET_MIN}–{TARGET_MAX}): {vo}")
     if "palm beach pep" not in vo.lower():
@@ -544,7 +543,8 @@ def write_review(rows: list[dict]) -> None:
     lines = [
         "# 20 × 30s Pep scripts — read and mark tweaks",
         "",
-        "Sal: these are the spoken `voice_over` lines. Easy science. Hook first. Studies + COA + store CTA still close every clip.",
+        "Human Script Agent pass. Unique set-specific hooks. Easy science. Locked studies + COA + store CTA still close every clip.",
+        "Spec: `marketing/HUMAN_SCRIPT_AGENT.md`.",
         "",
         f"Target **{TARGET_MIN}–{TARGET_MAX} words** (~{TARGET_MIN / WPS:.0f}–{TARGET_MAX / WPS:.1f}s at Pep TTS). OmniHuman **1080p** (30s audio cap).",
         "",
@@ -573,6 +573,8 @@ def main() -> None:
     assert len(set(names)) == 20
     surfaces = [r["surface"] for r in rows]
     assert len(set(surfaces)) == 20, "every clip needs a unique set"
+    firsts = [r["voice_over"].split(".")[0].strip().lower() for r in rows]
+    assert len(set(firsts)) == 20, f"duplicate first sentences: {firsts}"
 
     with SCENES.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=FIELDS, quoting=csv.QUOTE_ALL)
