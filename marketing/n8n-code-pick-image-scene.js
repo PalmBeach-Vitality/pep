@@ -3,13 +3,12 @@
 // Mode: Run Once for All Items
 // After: filter_active  Before: Limit
 //
-// Strict alternate: vial → pen → vial → pen.
-// Labs stay in the sheet but are never picked.
+// Manual override: Set node choose_pen_or_vial.format = "pen" | "vial"
+// (first node after Manual Trigger, before Get row(s)).
 //
-// last_used_date must be a full ISO timestamp (update_row writes $now.toISO())
-// so same-calendar-day runs stay ordered. Date-only legacy cells still work
-// as a fallback. Empty history starts on vial.
-// Within the chosen category: unused first, then oldest stamp, then rotation_order.
+// If format is blank/auto: strict alternate vial → pen → vial → pen
+// from the most recent pen/vial last_used stamp. Labs never picked.
+// update_row writes $now.toISO() timestamps for same-day ordering.
 
 function catOf(row) {
   return String((row && row.scene_category) || '').trim();
@@ -25,13 +24,25 @@ function usedRaw(row) {
 }
 
 function usedSortKey(row) {
-  // Prefer full ISO strings for ordering; date-only sorts before same-day timestamps.
   return usedRaw(row);
 }
 
 function rot(row) {
   var n = Number(row && row.rotation_order);
   return isFinite(n) ? n : 9999;
+}
+
+function manualChoice() {
+  try {
+    var raw = String($('choose_pen_or_vial').first().json.format || '')
+      .trim()
+      .toLowerCase();
+    if (raw === 'pen' || raw === 'pen_3ml_scene') return 'pen_3ml_scene';
+    if (raw === 'vial' || raw === 'vial_10ml_scene') return 'vial_10ml_scene';
+    return '';
+  } catch (e) {
+    return '';
+  }
 }
 
 var STAGGER = ['pen_3ml_scene', 'vial_10ml_scene'];
@@ -66,8 +77,17 @@ var dated = eligible
   });
 
 var lastCat = dated.length ? catOf(dated[0]) : '';
-var nextCat = NEXT_CAT[lastCat] || 'vial_10ml_scene';
-var staggerSource = lastCat ? 'last_used_alternate' : 'start_vial';
+var forced = manualChoice();
+var nextCat = '';
+var staggerSource = '';
+
+if (forced) {
+  nextCat = forced;
+  staggerSource = 'manual_choose';
+} else {
+  nextCat = NEXT_CAT[lastCat] || 'vial_10ml_scene';
+  staggerSource = lastCat ? 'last_used_alternate' : 'start_vial';
+}
 
 try {
   $getWorkflowStaticData('global').last_image_category = nextCat;
@@ -106,6 +126,7 @@ return [
       pick_next_category: nextCat,
       pick_stagger_source: staggerSource,
       pick_last_used_raw: dated.length ? usedRaw(dated[0]) : '',
+      pick_manual_format: forced || '',
     }),
   },
 ];
