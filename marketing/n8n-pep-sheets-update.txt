@@ -10,11 +10,9 @@
 # {{ $('gather_pep_clips').item.json.creation_id || $('prep_pep_beats').item.json.creation_id || $('Limit').item.json.creation_id }}
 #
 # Columns to update:
-# Sheet has one video_url / reel_still_url — those are Beat A.
-# Beats B/C/D stay on gather_pep_clips OUTPUT for CapCut.
+# Do not write still URLs back to the sheet. Canvas save_still_url keeps the still for OmniHuman.
 
 last_used_at   = {{ $now.toISO() }}
 times_used     = {{ Number($('Limit').item.json.times_used || $('Prep_day_variant').item.json.times_used || 0) + 1 }}
-reel_still_url = {{ $('gather_pep_clips').item.json.reel_still_url }}
 video_url      = {{ $('gather_pep_clips').item.json.video_url }}
 model_video    = {{ $('gather_pep_clips').item.json.model_video || 'fal-omnihuman-v1.5' }}
