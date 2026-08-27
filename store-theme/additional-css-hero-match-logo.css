@@ -1,0 +1,175 @@
+/**
+ * Palm Beach Vitality — logo + hero frames + category title images
+ *
+ * APPLY: paste the WHOLE CONTENTS of this file (not the filename) into
+ * WP Admin → Appearance → Customize → Additional CSS → Publish
+ * Replace whatever is there now with this full file.
+ */
+
+/* --- New logo --- */
+.pbv-logo-card {
+  background:
+    url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/PBV_NEW_LOGO.jpg")
+    center / cover no-repeat !important;
+}
+
+.pbv-logo-card__img {
+  opacity: 0 !important;
+}
+
+/* --- Logo + hero same 2.35:1 frame --- */
+.pbv-logo-card,
+.pbv-hero-photo {
+  width: min(100% - 2rem, 56rem) !important;
+  max-width: 56rem !important;
+  aspect-ratio: 2.35 / 1 !important;
+  border-radius: 1.25rem !important;
+  height: auto !important;
+}
+
+.pbv-hero-photo {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+@media (max-width: 749px) {
+  .pbv-logo-banner { padding: 1rem 1rem 0.85rem !important; }
+  .pbv-hero { padding: 0.75rem 1rem 0.5rem !important; }
+
+  .pbv-logo-card,
+  .pbv-hero-photo {
+    width: min(100% - 2rem, 56rem) !important;
+    max-width: none !important;
+    aspect-ratio: 2.35 / 1 !important;
+    border-radius: 1.25rem !important;
+  }
+
+  .pbv-hero-photo__body { display: none !important; }
+  .pbv-hero-photo__content { padding: 0.7rem 0.95rem !important; }
+  .pbv-hero-photo__title {
+    font-size: clamp(1.05rem, 4.5vw, 1.35rem) !important;
+    margin-bottom: 0.2rem !important;
+  }
+  .pbv-hero-photo__subtitle {
+    font-size: clamp(0.72rem, 3vw, 0.88rem) !important;
+    margin-bottom: 0.35rem !important;
+  }
+  .pbv-hero-photo__welcome {
+    font-size: clamp(0.78rem, 3.1vw, 0.95rem) !important;
+    margin: 0.25rem 0 !important;
+  }
+  .pbv-hero-photo__wholesale {
+    font-size: clamp(0.58rem, 2.2vw, 0.68rem) !important;
+  }
+}
+
+@media (min-width: 750px) {
+  .pbv-logo-card,
+  .pbv-hero-photo {
+    width: min(100% - 2rem, 64rem) !important;
+    max-width: 64rem !important;
+    aspect-ratio: 2.35 / 1 !important;
+    border-radius: 1.5rem !important;
+  }
+  .pbv-hero-photo__content { padding: 1.25rem 1.75rem !important; }
+  .pbv-hero-photo__body {
+    display: block !important;
+    font-size: 0.72rem !important;
+    line-height: 1.35 !important;
+    margin-bottom: 0.4rem !important;
+  }
+}
+
+/* --- Shared: centered category title image frames --- */
+body.term-peptides h1.page-title,
+body.term-peptide-pens h1.page-title {
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+  padding: 0 !important;
+  border: 0 !important;
+  height: auto !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  text-align: center !important;
+  text-shadow: none !important;
+  filter: none !important;
+  animation: none !important;
+  overflow: hidden !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  background-size: contain !important;
+}
+
+/* Peptides — 1080x540 */
+body.term-peptides h1.page-title {
+  width: min(92vw, 40rem) !important;
+  max-width: 40rem !important;
+  aspect-ratio: 1080 / 540 !important;
+  background-image: url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/Peptides-glow.png") !important;
+}
+
+/* Peptide Pens — 1815x540 (wider art) */
+body.term-peptide-pens h1.page-title {
+  width: min(94vw, 56rem) !important;
+  max-width: 56rem !important;
+  aspect-ratio: 1815 / 540 !important;
+  background-image: url("https://palmbeach-vitality.store/wp-content/uploads/2026/07/Peptide-Pens-glow.png") !important;
+}
+
+/*
+ * Put glow titles BELOW the category banner image (centered).
+ * DOM is: title then banner — flex order swaps them.
+ */
+body.term-peptides .site-wrap,
+body.term-peptide-pens .site-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+body.term-peptides .pbv-cat-banner,
+body.term-peptide-pens .pbv-cat-banner {
+  order: 1 !important;
+}
+
+body.term-peptides h1.page-title,
+body.term-peptide-pens h1.page-title {
+  order: 2 !important;
+}
+
+body.term-peptides .woocommerce-notices-wrapper,
+body.term-peptides p.woocommerce-result-count,
+body.term-peptides form.woocommerce-ordering,
+body.term-peptides ul.products,
+body.term-peptides .woocommerce-pagination,
+body.term-peptides nav.woocommerce-pagination,
+body.term-peptides .site-footer,
+body.term-peptide-pens .woocommerce-notices-wrapper,
+body.term-peptide-pens p.woocommerce-result-count,
+body.term-peptide-pens form.woocommerce-ordering,
+body.term-peptide-pens ul.products,
+body.term-peptide-pens .woocommerce-pagination,
+body.term-peptide-pens nav.woocommerce-pagination,
+body.term-peptide-pens .site-footer {
+  order: 3 !important;
+}
+
+/* Keep banner titles clean (no fake CSS glow) */
+body.term-peptides .pbv-cat-banner__title,
+body.term-peptide-pens .pbv-cat-banner__title,
+body.term-peptides .pbv-cat-banner__title span,
+body.term-peptide-pens .pbv-cat-banner__title span {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55) !important;
+  filter: none !important;
+  animation: none !important;
+  color: #fff !important;
+}
+
+body.term-peptides .pbv-cat-banner__title span,
+body.term-peptide-pens .pbv-cat-banner__title span {
+  color: #7ec8ff !important;
+}
