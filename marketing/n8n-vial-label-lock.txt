@@ -1,0 +1,6 @@
+VIAL LABEL LOCK (MANDATORY whenever a vial is visible in an image or video):
+The vial sticker has exactly two lines and nothing else.
+Line 1: peptide name only (example: BPC-157)
+Line 2: 10ml
+No milligram marks, no per-milliliter marks, no extra numbers, no purity percent, no IU
+on the glass, cap, carton, or hang-tag.

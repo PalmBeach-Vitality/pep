@@ -1,0 +1,28 @@
+# PEN HARDWARE LOCK — image_gen_buffer / GROK_Imagine
+
+No IF nodes. Code node `prep_imagine_request` chooses edits vs generations.
+See: marketing/n8n-image-gen-buffer-pen-nodes.md
+
+## Accent color rule (hard)
+
+| Compounds | Accent color (ring + DNA + label type + dial) |
+|---|---|
+| Semaglutide, Tirzepatide, Retatrutide | **BLUE** (`P-SEM-001`, `P-TIR-001`, `P-RET-001`) |
+| All other peptide pens | **RED** |
+
+## Templates
+
+Blue:
+https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-blue.png
+
+Red:
+https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-red.png
+
+Drive master:
+https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/retatrutide_pen_source.png
+
+## Exact node names
+
+`prep_imagine_request` → `GROK_Imagine` → `Save_render_URL`
+
+Delete `if_pen_scene` / `grok_imagine_pen_edit` / `merge_imagine_out` if you added them.

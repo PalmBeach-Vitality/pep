@@ -1,0 +1,47 @@
+{{ (() => {
+  const name = String($('Parse_Grok').item.json.display_name || $('Prep_day_variant').item.json.compound_name || '');
+  const id = String($('Prep_day_variant').item.json.compound_id || '');
+  const isBlue = ['P-SEM-001', 'P-TIR-001', 'P-RET-001'].includes(id)
+    || /^(semaglutide|tirzepatide|retatrutide)$/i.test(name.trim());
+  const accent = isBlue ? 'bright cobalt blue' : 'bright crimson red';
+  const accentShort = isBlue ? 'blue' : 'red';
+  const colorRule = isBlue
+    ? 'ACCENT COLOR LOCK: BLUE — this is Semaglutide, Tirzepatide, or Retatrutide.'
+    : 'ACCENT COLOR LOCK: RED — this peptide is NOT Semaglutide/Tirzepatide/Retatrutide; do not use blue accents.';
+  const templateUrl = isBlue
+    ? 'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-blue.png'
+    : 'https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/imagine-2-0-7786/marketing/assets/pbv-research-pen-template-red.png';
+  return {
+    model: 'grok-imagine-image-2.0',
+    aspect_ratio: '1:1',
+    resolution: '2k',
+    n: 1,
+    image: {
+      url: templateUrl,
+      type: 'image_url'
+    },
+    prompt: [
+      'EDIT the reference image. PRESERVE this sleek luxury research pen HARDWARE exactly, including the elongated slimmer 3mL barrel: matte pearl-gray medical plastic (not chrome), clear glass-like left tip-cap with NO pocket clip, ' + accent + ' precision mid accent ring, white wrap label with refined ' + accentShort + ' DNA double-helix graphic on the left of the label, ' + accent + ' finely ribbed dose dial on the right end.',
+      'Keep the premium catalog look — expensive, refined, photoreal. Do not redesign the pen. Do not shorten the barrel. Do not add a pocket clip. Do not change proportions, cap style, or dial style. Keep accent color exactly ' + accentShort + '.',
+      colorRule,
+      'ONLY change the pen label text to this compound name in large ' + accentShort + ' sans-serif: ' + name.replace(/\d+(?:\.\d+)?\s*(mg|mcg|µg|ug|iu)\s*\/\s*m[lL]/gi, '').replace(/\d+(?:\.\d+)?\s*(mg|mcg|µg|ug|iu)\b/gi, '').replace(/\s{2,}/g, ' ').trim() + '.',
+      'Secondary pen label line in smaller ' + accentShort + ' text: 3ml pen. Do not print milligram or per-milliliter marks on the pen.',
+      'VIAL LABEL LOCK: If any vial appears, sticker is peptide name + 10ml only. No milligram or per-milliliter marks on a vial.',
+      'Place that same locked longer pen mid-ground inside a photoreal pharmaceutical manufacturing cleanroom (GMP fill-finish / aseptic suite). NOT the template gray studio void. NOT a spa, bathroom, marble lifestyle set.',
+      'FOLLOW THIS SCENE BRIEF EXACTLY: ' + String($('Prep_day_variant').item.json.scene_brief || '') + '.',
+      'scene_id=' + String($('Prep_day_variant').item.json.scene_id || '') + '; scene_category=pen_3ml_scene.',
+      'Wide environmental FULL PHARMA LAB SCENE. Deep focus. Architecture + process equipment readable. Pen stays readable but not an extreme macro.',
+      'OVERLAY TEXT (required, sharp, perfectly spelled) as clean premium type over the photoreal pharma lab photo — do not replace the photo with a flat poster:',
+      'Exact brand wordmark: PALM BEACH VITALITY',
+      'Exact headline: ' + String($('Parse_Grok').item.json.figma_headline || name) + '.',
+      'Exact subhead: ' + String($('Parse_Grok').item.json.figma_subhead || '') + '.',
+      'Exact bullets only: ' + [ $('Parse_Grok').item.json.figma_bullet_1, $('Parse_Grok').item.json.figma_bullet_2, $('Parse_Grok').item.json.figma_bullet_3 ].filter(Boolean).join(' | ') + '.',
+      'Exact CTA: VIEW LABORATORY LISTING',
+      'Exact footer: FOR LABORATORY RESEARCH USE ONLY. NOT FOR HUMAN USE.',
+      'Tiny date: ' + $now.toISODate() + '.',
+      'Text stays in safe margins; pharmaceutical cleanroom must remain clearly visible.',
+      'HARD BAN: people, faces, hands, needles in use, clinics, gyms, lifestyle spa marble, cartoon hazard posters, biohazard trefoils as decor, striped danger tape as decoration.',
+      'Style: luxury pharmaceutical manufacturing catalog photography, sterile, precise, expensive, photoreal, sharp.'
+    ].join(' ')
+  };
+})() }}
