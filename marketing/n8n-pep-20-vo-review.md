@@ -1,7 +1,7 @@
 # 20 × 30s Pep scripts — read and mark tweaks
 
 Human Script Agent pass. Unique set-specific hooks. Easy science. Locked studies + COA + store CTA still close every clip.
-Spec: `marketing/HUMAN_SCRIPT_AGENT.md`.
+Spec: `.cursor/skills/human-scripts/SKILL.md`, `marketing/HUMAN_SCRIPT_AGENT.md`.
 
 Target **65–74 words** (~26–29.5s at Pep TTS). OmniHuman **1080p** (30s audio cap).
 

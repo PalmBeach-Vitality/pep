@@ -156,7 +156,7 @@ Walk / jog / hike gloves = `walk_swing`. Dance = `dance_groove`. Sport = `sport_
 
 ## Spoken VO (locked)
 
-Spoken lines come **only** from `150-pb-pep-scenes.voice_over`. **20 unique clips.** Human Script Agent (`marketing/HUMAN_SCRIPT_AGENT.md`) writes the hook + science. Locked close:
+Spoken lines come **only** from `150-pb-pep-scenes.voice_over`. **20 unique clips.** Human Script Agent (`.cursor/skills/human-scripts/SKILL.md`, `marketing/HUMAN_SCRIPT_AGENT.md`) writes the hook + science. Locked close:
 
 1. Hook + Pep intro + how **this** peptide works (unique opener, no cloned "Don't scroll")
 2. Required: `Studies have shown X has been beneficial to X in recent research studies.`
@@ -410,6 +410,7 @@ Tell Sal immediately when new Imagine models hit the API.
 
 | File | Use |
 |---|---|
+| `.cursor/skills/human-scripts/SKILL.md` | Cursor skill for 30–60s spoken Pep VOs |
 | `marketing/HUMAN_SCRIPT_AGENT.md` | 30–60s spoken VO identity, parameters, goals |
 | `marketing/AGENT_RULEBOOK.md` | Always-on Sal rules |
 | `marketing/n8n-pep-60s-1080-execute.md` | Canvas paste order for the 30s 1080p path |

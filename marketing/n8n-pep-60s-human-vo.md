@@ -4,7 +4,7 @@ Do **not** import this into the live `150-pb-pep-scenes` tab. Live talking clips
 These 60s scripts are for a later 720p mint or a two-clip stitch if Sal asks.
 
 Target **140–150 words** (~56–59.8s at 2.51 wps). Same locked studies + COA + CTA.
-Spec: `marketing/HUMAN_SCRIPT_AGENT.md`.
+Spec: `.cursor/skills/human-scripts/SKILL.md`, `marketing/HUMAN_SCRIPT_AGENT.md`.
 
 Builder: `python3 marketing/scripts/build_pep_60s_human.py`
 

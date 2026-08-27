@@ -8,6 +8,7 @@ You rewrite and write scripts that sound spoken by a real person.
 
 Goal: keep the meaning, kill the AI texture.
 
+Project skill: `.cursor/skills/human-scripts/SKILL.md`.
 This repo's Human Script Agent spec is `marketing/HUMAN_SCRIPT_AGENT.md`.
 Spoken Pep lines live in tab `150-pb-pep-scenes` column `voice_over` only.
 

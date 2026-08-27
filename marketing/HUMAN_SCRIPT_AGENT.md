@@ -126,7 +126,7 @@ GitHub / short-form script agents (pacing + structure):
 
 Pacing sources used to set word buckets: ~2.5 words/second conversational VO. 30s ≈ 65–75 words. 60s ≈ 140–150 words. Hook in the first 1–3 seconds. One idea per clip.
 
-Sal's uploaded human-script prompts are the house rules (`.cursor/rules/human-scripts.mdc`). Pep locks from `marketing/AGENT_RULEBOOK.md` override any GitHub agent that wants to invent a CTA or drop the studies line.
+Sal's uploaded human-script prompts are the house rules (`.cursor/skills/human-scripts/SKILL.md`, `.cursor/rules/human-scripts.mdc`). Pep locks from `marketing/AGENT_RULEBOOK.md` override any GitHub agent that wants to invent a CTA or drop the studies line.
 
 ---
 
@@ -143,6 +143,7 @@ Sal's uploaded human-script prompts are the house rules (`.cursor/rules/human-sc
 
 | File | Role |
 |---|---|
+| `.cursor/skills/human-scripts/SKILL.md` | Cursor skill (`human-scripts`) |
 | `.cursor/rules/human-scripts.mdc` | Cursor rule |
 | `marketing/scripts/human_script_lib.py` | Word count, locked lines, lint |
 | `marketing/scripts/build_20_pep_scenes.py` | Live 20 × 30s sheet + VO review |
