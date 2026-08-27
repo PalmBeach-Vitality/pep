@@ -1,0 +1,33 @@
+# edit_fields (before grok_api) — vid_gen_landscape_scenes
+# Place after: Prep_day_variant
+# Place before: grok_api
+# Node name: edit_fields
+
+# ---------------------------------------------------------------------------
+# Field: system_prompt  (String · fixed text)
+# Paste full contents of: marketing/n8n-system-prompt-landscape.txt
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Field: user_prompt  (String · Expression)
+# ---------------------------------------------------------------------------
+
+{{
+'Write science and research-only captions for this exact scene + product. Chemical names only. No marketing, no human-use language.\n\nHARD RULES:\n- IG, FB, TikTok captions MUST all end with the mandatory disclaimer.\n- Today: ' + String($now.weekdayLong).trim() + ' / ' + $now.toISODate() + '\n- Aspect: 9:16 social vertical\n- Include exact marker in IG + FB: Catalog note — ' + $now.toISODate() + '\n- Captions MUST match this product only (do not switch compounds).\n- creative_brief.visual_notes must match the scene_brief vibe (environment vs vial/pen) and stay full-scene, not extreme macro.\n\nHARD CAPTION LOCK:\n' + String($json.caption_lock || $('Prep_day_variant').item.json.caption_lock || '') + '\n\nscene:\n' + JSON.stringify({
+  creation_id: $json.creation_id || $('Prep_day_variant').item.json.creation_id || $('Limit').item.json.creation_id,
+  rank: $json.rank || $('Prep_day_variant').item.json.rank || $('Limit').item.json.rank,
+  category: $json.category || $('Prep_day_variant').item.json.category || $('Limit').item.json.category,
+  shot_family: $json.shot_family || $('Prep_day_variant').item.json.shot_family || $('Limit').item.json.shot_family,
+  compound_id: $json.compound_id || $('Prep_day_variant').item.json.compound_id || $('Limit').item.json.compound_id,
+  compound_name: $json.compound_name || $('Prep_day_variant').item.json.compound_name || $('Limit').item.json.compound_name,
+  canonical_url: $json.canonical_url || $('Prep_day_variant').item.json.canonical_url || $('Limit').item.json.canonical_url,
+  material_detail: $json.material_detail || $('Prep_day_variant').item.json.material_detail || $('Limit').item.json.material_detail,
+  hero_style: $json.hero_style || $('Prep_day_variant').item.json.hero_style || $('Limit').item.json.hero_style,
+  vibe: $json.vibe || $('Prep_day_variant').item.json.vibe || $('Limit').item.json.vibe,
+  theme: $json.theme || $('Prep_day_variant').item.json.theme || $('Limit').item.json.theme,
+  lighting: $json.lighting || $('Prep_day_variant').item.json.lighting || $('Limit').item.json.lighting,
+  aspect_ratio: '9:16',
+  scene_brief: $json.scene_brief || $('Prep_day_variant').item.json.scene_brief || $('Limit').item.json.scene_brief,
+  catalog_note_date: $now.toISODate()
+}, null, 2)
+}}
