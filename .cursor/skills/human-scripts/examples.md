@@ -24,13 +24,13 @@ Human:
 
 Do not copy these hooks onto another peptide or set. Pattern: set-specific first line → `I'm Palm Beach Pep` → one mechanism → locked studies + COA + store CTA.
 
-**PEP-001 BPC-157 (boardwalk)** — 68 words
+**PEP-001 BPC-157 (boardwalk)**
 
-Salt on these boards. I'm Palm Beach Pep. BPC-157 is a short gut-protein fragment labs watch as a local lining and tendon repair signal. Studies have shown BPC-157 has been beneficial to gut lining and tendon-repair research in recent research studies. Palm Beach Vitality research peptides are backed by a COA with every single order, American made delivering >99% purity 100% of the time. Visit us at palmbeach-vitality.store.
+You can still smell the salt in these boards. I'm Palm Beach Pep. BPC-157 is a short gut-protein fragment. Labs follow it as a local lining and tendon repair signal. Studies have shown BPC-157 has been beneficial to gut lining and tendon-repair research in recent research studies. Palm Beach Vitality research peptides are backed by a COA with every single order, American made delivering >99% purity 100% of the time. Visit us at palmbeach-vitality.store.
 
-**PEP-004 Semaglutide (bike path)** — 68 words
+**PEP-004 Semaglutide (bike path)**
 
-Keep the pace. I'm Palm Beach Pep. Semaglutide copies GLP-1, the meal hormone. After food it helps insulin when sugar is high and slows emptying. Studies have shown Semaglutide has been beneficial to appetite and metabolic-marker research in recent research studies. Palm Beach Vitality research peptides are backed by a COA with every single order, American made delivering >99% purity 100% of the time. Visit us at palmbeach-vitality.store.
+Steady on this path. I'm Palm Beach Pep. Semaglutide copies GLP-1, the meal hormone. After you eat, it helps insulin when sugar is high and slows emptying. Studies have shown Semaglutide has been beneficial to appetite and metabolic-marker research in recent research studies. Palm Beach Vitality research peptides are backed by a COA with every single order, American made delivering >99% purity 100% of the time. Visit us at palmbeach-vitality.store.
 
 Banned cloned opener (do not write):
 
