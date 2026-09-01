@@ -1,0 +1,27 @@
+# Node: save_pep_outputs (Edit Fields / Set)
+# After: stitch_pep_master (or last beat poll if stitching later)
+# Include Other Input Fields: ON
+
+# Core IDs
+# EXACT canvas names for Beat A path:
+# Prep_day_variant, Parse_Grok, prep_pep_beats, save_still_url,
+# grok_video_poll, save_video_url, sheets_update_creation
+
+creation_id = {{ $('prep_pep_beats').item.json.creation_id || $('Limit').item.json.creation_id || $('Prep_day_variant').item.json.creation_id }}
+compound_id = {{ $('prep_pep_beats').item.json.compound_id || $('Prep_day_variant').item.json.compound_id }}
+compound_name = {{ $('prep_pep_beats').item.json.compound_name || $('Prep_day_variant').item.json.compound_name }}
+
+# Still A (exact node save_still_url)
+reel_still_url = {{ $('save_still_url').item.json.reel_still_url || $('save_still_url').item.json.data[0].url }}
+
+# Beat A video (exact nodes) — fal Kling result path; expand with _b/_c/_d after duplicates exist
+video_url = {{ $('save_video_url').item.json.video_url || $('grok_video_poll').item.json.video.url }}
+
+# Captions / compliance (exact node Parse_Grok)
+ig_caption_draft = {{ $('Parse_Grok').item.json.ig_caption_draft }}
+fb_caption_draft = {{ $('Parse_Grok').item.json.fb_caption_draft }}
+compliance_ok = {{ $('Parse_Grok').item.json.compliance_ok }}
+aspect_ratio = 9:16
+target_duration_seconds = 60
+model_video = fal-kling-v3-pro-i2v
+

@@ -1,0 +1,18 @@
+# Node: sheets_update_creation  (EXACT canvas name)
+# LAST node in workflow
+# Wire: gather_pep_clips → sheets_update_creation
+#
+# Sheet / tab (exact): 150-pb-pep-scenes
+# Operation: Update
+# Column to Match On: creation_id
+#
+# Value to Match:
+# {{ $('gather_pep_clips').item.json.creation_id || $('prep_pep_beats').item.json.creation_id || $('Limit').item.json.creation_id }}
+#
+# Columns to update:
+# Do not write still URLs back to the sheet. Canvas save_still_url keeps the still for OmniHuman.
+
+last_used_at   = {{ $now.toISO() }}
+times_used     = {{ Number($('Limit').item.json.times_used || $('Prep_day_variant').item.json.times_used || 0) + 1 }}
+video_url      = {{ $('gather_pep_clips').item.json.video_url }}
+model_video    = {{ $('gather_pep_clips').item.json.model_video || 'fal-omnihuman-v1.5' }}

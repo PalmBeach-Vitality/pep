@@ -1,0 +1,13 @@
+# Approved Pep still A (Sal QC pass)
+
+## Source (xAI temp — may expire)
+https://imgen.x.ai/xai-imgen/xai-tmp-imgen-85b8f792-9b01-9cf8-9f27-b990bda1fd41-4c613761.jpeg
+
+## Saved in repo (use this)
+- File: `marketing/assets/palm-beach-pep-approved-still-a.jpeg`
+- Blob: https://github.com/PalmBeach-Vitality/pep/blob/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-approved-still-a.jpeg
+- Raw: https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-approved-still-a.jpeg
+
+## Produced by
+Locked body: `marketing/n8n-pep-grok-still-body-lock.txt`  
+Master: `marketing/assets/palm-beach-pep-master.jpg`
