@@ -4,7 +4,7 @@ B2C E-commerce brand
 
 
 ## Brand
-**Palm Beach Peptides** — Precision. Purity. Palm Beach Made.
+**Palm Beach Vitality** — Precision. Purity. Palm Beach Made.
 
 Premium American-made peptides for researchers, clinics, and B2B brands.
 
@@ -52,4 +52,4 @@ All pages are fully linked and mobile-responsive. No build step required (uses T
 - Update contact email / phone when ready
 - Expand research library articles as content is written
 
-Built for Salvatore / Palm Beach Peptides project.
+Built for Salvatore / Palm Beach Vitality project.
