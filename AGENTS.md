@@ -41,3 +41,8 @@ flowchart LR
 - **Never crop stills.** Use `scaleMode: "FIT"` (not `FILL`) for storyboard and lookbook images unless Salvatore explicitly asks to crop or zoom.
 - Prefer **9:16 portrait frames/pages** for vertical film stills so the full image can fill the page without cropping.
 - One still per page when reviewing detail.
+
+## Files / assets
+
+- **Always use Google Drive** when a file needs to be stored or shared.
+- Prefer the existing slideshow folders on Salvatore’s Drive over temporary file hosts.
