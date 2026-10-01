@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="380" viewBox="0 0 720 380" role="img" aria-label="Cagrilintide — Lipidated Analog">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FDFBF7"/>
+      <stop offset="100%" stop-color="#F0E9D8"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#bg)"/>
+  <text x="28" y="32" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700" fill="#0A1628">Cagrilintide — Lipidated Analog</text>
+  <text x="28" y="52" font-family="Inter, Arial, sans-serif" font-size="11" fill="#0D9488">Not a straight chain. C20 diacid–γ-Glu on Lys1, Cys2–Cys7 disulfide, 37 aa, C-terminal amide.</text>
+<line x1="36" y1="108" x2="542" y2="108" stroke="#99f6e4" stroke-width="4" stroke-linecap="round"/>
+<line x1="36" y1="164" x2="542" y2="164" stroke="#99f6e4" stroke-width="4" stroke-linecap="round"/>
+<line x1="36" y1="220" x2="542" y2="220" stroke="#99f6e4" stroke-width="4" stroke-linecap="round"/>
+<line x1="36" y1="276" x2="128" y2="276" stroke="#99f6e4" stroke-width="4" stroke-linecap="round"/>
+<path d="M 174 90 Q 289.0 60 404 90" fill="none" stroke="#0f766e" stroke-width="1.6"/>
+<text x="289.0" y="72" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="9" font-weight="700" fill="#0f766e">S–S</text>
+<text x="105.0" y="86" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#b45309">γ</text>
+<circle cx="36" cy="108" r="18" fill="#334155" stroke="#0A1628" stroke-width="1.2"/>
+<text x="36" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="8" font-weight="700" fill="#ffffff">C20</text>
+<circle cx="82" cy="108" r="18" fill="#b45309" stroke="#0A1628" stroke-width="1.2"/>
+<text x="82" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="8" font-weight="700" fill="#ffffff">γE</text>
+<circle cx="128" cy="108" r="18" fill="#7c3aed" stroke="#0A1628" stroke-width="1.2"/>
+<text x="128" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">K</text>
+<circle cx="174" cy="108" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="174" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">C</text>
+<circle cx="220" cy="108" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="220" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">N</text>
+<circle cx="266" cy="108" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="266" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">T</text>
+<circle cx="312" cy="108" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="312" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">A</text>
+<circle cx="358" cy="108" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="358" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">T</text>
+<circle cx="404" cy="108" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="404" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">C</text>
+<circle cx="450" cy="108" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="450" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">A</text>
+<circle cx="496" cy="108" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="496" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">T</text>
+<circle cx="542" cy="108" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="542" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">Q</text>
+<circle cx="36" cy="164" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="36" y="168" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">R</text>
+<circle cx="82" cy="164" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="82" y="168" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">L</text>
+<circle cx="128" cy="164" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="128" y="168" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">A</text>
+<circle cx="174" cy="164" r="18" fill="#b45309" stroke="#0A1628" stroke-width="1.2"/>
+<text x="174" y="168" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">E</text>
+<circle cx="220" cy="164" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="220" y="168" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">F</text>
+<circle cx="266" cy="164" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="266" y="168" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">L</text>
+<circle cx="312" cy="164" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="312" y="168" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">R</text>
+<circle cx="358" cy="164" r="18" fill="#7c3aed" stroke="#0A1628" stroke-width="1.2"/>
+<text x="358" y="168" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">H</text>
+<circle cx="404" cy="164" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="404" y="168" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">S</text>
+<circle cx="450" cy="164" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="450" y="168" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">S</text>
+<circle cx="496" cy="164" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="496" y="168" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">N</text>
+<circle cx="542" cy="164" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="542" y="168" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">N</text>
+<circle cx="36" cy="220" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="36" y="224" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">F</text>
+<circle cx="82" cy="220" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="82" y="224" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">G</text>
+<circle cx="128" cy="220" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="128" y="224" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">P</text>
+<circle cx="174" cy="220" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="174" y="224" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">I</text>
+<circle cx="220" cy="220" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="220" y="224" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">L</text>
+<circle cx="266" cy="220" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="266" y="224" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">P</text>
+<circle cx="312" cy="220" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="312" y="224" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">P</text>
+<circle cx="358" cy="220" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="358" y="224" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">T</text>
+<circle cx="404" cy="220" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="404" y="224" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">N</text>
+<circle cx="450" cy="220" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="450" y="224" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">V</text>
+<circle cx="496" cy="220" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="496" y="224" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">G</text>
+<circle cx="542" cy="220" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="542" y="224" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">S</text>
+<circle cx="36" cy="276" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="36" y="280" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">N</text>
+<circle cx="82" cy="276" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="82" y="280" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">T</text>
+<circle cx="128" cy="276" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="128" y="280" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">P</text>
+  <text x="28" y="366" font-family="Inter, Arial, sans-serif" font-size="10" fill="#64748b">N→C orientation · research diagram · color by residue class</text>
+</svg>
