@@ -1,0 +1,42 @@
+# OmniHuman keeper (storefront handoff 2026-08-13)
+
+Sal: “That looks PERFECT.” Locked talking model is OmniHuman v1.5 (image + audio). Stop Sync-3 / VEED / Kling lipsync / LatentSync. Do not splice clips.
+
+Fal CDN links expire. Use the local copies.
+
+## Local copies (this branch)
+
+| Asset | File |
+|---|---|
+| Keeper clip (1088×1920-class, ~15.2s) | `marketing/assets/palm-beach-pep-omnihuman-keeper.mp4` |
+| Open-mouth still (OmniHuman start frame, 1080×1920) | `marketing/assets/palm-beach-pep-openmouth-still.jpg` |
+| Speech wav (QC reference only — do not hardcode as Audio Url) | `marketing/assets/palm-beach-pep-omnihuman-speech.wav` |
+
+Blob:
+https://github.com/PalmBeach-Vitality/pep/blob/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-omnihuman-keeper.mp4
+
+https://github.com/PalmBeach-Vitality/pep/blob/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-openmouth-still.jpg
+
+https://github.com/PalmBeach-Vitality/pep/blob/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-omnihuman-speech.wav
+
+Raw:
+https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-omnihuman-keeper.mp4
+
+https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-openmouth-still.jpg
+
+https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-omnihuman-speech.wav
+
+## Original fal URLs (may 422 / expire)
+
+- Clip: `https://v3b.fal.media/files/b/0aa63765/PodRjpU1AXRlCQ-iw5eOX_video.mp4`
+- Still: `https://v3b.fal.media/files/b/0aa6373b/SMgvhKAFxp1nWiyvnnD7p_pep-openmouth-still.jpg`
+- Wav: `https://v3b.fal.media/files/b/0aa635c9/Da599Vpkt4NS7oUZD6ZFq_full-audio.wav`
+
+## Locked n8n args
+
+- Model: `fal-ai/bytedance/omnihuman/v1.5` on `pep_lipsync_fal`
+- `image_url` = `={{ $('save_still_url').item.json.reel_still_url }}`
+- `audio_url` = `={{ $('fal_upload_tts_initiate').item.json.file_url }}`
+- `resolution` = `1080p` (audio must be under 30s)
+- Max Wait Time = `1200` (1080p can exceed 10 min; 600 is the n8n default and too short)
+- Do **not** hardcode Audio Url. Do **not** pin `grok_imagine_reel_still`, `tts_pep_voice_over`, or `pep_lipsync_fal` on a unique-scene run.

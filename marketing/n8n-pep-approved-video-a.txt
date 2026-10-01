@@ -1,0 +1,15 @@
+# Approved Pep video A (Beat A — fal Kling)
+
+## Source (fal CDN)
+https://v3b.fal.media/files/b/0aa5f058/pPFwMLuUpRj-sdwmBPs-o_output.mp4
+
+## Saved in repo
+- File: `marketing/assets/palm-beach-pep-approved-video-a.mp4`
+- Blob: https://github.com/PalmBeach-Vitality/pep/blob/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-approved-video-a.mp4
+- Raw: https://raw.githubusercontent.com/PalmBeach-Vitality/pep/cursor/palm-beach-pep-scenes-8510/marketing/assets/palm-beach-pep-approved-video-a.mp4
+
+## Paired still
+`marketing/assets/palm-beach-pep-approved-still-a.jpeg`
+
+## n8n save_video_url
+`video_url` = the fal.media link above (or raw GitHub after push)
