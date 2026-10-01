@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="212" viewBox="0 0 720 212" role="img" aria-label="Melanotan II — Cyclic Lactam">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FDFBF7"/>
+      <stop offset="100%" stop-color="#F0E9D8"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#bg)"/>
+  <text x="28" y="32" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700" fill="#0A1628">Melanotan II — Cyclic Lactam</text>
+  <text x="28" y="52" font-family="Inter, Arial, sans-serif" font-size="11" fill="#0D9488">Cyclic, not linear. Lactam closes Asp to Lys. Ac-Nle sits outside the ring; C-terminus is an amide.</text>
+<line x1="36" y1="108" x2="404" y2="108" stroke="#99f6e4" stroke-width="4" stroke-linecap="round"/>
+<path d="M 128 90 Q 243.0 60 358 90" fill="none" stroke="#0f766e" stroke-width="1.6"/>
+<text x="243.0" y="72" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="9" font-weight="700" fill="#0f766e">lactam</text>
+<circle cx="36" cy="108" r="18" fill="#334155" stroke="#0A1628" stroke-width="1.2"/>
+<text x="36" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="8" font-weight="700" fill="#ffffff">Ac</text>
+<circle cx="82" cy="108" r="18" fill="#334155" stroke="#0A1628" stroke-width="1.2"/>
+<text x="82" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="8" font-weight="700" fill="#ffffff">Nle</text>
+<circle cx="128" cy="108" r="18" fill="#b45309" stroke="#0A1628" stroke-width="1.2"/>
+<text x="128" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">D</text>
+<circle cx="174" cy="108" r="18" fill="#7c3aed" stroke="#0A1628" stroke-width="1.2"/>
+<text x="174" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">H</text>
+<circle cx="220" cy="108" r="18" fill="#334155" stroke="#0A1628" stroke-width="1.2"/>
+<text x="220" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="8" font-weight="700" fill="#ffffff">D-F</text>
+<circle cx="266" cy="108" r="18" fill="#0d9488" stroke="#0A1628" stroke-width="1.2"/>
+<text x="266" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">R</text>
+<circle cx="312" cy="108" r="18" fill="#1e3a5f" stroke="#0A1628" stroke-width="1.2"/>
+<text x="312" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">W</text>
+<circle cx="358" cy="108" r="18" fill="#7c3aed" stroke="#0A1628" stroke-width="1.2"/>
+<text x="358" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">K</text>
+<circle cx="404" cy="108" r="18" fill="#334155" stroke="#0A1628" stroke-width="1.2"/>
+<text x="404" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="8" font-weight="700" fill="#ffffff">NH2</text>
+  <text x="28" y="198" font-family="Inter, Arial, sans-serif" font-size="10" fill="#64748b">N→C orientation · research diagram · color by residue class</text>
+</svg>
